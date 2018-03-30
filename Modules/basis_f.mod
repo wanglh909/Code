@@ -1,0 +1,102 @@
+GFORTRAN module version '0' created from Sources/basis_function.f90 on Mon Feb 12 22:21:25 2018
+MD5:445c1d24b10dbe863f02329f77849adf -- If you edit this, you'll get what you deserve.
+
+(() () () ()
+() () () () () () () () () () () () () () () () () () () () () () ())
+
+()
+
+()
+
+()
+
+()
+
+(2 'basis_f' 'basis_f' 'basis_f' 1 ((MODULE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN UNKNOWN) (UNKNOWN 0 0 0 UNKNOWN ()) 0 0 () () 0 () () () 0 0)
+3 'basis_function' 'basis_f' 'basis_function' 1 ((PROCEDURE
+UNKNOWN-INTENT MODULE-PROC DECL UNKNOWN SUBROUTINE) (UNKNOWN 0 0 0
+UNKNOWN ()) 0 0 () () 0 () () () 0 0)
+4 'ik' 'kind' 'ik' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+IMPLICIT-SAVE) (INTEGER 4 0 0 INTEGER ()) 0 0 () (CONSTANT (INTEGER 4 0
+0 INTEGER ()) 0 '4') () 0 () () () 0 0)
+5 'kind' 'kind' 'kind' 1 ((MODULE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+UNKNOWN) (UNKNOWN 0 0 0 UNKNOWN ()) 0 0 () () 0 () () () 0 0)
+6 'phii' 'basis_f' 'phii' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
+UNKNOWN FUNCTION) (REAL 8 0 0 REAL ()) 7 0 (8 9 10) () 6 () () () 0 0)
+11 'phii_1d' 'basis_f' 'phii_1d' 1 ((PROCEDURE UNKNOWN-INTENT
+MODULE-PROC DECL UNKNOWN FUNCTION) (REAL 8 0 0 REAL ()) 12 0 (13 14) ()
+11 () () () 0 0)
+15 'phiieta' 'basis_f' 'phiieta' 1 ((PROCEDURE UNKNOWN-INTENT
+MODULE-PROC DECL UNKNOWN FUNCTION) (REAL 8 0 0 REAL ()) 16 0 (17 18 19)
+() 15 () () () 0 0)
+20 'phiisi' 'basis_f' 'phiisi' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC
+DECL UNKNOWN FUNCTION) (REAL 8 0 0 REAL ()) 21 0 (22 23 24) () 20 () ()
+() 0 0)
+25 'phiix_1d' 'basis_f' 'phiix_1d' 1 ((PROCEDURE UNKNOWN-INTENT
+MODULE-PROC DECL UNKNOWN FUNCTION) (REAL 8 0 0 REAL ()) 26 0 (27 28) ()
+25 () () () 0 0)
+29 'psii' 'basis_f' 'psii' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC DECL
+UNKNOWN FUNCTION) (REAL 8 0 0 REAL ()) 30 0 (31 32 33) () 29 () () () 0
+0)
+34 'psiieta' 'basis_f' 'psiieta' 1 ((PROCEDURE UNKNOWN-INTENT
+MODULE-PROC DECL UNKNOWN FUNCTION) (REAL 8 0 0 REAL ()) 35 0 (36 37) ()
+34 () () () 0 0)
+38 'psiisi' 'basis_f' 'psiisi' 1 ((PROCEDURE UNKNOWN-INTENT MODULE-PROC
+DECL UNKNOWN FUNCTION) (REAL 8 0 0 REAL ()) 39 0 (40 41) () 38 () () ()
+0 0)
+42 'rk' 'kind' 'rk' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+IMPLICIT-SAVE) (INTEGER 4 0 0 INTEGER ()) 0 0 () (CONSTANT (INTEGER 4 0
+0 INTEGER ()) 0 '8') () 0 () () () 0 0)
+43 'rk2' 'kind' 'rk2' 1 ((PARAMETER UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+IMPLICIT-SAVE) (INTEGER 4 0 0 INTEGER ()) 0 0 () (CONSTANT (INTEGER 4 0
+0 INTEGER ()) 0 '8') () 0 () () () 0 0)
+44 'selected_real_kind' '(intrinsic)' 'selected_real_kind' 1 ((
+PROCEDURE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN FUNCTION) (REAL 4
+0 0 REAL ()) 0 0 () () 44 () () () 0 0)
+8 'si' '' 'si' 7 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN
+DUMMY) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+9 'eta' '' 'eta' 7 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+UNKNOWN DUMMY) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+10 'i' '' 'i' 7 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN
+DUMMY) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
+22 'si' '' 'si' 21 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+UNKNOWN DUMMY) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+23 'eta' '' 'eta' 21 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+UNKNOWN DUMMY) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+24 'i' '' 'i' 21 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN
+DUMMY) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
+17 'si' '' 'si' 16 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+UNKNOWN DUMMY) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+18 'eta' '' 'eta' 16 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+UNKNOWN DUMMY) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+19 'i' '' 'i' 16 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN
+DUMMY) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
+31 'si' '' 'si' 30 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+UNKNOWN DUMMY) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+32 'eta' '' 'eta' 30 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+UNKNOWN DUMMY) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+33 'i' '' 'i' 30 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN
+DUMMY) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
+40 'eta' '' 'eta' 39 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+UNKNOWN DUMMY) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+41 'i' '' 'i' 39 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN
+DUMMY) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
+36 'si' '' 'si' 35 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+UNKNOWN DUMMY) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+37 'i' '' 'i' 35 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN
+DUMMY) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
+13 'x' '' 'x' 12 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN
+DUMMY) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+14 'i' '' 'i' 12 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN
+DUMMY) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
+27 'x' '' 'x' 26 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN
+DUMMY) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
+28 'i' '' 'i' 26 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN
+DUMMY) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
+)
+
+('basis_f' 0 2 'basis_function' 0 3 'ik' 0 4 'kind' 0 5 'phii' 0 6
+'phii_1d' 0 11 'phiieta' 0 15 'phiisi' 0 20 'phiix_1d' 0 25 'psii' 0 29
+'psiieta' 0 34 'psiisi' 0 38 'rk' 0 42 'rk2' 0 43 'selected_real_kind' 0
+44)

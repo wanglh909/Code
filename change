@@ -1,0 +1,16 @@
+car_cal: write surface stress & gradT change r, write umax & vmax
+main: write total calculation time
+
+fsize, A_NOP_mod, initial_condition(k_alge): for mesh convergence for dense elements
+
+graph: write umax & vmax as DATASETAUXDATA
+
+var_cal: data file 20-30, stagnation point exclude r=0&r=1 elements
+
+use converged r&z values: fsize, graph, initial_condition, data(read_coordinate_value), L2_error(replace open data files 'error.dat' etc)
+
+heating substrate: parameter, data(T_sub), initial_condition
+
+uniflux(thermal BC, not mass BC): data(true_uniflux), main, sf, sj_SI
+
+!!BC: outer_circle, judge if use imposed flux (uniflux), or else: T at the right upper corner of the substrate is fixed.

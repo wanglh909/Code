@@ -1,0 +1,38 @@
+#-*- mode: makefile;-*-  
+CC=icc
+FC=ifort
+CFLAGS=-O3 -w -ipo -xhost 
+FFLAGS= -O3 -qopenmp -ipo -xhost -FR -u -heap-arrays -module Modules
+LDFLAGS= -O3 -qopenmp -ipo -xhost -module Modules
+
+
+SRCDIR=Sources
+OBJDIR=Objects
+
+
+FSOURCES= $(SRCDIR)/AAAkind.f90 $(SRCDIR)/AAdata.f90 $(SRCDIR)/AAdata_local.f90 $(SRCDIR)/A_NOP_mod.f90 $(SRCDIR)/Amultifront_intel.f90 $(SRCDIR)/main.f90 $(SRCDIR)/BC.f90 $(SRCDIR)/basis_function.f90 $(SRCDIR)/graph.f90 $(SRCDIR)/initial_condition.f90 $(SRCDIR)/sj_VI.f90 $(SRCDIR)/sj_SI.f90 $(SRCDIR)/reverse_sj_part.f90 $(SRCDIR)/split_sol.f90 $(SRCDIR)/values_in_an_element.f90 $(SRCDIR)/values_in_sj.f90 $(SRCDIR)/sf.f90 $(SRCDIR)/L2_error.f90 $(SRCDIR)/prediction_and_preparation.f90 $(SRCDIR)/assemble.f90 $(SRCDIR)/jacobian_check.f90 $(SRCDIR)/jacobian_whole.f90 $(SRCDIR)/fsize.f90 $(SRCDIR)/parameter.f90 $(SRCDIR)/var_cal.f90  $(SRCDIR)/newton_interation.f90 $(SRCDIR)/initialization.f90 #$(SRCDIR)/drop_volume.f90
+
+FOBJECTS= $(FSOURCES:$(SRCDIR)/%.f90=$(OBJDIR)/%.o)
+
+
+EXECUTABLE=Project
+
+
+all: $(CSOURCES) $(FSOURCES) $(EXECUTABLE)
+
+cmd: $(FSOURCES) $(CSOURCESCMD) $(EXECUTABLECMD) 
+
+$(EXECUTABLE): $(FOBJECTS)  
+	$(FC) $(LDFLAGS) $(FOBJECTS) -o $@
+
+$(FOBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.f90
+	$(FC) $(FFLAGS) -c $< -o $@
+
+clean:
+	rm *dat #$(MODDIR)/*mod $(EXECUTABLE) $(FOBJECTS) $(COBJECTS)
+
+wipe:
+	rm $(MODDIR)/*mod $(EXECUTABLE) $(FOBJECTS) $(COBJECTS) 
+
+
+#make -f makefileintel
