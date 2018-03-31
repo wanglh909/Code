@@ -1,11 +1,11 @@
 subroutine vapor_mesh_size
   use kind
-  use data, only: vlayer, NEV1, R11, R, NEV, uniflux
+  use data, only: vlayer, NEV1, R11, R, NEV, no_vapor
   
   vlayer = 3
   allocate( NEV1(vlayer-1), R11(vlayer-1) )
   NEV1 = (/ NEV/6+1, 2*(NEV/6)+2 /)
-  if(uniflux) then
+  if(no_vapor.eq.1) then
      R11 = (/ 1.05_rk, 1.1_rk /)*R  
   else
      R11 = (/ 1.05_rk, 2.0_rk /)*R

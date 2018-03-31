@@ -222,7 +222,7 @@ if(s_mode.eq.0) then
      
          do k = 1, Ng, 1    !three gausspoints
 
-if(uniflux) then  !uniflux( flux( angle_c,rintfac_right(k,id) ) )
+if(no_vapor.eq.1) then  !flux: flux( angle_c,rintfac_right(k,id) ) 
    
    !KBC2
    intRsi_r_S(k) =  phi_1d(k,ipp)* flux( angle_c,rintfac_right(k,id) ) *&
@@ -240,7 +240,7 @@ if(uniflux) then  !uniflux( flux( angle_c,rintfac_right(k,id) ) )
    !evaporation cooling 2
    intRt_r_S(k) = REH* intRsi_r_S(k)
    intRt_z_S(k) = REH* intRsi_z_S(k)
-   if(true_uniflux.eq.1) then
+   if(uniflux.eq.1) then
       intRsi_r_S(k) = intRsi_r_S(k) / flux( angle_c,rintfac_right(k,id) )
       intRsi_z_S(k) = intRsi_z_S(k) / flux( angle_c,rintfac_right(k,id) )
    end if
@@ -360,7 +360,7 @@ intRt_T_S(k) = intRt_T_S(k) - phi_1d(k,ipp)*( -phisi1_1d(k,j)*( reta_right(k,id)
 
 
   !free surface from vapor, KBC part2 & evaporation cooling part2
-  if(.not.uniflux) then
+  if(no_vapor.eq.0) then
   if( (BCflagN( globalNM(m,i), 3 ).eq.1 .or. BCflagN( globalNM(m,i), 3 ).eq.3) .and. VE(m).eq.1 ) then
      ipp = i/3 + 1  !phi_1d(k,l)
 
@@ -411,7 +411,7 @@ intRt_c_S(k) = REH* intRsi_c_S(k)
      
 
   end if   !for i = 1,4,7 on the free surface
-  end if   !for uniflux = 0
+  end if   !solve for vapor phase
   
 end if   !for s_mode=0
 

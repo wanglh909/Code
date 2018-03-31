@@ -287,15 +287,16 @@ if( (BCflagN( globalNM(m,i), 3 ).eq.1 .or. BCflagN( globalNM(m,i), 3 ).eq.3) .an
    ipp = i/3  !phix_1d(k,ipp)
    do k = 1, Ng, 1    !three gausspoints
 
-!KBC
-if(uniflux) then  !uniflux:  flux( angle_c,rintfac_right(k,id) ) 
+!KBC2 & cooling2 added here if impose the flux with no vapor phase solving
+if(no_vapor.eq.1) then  !flux:  flux( angle_c,rintfac_right(k,id) ) 
    !KBC2
    intRsi_S(k) = phi_1d(k,ipp)* flux( angle_c,rintfac_right(k,id) ) * &
         ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk *rintfac_right(k,id)
    !evaporation cooling 2
    intRt_S(k) = REH * intRsi_S(k)
-   if(true_uniflux.eq.1) intRsi_S(k) = intRsi_S(k) / flux( angle_c,rintfac_right(k,id) )
+   if(uniflux.eq.1) intRsi_S(k) = intRsi_S(k) / flux( angle_c,rintfac_right(k,id) )
 end if
+
 !KBC1
 intRsi_S(k) = intRsi_S(k) + KBCgroup* ( phi_1d(k,ipp)* &
      ( -zeta_right(k,id)*( uintfac_right(k,id) - rdotintfac_right(k,id) ) + &
@@ -331,7 +332,7 @@ end if
 
 
 !free surface from vapor, KBC part2 & evaporation cooling part2
-if(.not.uniflux) then
+if(no_vapor.eq.0) then
 if( (BCflagN( globalNM(m,i), 3 ).eq.1 .or. BCflagN( globalNM(m,i), 3 ).eq.3) .and. VE(m).eq.1 ) then
    ipp = i/3 + 1  !phi_1d(k,ipp)
    do k = 1, Ng, 1    !three gausspoints
@@ -355,7 +356,7 @@ intRt_S(k) = REH* intRsi_S(k)
       sf(LNOPP(i)+Nr) = sf(LNOPP(i)+Nr) + gaussian_quadrature_1d(intRsi_S)
       sf(LNOPP(i)+NT) = sf(LNOPP(i)+NT) + gaussian_quadrature_1d(intRt_S)
 end if  !free surface nodes
-end if  !not uniflux
+end if  !solve for vapor
 
 
 end if  !for s_mode=0

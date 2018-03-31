@@ -9,8 +9,6 @@ subroutine newton_raphson
   real(kind=rk), parameter:: TOL = 1.0e-5_rk
   integer(kind=ik):: i
 
-! real(kind=rk):: a, b
-! integer(kind=ik):: i,j
 
   do       !newtons iteration loop
 
@@ -22,7 +20,6 @@ subroutine newton_raphson
      else
         soldot = 2.0_rk*( sol - solp )/dt - soldotp
      end if
-
 
      if(ths.eq.1) then
         call multifront_single(error1, cal_time) !using subroutine assemble
@@ -36,11 +33,10 @@ subroutine newton_raphson
         !mode: determines natural(1) or nested(2) sub ordering
         !If you overrode init_front with -1 or -2 ptn then no purpose
      end if
-
 ! if(initial_vapor_solved.eq.1) pause
 
      !for debug, put 'sj's together as Jac, check Jac
-     if( check_0_in_Jac.eq.1 ) then!.and. s_mode.eq.0 .and. initial_vapor_solved.eq.1)  then
+     if( check_0_in_Jac.eq.1 .and. s_mode.eq.0) then!.and. s_mode.eq.0 .and. initial_vapor_solved.eq.1)  then
         call jac_check_0
         Jac(:,:) = 0.0_rk
      end if

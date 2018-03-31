@@ -1,5 +1,5 @@
-GFORTRAN module version '0' created from Sources/Amultifront.f90 on Mon Feb 12 22:21:13 2018
-MD5:e12c2f22c4b6fc19c19ce24af114192a -- If you edit this, you'll get what you deserve.
+GFORTRAN module version '0' created from Sources/Amultifront.f90 on Sat Mar 31 16:58:51 2018
+MD5:144b10d6f1b86421b4fcc34c2a1823ad -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () ()
 () () () () () () () () ())
@@ -382,6 +382,8 @@ UNKNOWN UNKNOWN) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
 UNKNOWN UNKNOWN) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
 305 'z_ele' 'front_mod' 'z_ele' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
+125 'ptn2' '' 'ptn2' 122 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+UNKNOWN DUMMY) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
 186 'lock' '' 'lock' 185 ((VARIABLE INOUT UNKNOWN-PROC UNKNOWN UNKNOWN
 DUMMY) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
 195 'level' '' 'level' 194 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN
@@ -445,8 +447,6 @@ DUMMY) (INTEGER 8 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
 123 'init' '' 'init' 122 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN DUMMY) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
 124 'ptn' '' 'ptn' 122 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
-UNKNOWN DUMMY) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
-125 'ptn2' '' 'ptn2' 122 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN DUMMY) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
 90 'ele' '' 'ele' 89 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN DUMMY) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)

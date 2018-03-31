@@ -1,13 +1,13 @@
 subroutine parameter_values
   use kind
   use data, only: Re, Ca, Kdi, Pe, KBCgroup, REH, beta, Oh, Grav, R, Hum, F0, kR, folder, substrate, outer, &
-       NStrans, Inert, Capil, Viscous, GravI, Ttime, Tconv, Tdiff, TtimeS, TdiffS, NEM, NEL, NES, NEV, NEM_alge, T_sub, true_uniflux
+       NStrans, Inert, Capil, Viscous, GravI, Ttime, Tconv, Tdiff, TtimeS, TdiffS, NEM, NEL, NES, NEV, NEM_alge, T_sub, uniflux
   implicit none
 
   integer(kind=ik):: Ltype !, water, octane, hexanol
   real(kind=rk):: rho, mu, kT, cp, alpha, beta0, Diff, csat, Hv, sigmac, lc, vc, Tc, ks, rhos, cpS, alphaS, Mmolar
 
-  substrate = 0.15_rk! 3.0_rk! 0.15_rk   !1.0_rk  !0.15_rk   
+  substrate = 3.0_rk! 0.15_rk!   !1.0_rk  !0.15_rk   
   outer = 1.3_rk    !10.0_rk!   20.0_rk, 1.3_rk
 
   Ltype = 1
@@ -127,7 +127,7 @@ subroutine parameter_values
   write(10,'(A, i8)') 'Tdiff =', Tdiff
   write(10,'(A, i8)') 'TtimeS =', TtimeS
   write(10,'(A, i8)') 'TdiffS =', TdiffS
-  write(10,'(A, i8)') 'uniflux =', true_uniflux
+  write(10,'(A, i8)') 'uniflux =', uniflux
 
   write(10,'(A)') ' '
 

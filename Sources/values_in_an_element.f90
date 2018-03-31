@@ -43,7 +43,6 @@ subroutine values_in_an_element(m,id)
               Tlocal(j,id) = sol( NOPP( globalNM(m,j) ) + NT )
               Tdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + NT )
            end if
-           !??
         end if
            
      end if !for s_mode=0

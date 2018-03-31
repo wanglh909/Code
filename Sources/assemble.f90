@@ -83,7 +83,7 @@ subroutine assemble_local(m, locJacTr, locRHS, LNOPP, LNVar, id, dum)
   ! if(  m.eq.ele_c ) pause
 
 !for debug, put 'sj's together as Jac
-if( check_0_in_Jac.eq.1 ) then!.and. initial_vapor_solved.eq.1) then
+if( check_0_in_Jac.eq.1 .and. s_mode.eq.0) then!.and. initial_vapor_solved.eq.1) then
    do i = 1, LNVart
       do k = 1, bas
          if( i.lt.LNOPP(k) ) exit
@@ -95,7 +95,7 @@ if( check_0_in_Jac.eq.1 ) then!.and. initial_vapor_solved.eq.1) then
             if( j.lt.LNOPP(l) ) exit
          end do
          l=l-1
-
+         
          Jac(NOPP( globalNM(m,k) ) + i-LNOPP(k), NOPP( globalNM(m,l) ) + j-LNOPP(l) ) = &
             Jac(NOPP( globalNM(m,k) ) + i-LNOPP(k), NOPP( globalNM(m,l) ) + j-LNOPP(l) ) + locJac(i,j)
 

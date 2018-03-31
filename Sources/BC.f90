@@ -107,6 +107,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
         locRes(j) = 0.0_rk
      end if
 
+     !algebraic mesh
 if(alge_corner.eq.1) then
      !corner algebraic mesh     
      if( algeN(globalNM(m,i)).eq.1 ) then
@@ -123,46 +124,14 @@ if(alge_corner.eq.1) then
         locJac(j,j-1) = 1.0_rk    !dReta/dri
         locRes(j) = 0.0_rk
      end if
-end if
+  end if
+  
      !substrate algebraic mesh at contact line and vapor region boundary
      if( algeS(globalNM(m,i)).eq.3 .or. algeS(globalNM(m,i)).eq.1 ) then
         j = LNOPP(i) + Nr      !The location of Rsi(i) in locRes
         locJac(j,:) = 0.0_rk
         locJac(j,j) = 1.0_rk    !dRsi/dri
         locRes(j) = 0.0_rk
-     end if
-
-     !outer circle
-     if( no_vapor.eq.0 .and. (.not.uniflux) .and. &
-          BCflagN( globalNM(m,i), 4 ).eq.1 .or. BCflagN( globalNM(m,i), 4 ).eq.3 ) then !vapor outer
-        j = LNOPP(i) + Nr      !The location of Rsi(i) in locRes
-        locJac(j,:) = 0.0_rk
-        locJac(j,j) = 2.0_rk*rcoordinate( globalNM(m,i) )    !dRsi/dri
-        locJac(j,j+1) = 2.0_rk*zcoordinate( globalNM(m,i) )    !dRsi/dzi
-        locRes(j) = rcoordinate( globalNM(m,i) )**2 + zcoordinate( globalNM(m,i) )**2 - (outer*R)**2
-
-        if(s_mode.eq.0) then
-           j = LNOPP(i) + MDF(globalNM(m,i))-1      !The location of Rc(i) in locRes
-           locJac(j,:) = 0.0_rk
-           locJac(j,j) = 1.0_rk    !dRci/dci
-           locRes(j) = 0.0_rk
-        end if
-     end if
-     if( BCflagN( globalNM(m,i), 4 ).eq.2 .or. BCflagN( globalNM(m,i), 4 ).eq.3 ) then    !outer BC for substrate
-        j = LNOPP(i) + Nr      !The location of Rsi(i) in locRes
-        locJac(j,:) = 0.0_rk
-        locJac(j,j) = 1.0_rk    !dRsi/dri
-        locRes(j) = 0.0_rk
-
-        ! !if use no flux BC at outer substrate surface, then comment out
-        ! if(s_mode.eq.0) then
-        !    j = LNOPP(i) + NTs
-        !    locJac(j,:) = 0.0_rk
-        !    locJac(j,j) = 1.0_rk    !dRt/dT
-        !    locRes(j) = 0.0_rk
-        ! end if
-           
-
      end if
 
 if(no_vapor.eq.0) then
@@ -190,16 +159,52 @@ if(no_vapor.eq.0) then
      end do
 end if
 
-     !free   ?can be neglected or not
-     if( ( BCflagN( globalNM(m,i), 3 ).eq.1 .or. BCflagN( globalNM(m,i), 3 ).eq.3) ) then
+  
+     !outer circle
+     if( no_vapor.eq.0  .and. &
+          ( BCflagN( globalNM(m,i), 4 ).eq.1 .or. BCflagN( globalNM(m,i), 4 ).eq.3 ) ) then !vapor outer
+        j = LNOPP(i) + Nr      !The location of Rsi(i) in locRes
+        locJac(j,:) = 0.0_rk
+        locJac(j,j) = 2.0_rk*rcoordinate( globalNM(m,i) )    !dRsi/dri
+        locJac(j,j+1) = 2.0_rk*zcoordinate( globalNM(m,i) )    !dRsi/dzi
+        locRes(j) = rcoordinate( globalNM(m,i) )**2 + zcoordinate( globalNM(m,i) )**2 - (outer*R)**2
+
         if(s_mode.eq.0) then
-           if( VE(m).eq.1 ) then
+           j = LNOPP(i) + MDF(globalNM(m,i))-1      !The location of Rc(i) in locRes
+           locJac(j,:) = 0.0_rk
+           locJac(j,j) = 1.0_rk    !dRci/dci
+           locRes(j) = 0.0_rk
+        end if
+     end if
+     
+     if( BCflagN( globalNM(m,i), 4 ).eq.2 .or. BCflagN( globalNM(m,i), 4 ).eq.3 ) then    !outer BC for substrate
+        j = LNOPP(i) + Nr      !The location of Rsi(i) in locRes
+        locJac(j,:) = 0.0_rk
+        locJac(j,j) = 1.0_rk    !dRsi/dri
+        locRes(j) = 0.0_rk
+
+        ! !if use no flux BC at outer substrate surface, then comment out
+        ! if(s_mode.eq.0) then
+        !    j = LNOPP(i) + NTs
+        !    locJac(j,:) = 0.0_rk
+        !    locJac(j,j) = 1.0_rk    !dRt/dT
+        !    locRes(j) = 0.0_rk
+        ! end if
+           
+
+     end if
+
+
+     !free 
+     if( ( BCflagN( globalNM(m,i), 3 ).eq.1 .or. BCflagN( globalNM(m,i), 3 ).eq.3) ) then
+        if(s_mode.eq.0) then  !?can be neglected or not
+           if( no_vapor.eq.0 .and. VE(m).eq.1 ) then
               j = LNOPP(i) + MDF(globalNM(m,i))-1      !The location of Rc(i) in locRes
               locJac(j,:) = 0.0_rk
               locJac(j,j) = 1.0_rk    !dRci/dci
               locRes(j) = 0.0_rk
            end if
-        else !s_mode=1
+        else !s_mode=1, spherical cap shape
            j = LNOPP(i) + Nr      !The location of Rsi(i) in locRes
            locJac(j,:) = 0.0_rk
            locJac(j,j) = 2.0_rk*rcoordinate( globalNM(m,i) )    !dRsi/dri
@@ -208,15 +213,6 @@ end if
         end if
      end if
 
-     ! !should be of no use when adding thermal eqns for substrate
-     ! if(s_mode.eq.0) then
-     !    if(BCflagN(globalNM(m,i),2).ne.0 .and. VN(globalNM(m,i)).eq.1 ) then
-     !       j = LNOPP(i) + NT      !The location of Rt(i) in locRes
-     !       locJac(j,:) = 0.0_rk
-     !       locJac(j,j) = 1.0_rk    !dRti/dTi
-     !       locRes(j) = 0.0_rk
-     !    end if
-     ! end if
 
      !substrate base
      if( BCflagN( globalNM(m,i), 5 ).ne.0 ) then
@@ -321,7 +317,6 @@ end if
         if( VE(m).eq.0 ) then
            do i = 1, 9   
               if(i.eq.1 .or. i.eq.3 .or. i.eq.7 .or. i.eq.9) then
-                 j = LNOPP(i) + Np     !The location of Rc(i) in locRes
                  locJac(j,:) = 0.0_rk
                  locJac(j,j) = 1.0_rk               !dRc/dci
                  locRes(j) = 0.0_rk

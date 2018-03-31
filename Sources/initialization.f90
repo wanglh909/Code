@@ -64,8 +64,6 @@ subroutine initialization
 
   angle_cd = 0.0_rk
 
-  ! fluxuni = 0.0_rk
-  ! if(uniflux) fluxuni = 1.0_rk
 
 
   !-------------------------------------allocate local data-------------------------------------

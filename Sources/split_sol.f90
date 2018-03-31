@@ -40,7 +40,7 @@ subroutine split_sol
      end if
 
 
-     if(s_mode.eq.0) then  !vapor concentration
+     if(s_mode.eq.0 .and. no_vapor.eq.0) then  !vapor concentration
         
         !free surface    ?can be neglected or not
         if( VN(i).eq.2 ) then
@@ -48,7 +48,7 @@ subroutine split_sol
         end if
 
         !outer circle
-        if( ( BCflagN(i,4).eq.1 .or. BCflagN(i,4).eq.3 ) .and. no_vapor.eq.0 ) then
+        if( BCflagN(i,4).eq.1 .or. BCflagN(i,4).eq.3 ) then
            sol( NOPP(i) + MDF(i)-1 ) = Hum
         end if
 

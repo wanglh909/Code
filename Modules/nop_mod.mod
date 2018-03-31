@@ -1,5 +1,5 @@
-GFORTRAN module version '0' created from Sources/A_NOP_mod.f90 on Tue Feb 27 15:27:43 2018
-MD5:fb6078acc1249abb39ee7e8ff0a274e5 -- If you edit this, you'll get what you deserve.
+GFORTRAN module version '0' created from Sources/A_NOP_mod.f90 on Sat Mar 31 16:58:48 2018
+MD5:34fd8cf8fdb501bf05cf52955b94ed64 -- If you edit this, you'll get what you deserve.
 
 (() () () () () ()
 () () () () () () () () () () () () () () () () () () () () ())
@@ -465,65 +465,62 @@ UNKNOWN-PROC UNKNOWN UNKNOWN) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 ()
 167 'top_node' 'data' 'top_node' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 ()
 () () 0 0)
-168 'true_uniflux' 'data' 'true_uniflux' 1 ((VARIABLE UNKNOWN-INTENT
-UNKNOWN-PROC UNKNOWN UNKNOWN) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 ()
-() () 0 0)
-169 'trunerr' 'data' 'trunerr' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+168 'trunerr' 'data' 'trunerr' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
-170 'tsol' 'data' 'tsol' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+169 'tsol' 'data' 'tsol' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN ALLOCATABLE DIMENSION) (REAL 8 0 0 REAL ()) 0 0 () (1
 DEFERRED () ()) 0 () () () 0 0)
-171 'ttime' 'data' 'ttime' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+170 'ttime' 'data' 'ttime' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
-172 'ttimes' 'data' 'ttimes' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+171 'ttimes' 'data' 'ttimes' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
-173 'umax' 'data' 'umax' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+172 'umax' 'data' 'umax' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
-174 'uniflux' 'data' 'uniflux' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN UNKNOWN) (LOGICAL 4 0 0 LOGICAL ()) 0 0 () () 0 () () () 0 0)
-175 'usol' 'data' 'usol' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+173 'uniflux' 'data' 'uniflux' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+UNKNOWN UNKNOWN) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
+174 'usol' 'data' 'usol' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN ALLOCATABLE DIMENSION) (REAL 8 0 0 REAL ()) 0 0 () (1
 DEFERRED () ()) 0 () () () 0 0)
-176 'variablen' 'nop_mod' 'variablen' 1 ((PROCEDURE UNKNOWN-INTENT
+175 'variablen' 'nop_mod' 'variablen' 1 ((PROCEDURE UNKNOWN-INTENT
 MODULE-PROC DECL UNKNOWN SUBROUTINE) (UNKNOWN 0 0 0 UNKNOWN ()) 0 0 () ()
 0 () () () 0 0)
-177 've' 'data' 've' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+176 've' 'data' 've' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN ALLOCATABLE DIMENSION) (INTEGER 4 0 0 INTEGER ()) 0 0 () (1
 DEFERRED () ()) 0 () () () 0 0)
-178 'viscous' 'data' 'viscous' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+177 'viscous' 'data' 'viscous' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
-179 'vlayer' 'data' 'vlayer' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+178 'vlayer' 'data' 'vlayer' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
-180 'vmax' 'data' 'vmax' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+179 'vmax' 'data' 'vmax' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
-181 'vn' 'data' 'vn' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
+180 'vn' 'data' 'vn' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN
 UNKNOWN ALLOCATABLE DIMENSION) (INTEGER 4 0 0 INTEGER ()) 0 0 () (1
 DEFERRED () ()) 0 () () () 0 0)
-182 'volevap1' 'data' 'volevap1' 1 ((VARIABLE UNKNOWN-INTENT
+181 'volevap1' 'data' 'volevap1' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE) (REAL 8 0 0 REAL ()) 0 0 () () 0 ()
 () () 0 0)
-183 'volevap2' 'data' 'volevap2' 1 ((VARIABLE UNKNOWN-INTENT
+182 'volevap2' 'data' 'volevap2' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE) (REAL 8 0 0 REAL ()) 0 0 () () 0 ()
 () () 0 0)
-184 'volevap3' 'data' 'volevap3' 1 ((VARIABLE UNKNOWN-INTENT
+183 'volevap3' 'data' 'volevap3' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN IMPLICIT-SAVE) (REAL 8 0 0 REAL ()) 0 0 () () 0 ()
 () () 0 0)
-185 'vsol' 'data' 'vsol' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+184 'vsol' 'data' 'vsol' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN ALLOCATABLE DIMENSION) (REAL 8 0 0 REAL ()) 0 0 () (1
 DEFERRED () ()) 0 () () () 0 0)
-186 'wflag' 'data' 'wflag' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+185 'wflag' 'data' 'wflag' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN ALLOCATABLE DIMENSION) (INTEGER 4 0 0 INTEGER ()) 0 0 ()
 (1 DEFERRED () ()) 0 () () () 0 0)
-187 'x_alge' 'data' 'x_alge' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+186 'x_alge' 'data' 'x_alge' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
-188 'zcoordinate' 'data' 'zcoordinate' 1 ((VARIABLE UNKNOWN-INTENT
+187 'zcoordinate' 'data' 'zcoordinate' 1 ((VARIABLE UNKNOWN-INTENT
 UNKNOWN-PROC UNKNOWN UNKNOWN ALLOCATABLE DIMENSION) (REAL 8 0 0 REAL ())
 0 0 () (1 DEFERRED () ()) 0 () () () 0 0)
-189 'zmax' 'data' 'zmax' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+188 'zmax' 'data' 'zmax' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
-190 'zone' 'data' 'zone' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+189 'zone' 'data' 'zone' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
-191 'ztop' 'data' 'ztop' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+190 'ztop' 'data' 'ztop' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
 25 'x' '' 'x' 24 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC UNKNOWN UNKNOWN
 DUMMY) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
@@ -570,9 +567,8 @@ INTEGER 4 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 INTEGER ()) 0
 151 'soldotp' 0 152 'soldotpp' 0 153 'solp' 0 154 'solpred' 0 155 'step'
 0 156 'substrate' 0 157 't_sub' 0 158 'tconv' 0 159 'tdiff' 0 160 'tdiffs'
 0 161 'ths' 0 162 'time' 0 163 'timestep' 0 164 'tmax' 0 165 'top_element'
-0 166 'top_node' 0 167 'true_uniflux' 0 168 'trunerr' 0 169 'tsol' 0 170
-'ttime' 0 171 'ttimes' 0 172 'umax' 0 173 'uniflux' 0 174 'usol' 0 175
-'variablen' 0 176 've' 0 177 'viscous' 0 178 'vlayer' 0 179 'vmax' 0 180
-'vn' 0 181 'volevap1' 0 182 'volevap2' 0 183 'volevap3' 0 184 'vsol' 0
-185 'wflag' 0 186 'x_alge' 0 187 'zcoordinate' 0 188 'zmax' 0 189 'zone'
-0 190 'ztop' 0 191)
+0 166 'top_node' 0 167 'trunerr' 0 168 'tsol' 0 169 'ttime' 0 170 'ttimes'
+0 171 'umax' 0 172 'uniflux' 0 173 'usol' 0 174 'variablen' 0 175 've' 0
+176 'viscous' 0 177 'vlayer' 0 178 'vmax' 0 179 'vn' 0 180 'volevap1' 0
+181 'volevap2' 0 182 'volevap3' 0 183 'vsol' 0 184 'wflag' 0 185 'x_alge'
+0 186 'zcoordinate' 0 187 'zmax' 0 188 'zone' 0 189 'ztop' 0 190)

@@ -16,18 +16,16 @@ program main
   angle_c_degree = 50.0_rk
   angle_c = angle_c_degree /180.0_rk*pi
   ths = 2
-  !notice: use true_uniflux
-  uniflux = .true.   !.false.  !   !determine if use imposed flux instead of solving flux from Laplace
-  true_uniflux = 0  !determine if the imposed flux is uniform. Notice: If flux is uniform, still use divergent heat flux.
-  no_vapor = 1       !no_vapor = 1: do not solve for vapor phase, use function flux
+  no_vapor = 1       !no_vapor = 1: do not solve for vapor phase, impose function flux
+  uniflux = 0  !determine if the imposed flux is uniform. Notice: If flux is uniform, still use divergent heat flux.
   call data_folder  !determine xe
 
   !set mesh parameters
   !2 6 4 2 2 simple mesh
   NEL = 8!10    !input   
   NEM = 200  !input     !decide in data_folder
-  NEV = 50!  1000!  !input
-  NES = 5   !30  !input
+  NEV = 50 !200!     1000!  !input
+  NES = 10!  5   !30  !input
   NEM_alge = 90!450!90   !  135!NEM/3*2    !decide in data_folder
   !set terms option
   NStrans = 1
@@ -55,7 +53,7 @@ program main
   FTS = 5 !fixed timesteps
 
   !debug flag
-  simple_mesh = 1     ! !1: use simple mesh for quicker calculation
+  simple_mesh = 0     ! !1: use simple mesh for quicker calculation
   graph_mode = 0    !1: graph each step; 0: graph each timestep
   check_0_in_Jac = 0   !1: put 'sj's together as Jac, check Jac
   if( simple_mesh.eq.1 ) then
@@ -69,7 +67,7 @@ program main
      ths = 1
      dt = 1.0e-5_rk!0.01_rk   !dt in first 5 steps
   end if
-  if( uniflux .and. no_vapor.eq.0 ) NEV = 3
+  if( no_vapor.eq.0 ) NEV = 3
   if( ( outer.eq.1.0_rk .or. substrate.eq.0.0_rk ) .and. no_vapor.eq.1 ) NEV = 0
   
   if(substrate.eq.0.0_rk) NES = 0

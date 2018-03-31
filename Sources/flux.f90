@@ -1,6 +1,6 @@
 real(kind=rk) function flux(theta, r)
 use kind
-use data, only: Hum, pi, true_uniflux
+use data, only: Hum, pi
 
 
 implicit none
@@ -15,8 +15,6 @@ else
    lambda = 0.5_rk - theta/pi
    flux = J0 *( 1.0_rk - r**2 ) **(-lambda)
 end if
-
-! flux = (1.0_rk-Hum) *( 0.27_rk*theta**2 + 1.3_rk ) *( 0.6381 - 0.2239 *( theta - pi/4.0_rk )**2 )
 
 ! flux = 1.0_rk
 

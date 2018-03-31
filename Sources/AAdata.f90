@@ -128,9 +128,8 @@ module data
   character(LEN=40):: folder
   ! logical:: exist
 
-  logical:: uniflux  !determine if use imposed flux instead of solving flux from Laplace
-  integer:: true_uniflux    !determine if the imposed flux is uniform. Notice: If flux is uniform, still use divergent heat flux.
-  ! real(kind=rk):: fluxuni
+  integer:: uniflux    !determine if the imposed flux is uniform. Notice: If flux is uniform, still use divergent heat flux.
+  
   integer(kind=ik):: simple_mesh
 
   integer(kind=ik):: zone

@@ -13,4 +13,6 @@ heating substrate: parameter, data(T_sub), initial_condition
 
 uniflux(thermal BC, not mass BC): data(true_uniflux), main, sf, sj_SI
 
-!!BC: outer_circle, judge if use imposed flux (uniflux), or else: T at the right upper corner of the substrate is fixed.
+!!BC: outer_circle, missed a bracket for all conditions other than no_vapor
+
+merged uniflux and no_vapor(same meaning: impose flux), change true_uniflux to uniflux
