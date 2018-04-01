@@ -60,7 +60,6 @@ subroutine initialization
   initial_vapor_solved = 0   !start with 0, adjust the vapor concentration before solving for dynamics
   initial_vapor_solving = 0
   diverge = 0
-  zone = 0
 
   angle_cd = 0.0_rk
 

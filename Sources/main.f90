@@ -25,7 +25,7 @@ program main
   NEL = 8!10    !input   
   NEM = 200  !input     !decide in data_folder
   NEV = 50 !200!     1000!  !input
-  NES = 10!  5   !30  !input
+  NES = 5   !10!  30  !input
   NEM_alge = 90!450!90   !  135!NEM/3*2    !decide in data_folder
   !set terms option
   NStrans = 1
@@ -53,12 +53,12 @@ program main
   FTS = 5 !fixed timesteps
 
   !debug flag
-  simple_mesh = 0     ! !1: use simple mesh for quicker calculation
+  simple_mesh = 1     ! !1: use simple mesh for quicker calculation
   graph_mode = 0    !1: graph each step; 0: graph each timestep
   check_0_in_Jac = 0   !1: put 'sj's together as Jac, check Jac
   if( simple_mesh.eq.1 ) then
-     angle_c_degree = 90.0_rk
-     angle_c = pi/2.0_rk
+     angle_c_degree = 10.0_rk!90.0_rk
+     angle_c = angle_c_degree /180.0_rk*pi
      NEL = 4
      NEM = 5
      NEV = 3!6

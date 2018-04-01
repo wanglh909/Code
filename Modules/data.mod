@@ -1,5 +1,5 @@
-GFORTRAN module version '0' created from Sources/AAdata.f90 on Sat Mar 31 16:58:48 2018
-MD5:47b2f9722fdcec04ad893a651788aa71 -- If you edit this, you'll get what you deserve.
+GFORTRAN module version '0' created from Sources/AAdata.f90 on Sat Mar 31 22:36:55 2018
+MD5:0889a65fa1828e093697b5e92f0d56a6 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () ()
 () () () () () () () () () () () () () () () ())
@@ -500,9 +500,7 @@ UNKNOWN-PROC UNKNOWN UNKNOWN ALLOCATABLE DIMENSION) (REAL 8 0 0 REAL ())
 0 0 () (1 DEFERRED () ()) 0 () () () 0 0)
 175 'zmax' 'data' 'zmax' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
-176 'zone' 'data' 'zone' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
-UNKNOWN UNKNOWN) (INTEGER 4 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
-177 'ztop' 'data' 'ztop' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
+176 'ztop' 'data' 'ztop' 1 ((VARIABLE UNKNOWN-INTENT UNKNOWN-PROC
 UNKNOWN UNKNOWN) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
 )
 
@@ -540,4 +538,4 @@ UNKNOWN UNKNOWN) (REAL 8 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
 0 159 'umax' 0 160 'uniflux' 0 161 'usol' 0 162 've' 0 163 'viscous' 0
 164 'vlayer' 0 165 'vmax' 0 166 'vn' 0 167 'volevap1' 0 168 'volevap2' 0
 169 'volevap3' 0 170 'vsol' 0 171 'wflag' 0 172 'x_alge' 0 173
-'zcoordinate' 0 174 'zmax' 0 175 'zone' 0 176 'ztop' 0 177)
+'zcoordinate' 0 174 'zmax' 0 175 'ztop' 0 176)

@@ -132,8 +132,6 @@ module data
   
   integer(kind=ik):: simple_mesh
 
-  integer(kind=ik):: zone
-
   integer(kind=ik):: alge_corner, no_vapor
 
   real(kind=rk):: ztop

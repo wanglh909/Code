@@ -57,9 +57,9 @@ subroutine newton_raphson
      if( graph_mode.eq.1 .or. initial_vapor_solving.eq.1) call graph
 
 
-     !bug exsistance, stop program
+     !bug exsistance, (stop program) or ( diverge=1 and redo this timestep to record )
      !if ( ( step.gt.20 .and. (timestep.ne.0 .and. timestep.ne.1) ) .or. error2.gt.1.0e8_rk  )  then 
-     if ( ( step.gt.20 .and. (timestep.ne.0) ) .or. error2.gt.1.0e8_rk  )  then 
+     if ( ( step.gt.10 .and. (timestep.ne.0) ) .or. error2.gt.1.0e8_rk  )  then 
         if(diverge.eq.1 .or. s_mode.eq.1) then
            ! call system('preplot '//trim(folder)//'dynamics.dat')
            ! call system('preplot '//trim(folder)//'mesh.dat')

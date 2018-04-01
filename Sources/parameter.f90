@@ -7,7 +7,7 @@ subroutine parameter_values
   integer(kind=ik):: Ltype !, water, octane, hexanol
   real(kind=rk):: rho, mu, kT, cp, alpha, beta0, Diff, csat, Hv, sigmac, lc, vc, Tc, ks, rhos, cpS, alphaS, Mmolar
 
-  substrate = 3.0_rk! 0.15_rk!   !1.0_rk  !0.15_rk   
+  substrate = 0.15_rk!   3.0_rk! !1.0_rk  !0.15_rk   
   outer = 1.3_rk    !10.0_rk!   20.0_rk, 1.3_rk
 
   Ltype = 1

@@ -8,7 +8,7 @@ subroutine graph
 
   implicit none
 
-  integer(kind=ik):: i, step_indicator
+  integer(kind=ik):: i, step_indicator, zone_d=0, zone_T=0
   character(LEN=4):: fileN
   character(LEN=40):: file_mesh, temp
 
@@ -31,6 +31,7 @@ write(*,*) 'write mesh'
     
      if( final_size.eq.1) then
 
+        !store coordinate values to a file for future elliptic mesh
         if(read_coordinate_value.eq.0) then
            open(unit = 20, file = 'Sources/elliptic_mesh.dat', status = 'replace')
            write(20,'(4i4,2es13.6)') NEL, NEM, NEM_alge, NEV, outer, substrate
@@ -43,12 +44,11 @@ write(*,*) 'write mesh'
 
         if( no_vapor.eq.1 ) then
            open(unit = 11, file = trim(folder)//'dynamics.dat', status = 'replace')
-           zone = 1
            open(unit = 12, file = trim(folder)//'temperature.dat', status = 'replace')
            if(no_vapor.eq.0) &
                 open(unit = 13, file = trim(folder)//'vapor_concentration.dat', status = 'replace' )
            call graph_dynamics(0)
-write(*,*) 'dynamics'
+           write(*,*) 'dynamics'
         end if
      end if
 
@@ -62,57 +62,34 @@ write(*,*) 'dynamics'
      !    end if
      !    call graph_dynamics(step)
      ! else
-
-        if(graph_mode.eq.0) then
-           step_indicator = timestep
+     
+     if(graph_mode.eq.0) then
+        step_indicator = timestep
+     else
+        step_indicator = step
+     end if
+     
+     if(diverge.eq.1 .and. graph_mode.eq.1) then
+        if(step_indicator.eq.0) then
+           open(unit = 11, file = trim(folder)//'divergence.dat', status = 'replace')
         else
-           step_indicator = step
+           open(unit = 11, file = trim(folder)//'divergence.dat', status = 'old', access = 'append')
         end if
-
-        if(diverge.eq.1) then
-           if(step_indicator.eq.1) then
-              open(unit = 11, file = trim(folder)//'divergence.dat', status = 'replace')
-           else if(graph_mode.eq.1) then
-              open(unit = 11, file = trim(folder)//'divergence.dat', status = 'old', access = 'append')
-           end if
-        else  !not diverge
-           if(no_vapor.eq.0 .and. step_indicator.eq.0) then
-              open(unit = 11, file = trim(folder)//'dynamics.dat', status = 'replace')
-              zone = 1
-              open(unit = 12, file = trim(folder)//'temperature.dat', status = 'replace')
-              if(no_vapor.eq.0) &
-                   open(unit = 13, file = trim(folder)//'vapor_concentration.dat', status = 'replace')
-           else
-              open(unit = 11, file = trim(folder)//'dynamics.dat', status = 'old', access = 'append')
-              zone = zone + 1
-              open(unit = 12, file = trim(folder)//'temperature.dat', status = 'old', access = 'append')
-              if(no_vapor.eq.0) &
-                   open(unit = 13, file = trim(folder)//'vapor_concentration.dat', status = 'old', access = 'append')
-           end if
+     else  !not diverge or right before divergence
+        if(no_vapor.eq.0 .and. step_indicator.eq.0) then
+           open(unit = 11, file = trim(folder)//'dynamics.dat', status = 'replace')
+           open(unit = 12, file = trim(folder)//'temperature.dat', status = 'replace')
+           if(no_vapor.eq.0) &
+                open(unit = 13, file = trim(folder)//'vapor_concentration.dat', status = 'replace')
+        else
+           open(unit = 11, file = trim(folder)//'dynamics.dat', status = 'old', access = 'append')
+           open(unit = 12, file = trim(folder)//'temperature.dat', status = 'old', access = 'append')
+           if(no_vapor.eq.0) &
+                open(unit = 13, file = trim(folder)//'vapor_concentration.dat', status = 'old', access = 'append')
         end if
+     end if
 
-        ! if( step_indicator.eq.1 ) then
-        !    if(diverge.eq.1 ) then
-        !       open(unit = 11, file = trim(folder)//'divergence.dat', status = 'replace')
-        !    else
-        !       open(unit = 11, file = trim(folder)//'dynamics.dat', status = 'replace')
-        !       zone = 1
-        !       open(unit = 12, file = trim(folder)//'temperature.dat', status = 'replace')
-        !       if(no_vapor.eq.0) &
-        !            open(unit = 13, file = trim(folder)//'vapor_concentration.dat', status = 'replace')
-        !    end if
-        ! else
-        !    if(diverge.eq.1 .and. graph_mode.eq.1) then
-        !       open(unit = 11, file = trim(folder)//'divergence.dat', status = 'old', access = 'append')
-        !    else
-        !       open(unit = 11, file = trim(folder)//'dynamics.dat', status = 'old', access = 'append')
-        !       zone = zone + 1
-        !       open(unit = 12, file = trim(folder)//'temperature.dat', status = 'old', access = 'append')
-        !       if(no_vapor.eq.0) &
-        !            open(unit = 13, file = trim(folder)//'vapor_concentration.dat', status = 'old', access = 'append')
-        !    end if
-        ! end if
-write(*,*) 'write dnamics'
+write(*,*) 'write dynamics'
         call graph_dynamics(step_indicator)
 
      ! end if
@@ -206,7 +183,7 @@ contains
        time_indicator = real(step,rk)
     end if
     
-    if(diverge.eq.0) then
+    if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
        if(Nregion.eq.1) fileN = '11'
        if(Nregion.eq.1 .or. Nregion.eq.3) fileN = '12'
        if(Nregion.eq.2) fileN = '13'
@@ -231,7 +208,7 @@ contains
        end select
 
        !write headlines
-       if(diverge.eq.0) then
+       if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
           if(Nregion.eq.1) then
              write(11, '(A)') 'variables = "r", "z", "u", "v", "T", "p"'
              ! write(11, '(A,es13.6,A)') 'DATASETAUXDATA Umax = "', umax, '"'
@@ -244,6 +221,7 @@ contains
                   AUXDATA angle = "',angle_c_degree, '", AUXDATA UMAX = "', umax, '", &
                   AUXDATA VMAX = "', vmax, '", AUXDATA ZTOP = "', ztop, '"'
 202    format(A,i8,A,es14.7,A,i8,A,i8,A, f7.3, A,es13.6,A,es13.6,A,ES13.6,A)
+             zone_d = zone_d + 1
 
           end if
           if(Nregion.eq.1 .or. Nregion.eq.3) then
@@ -254,6 +232,7 @@ contains
                   ', DT = (double,double,double), &
                   AUXDATA angle = "',angle_c_degree, '"'
 203    format(A,i8,A,i8,A,es14.7,A,i8,A,i8,A, f7.3, A)
+             zone_T = zone_T + 1
           end if
           if(Nregion.eq.2) then
              ! pause
@@ -264,25 +243,25 @@ contains
                   ', Datapacking = Point, Zonetype = FEQuadrilateral, N =', Nnode, ', E =', Nele, &
                   ', DT = (double,double,double)'
           end if
-       else
+
+          
+       else  !diverge=1 & graph_mode=1 --> repeat diverging timestep
+          
           write(11, '(A)') 'variables = "r", "z", "u", "v", "T", "p", "c"'
           write(11,201) 'Zone T = "step:', step_indicator, &!', RGN: ', Nregion, &
                '", STRANDID = 1, SOLUTIONTIME =', time_indicator, &
                ', Datapacking = Point, Zonetype = FEQuadrilateral, N =', Nnode, ', E =', Nele, &
                ', DT = (double,double,double,double,double,double)'
        end if
-       ! write(11,201) 'Zone T = "step:', step_indicator, ', RGN: ', Nregion, &
-       !      '", STRANDID = 1, SOLUTIONTIME =', time_indicator, &
-       !      ', Datapacking = Point, Zonetype = FEQuadrilateral, N =', Nnode, ', E =', Nele, &
-       !      ', DT = (double,double,double,double,double,double)'
 201    format(A,i8,A,es14.7,A,i8,A,i8,A)
 
+       
        do i = 1, NTN, 1
           if (Nregion.eq.1 .and. (VN(i).eq.1 .or. VN(i).eq.5) ) cycle
           if (Nregion.eq.2 .and. (VN(i).eq.0 .or. VN(i).eq.5) ) cycle
           if (Nregion.eq.3 .and. (.not.( VN(i).eq.5 .or. BCflagN(i,2).ne.0 )) ) cycle
 
-          if(diverge.eq.0) then
+          if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
              if(Nregion.eq.1) then
                 write(11,'(7es15.7)') rcoordinate(i), zcoordinate(i), usol(i), vsol(i), Tsol(i), psol(i)
              end if
@@ -292,7 +271,8 @@ contains
              if(Nregion.eq.2) then
                 write(13,'(7es15.7)') rcoordinate(i), zcoordinate(i), csol(i)
              end if
-          else
+             
+          else   !diverge=1 & graph_mode=1 --> repeat diverging timestep
              write(11,'(7es15.7)') rcoordinate(i), zcoordinate(i), usol(i), vsol(i), Tsol(i), psol(i), csol(i)
           end if
           
@@ -304,7 +284,7 @@ contains
           if (Nregion.eq.2 .and. VE(i).ne.1 ) cycle
           if (Nregion.eq.3 .and. VE(i).ne.5 ) cycle
 
-          if(diverge.eq.0) then
+          if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
              if(Nregion.eq.1) then
                 write(11,'(4i8)') NOPDV(globalNM(i,1),Nregion), NOPDV(globalNM(i,3),Nregion), &
                      NOPDV(globalNM(i,9),Nregion), NOPDV(globalNM(i,7),Nregion)
@@ -317,7 +297,8 @@ contains
                 write(13,'(4i8)') NOPDV(globalNM(i,1),Nregion), NOPDV(globalNM(i,3),Nregion), &
                      NOPDV(globalNM(i,9),Nregion), NOPDV(globalNM(i,7),Nregion)
              end if
-          else
+             
+          else  !diverge=1 & graph_mode=1 --> repeat diverging timestep
              write(11,'(4i8)') NOPDV(globalNM(i,1),Nregion), NOPDV(globalNM(i,3),Nregion), &
                   NOPDV(globalNM(i,9),Nregion), NOPDV(globalNM(i,7),Nregion)
           end if
@@ -327,12 +308,26 @@ contains
 
     end do
 
-    write(11,'(A,f7.3,A,i7,A,i7)') 'Text X=40, Y=90, F=Times, T= "contact angle =', angle_c_degree, '", ZN= ', zone
+    !write contact angle
+    write(11,'(A,f7.3,A,i7)') 'Text X=40, Y=90, F=Times, T= "contact angle =', angle_c_degree, '", ZN= ', zone_d
+write(*,*) angle_c_degree, zone_d
+    if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
+       write(12,'(A,f7.3,A,i7)') 'Text X=40, Y=90, F=Times, T= "contact angle =', &
+            angle_c_degree, '", ZN= ', zone_T
+       write(12,'(A)') ' '
+write(*,*) angle_c_degree, zone_T
+       ! if(no_vapor.eq.0) write(13,'(A,f7.3,A,i7,A,i7)') &
+       !      'Text X=40, Y=90, F=Times, T= "contact angle =', angle_c_degree, '", ZN= ', zone_T
+end if
+!pause
 
+    !close files
     close(11)
-    close(12)
-    if(no_vapor.eq.0) close(13)
-
+    if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
+       close(12)
+       if(no_vapor.eq.0) close(13)
+    end if
+    
     return
   end subroutine graph_dynamics
 

@@ -16,3 +16,6 @@ uniflux(thermal BC, not mass BC): data(true_uniflux), main, sf, sj_SI
 !!BC: outer_circle, missed a bracket for all conditions other than no_vapor
 
 merged uniflux and no_vapor(same meaning: impose flux), change true_uniflux to uniflux
+
+graph: diverge=1, conditions to replace "divergence.dat"
+graph: write "contact angle=" on temperature.dat, notice: each timestep has 2 zones, so also change the way to calculate zone (zone_d, zone_T)
