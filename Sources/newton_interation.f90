@@ -2,7 +2,7 @@ subroutine newton_raphson
   use kind
   use data
   use NOP_mod, only: damfac
-  use front_mod, only: multifront_dual2, multifront_single, multifront2, load_dum
+  use front_mod, only: multifront, load_dum
 
   implicit none
   real(kind=rk):: cal_time
@@ -21,18 +21,10 @@ subroutine newton_raphson
         soldot = 2.0_rk*( sol - solp )/dt - soldotp
      end if
 
-     if(ths.eq.1) then
-        call multifront_single(error1, cal_time) !using subroutine assemble
-     else if(ths.eq.2) then
-        call multifront_dual2(error1, cal_time) !using subroutine assemble
-     else if(ths.ge.4) then
-        call multifront2(error1, cal_time) !using subroutine assemble
-        !subroutine multifront_XX(L2res,t)
-        !L2res: returns this value
-        !t: returns solve time, useful for comparing different params
-        !mode: determines natural(1) or nested(2) sub ordering
-        !If you overrode init_front with -1 or -2 ptn then no purpose
-     end if
+     call multifront(error1, cal_time) !using subroutine assemble
+     write(*,*) "Solver time:", cal_time
+
+     
 ! if(initial_vapor_solved.eq.1) pause
 
      !for debug, put 'sj's together as Jac, check Jac

@@ -1,12 +1,21 @@
 module data
   use kind
   implicit none
-!?split into data & Ldatas
+  !?split into data & Ldatas
+  
+  integer(kind=ik), target :: NVar, NTN, NTE, s_mode, bas = 9
+  !s_mode = 0: solve for dynamics, 1: mesh only
+  !s_mode: Set to 0 if solving full dynamics and 1 if only mesh (must be 0 if solve mesh by putting BC's on all velocity and pressure vars)
+  !bas: number of nodes in element (9)
+  integer(kind=ik), allocatable, target :: rNOP(:,:,:), globalNM(:,:), MDF(:), NOPP(:), RegN(:)
+  real(kind=rk), allocatable, target :: dsol(:)
+  integer(kind=ik) :: SOLVER_MODE
 
+  
   real(kind=rk):: R, outer, substrate
   real(kind=rk):: Re, Ca, Oh, Grav, Kdi, KBCgroup, Pe, REH, beta, F0, kR
 
-  integer(kind=ik):: NEL, NEM, NEV, NES, NNX34, NNX3456, NNXV, NTN, NNR1278, NNR1278p, NTE, NVar, iBW,iBW1,iBW2
+  integer(kind=ik):: NEL, NEM, NEV, NES, NNX34, NNX3456, NNXV, NNR1278, NNR1278p, iBW,iBW1,iBW2
   !NVar: Number of Variables   !NNX: number of nodes in r (abscissa)   
   integer(kind=ik):: NND, NNV, NNS, ED, EV, ES
   !NND: number of nodes of droplet,   NNV: number of nodes of vapor
@@ -19,18 +28,18 @@ module data
 
   real(kind=rk):: error1, error2
 
-  integer(kind=ik), allocatable:: globalNM(:,:), rowNM(:), columnNM(:), WFLAG(:), RegN(:)!, RegNN(:)
+  integer(kind=ik), allocatable:: rowNM(:), columnNM(:), WFLAG(:)!, RegNN(:)
   !RegN: tell which region the element is in
   !RegNN: tell which region the node is in
   integer(kind=ik),allocatable:: Ngrid(:,:)
-  integer(kind=ik), allocatable:: MDF(:), MDFd(:), NOPP(:), PN(:)
+  integer(kind=ik), allocatable:: MDFd(:), PN(:)
   !PN = 1, node with pressure; 0, node without pressure
 
 
   real(kind=rk):: time
   real(kind=rk), allocatable:: rcoordinate(:), zcoordinate(:), usol(:), vsol(:), Tsol(:), psol(:), csol(:)
   !solp & dtp means previous solution & dt, solpred means the predicted solution
-  real(kind=rk), allocatable:: sol(:), solp(:), soldot(:), soldotp(:), soldotpp(:), solpred(:), dsol(:)
+  real(kind=rk), allocatable:: sol(:), solp(:), soldot(:), soldotp(:), soldotpp(:), solpred(:)
 
   real(kind=rk), allocatable:: fsi_size(:), geta_size(:)
 
@@ -54,18 +63,6 @@ module data
   !for subroutine prediction
   real(kind=rk):: dt, dtp, CTJ, change, trunerr
   real(kind=rk), parameter:: eps = 1.0e-3_rk
-
-
-
-  !for frontal solver  
-  integer(kind=ik), allocatable:: rNOP(:,:,:)
-  integer(kind=ik):: s_mode, bas = 9          !s_mode = 0: solve for dynamics, 1: mesh only
-  integer(kind=ik):: ths
-  !s_mode: Set to 0 if solving full dynamics and 1 if only mesh (must be 0 if solve mesh by putting BC's on all velocity and pressure vars)
-  !bas: number of nodes in element (9)
-  !ths: Number of threads, parameter in the kind file (must make clean(wipe)  when changing)
-
-  integer(kind=ik):: RN = 1   !number of regions
 
   
   !for size_function change

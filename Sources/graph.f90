@@ -4,6 +4,7 @@
 subroutine graph
   use kind
   use data!, only: timestep, time, dt, NTN, NTE, rcoordinate, zcoordinate, usol, vsol, psol, globalNM, step, size_function_change, final_size
+  use front_mod, only: BNOP, sBNOP
 
 
   implicit none
@@ -127,7 +128,7 @@ contains
        end select
 
 
-       write(10, '(A)') 'variables = "r", "z"'
+       write(10, '(A)') 'variables = "r", "z", "B", "sB"'   !?what is sB used for
        write(10,200) 'Zone T = "step:', step_indicator, ', RGN: ', Nregion, &
             '", STRANDID = 1, SOLUTIONTIME =', step_indicator, &
             ', Datapacking = Point, Zonetype = FEQuadrilateral, N =', Nnode, ', E =', Nele, &
@@ -137,8 +138,8 @@ contains
        do i = 1, NTN, 1
           if (Nregion.eq.1 .and. (VN(i).eq.1 .or. VN(i).eq.5) ) cycle
           if (Nregion.eq.2 .and. (VN(i).eq.0 .or. VN(i).eq.5) ) cycle
-          if (Nregion.eq.3 .and. (.not.( VN(i).eq.5 .or. BCflagN(i,2).ne.0 )) ) cycle          
-          write(10,'(2es15.7)') rcoordinate(i), zcoordinate(i)
+          if (Nregion.eq.3 .and. (.not.( VN(i).eq.5 .or. BCflagN(i,2).ne.0 )) ) cycle 
+          write(10,'(4es15.7)') rcoordinate(i), zcoordinate(i), REAL(BNOP(rNOP(i,1,1)),rk), REAL(sBNOP(rNOP(i,1,1)),rk)
        end do
 
        !form the quadrilateral with nodes

@@ -115,4 +115,49 @@ end subroutine assemble_local
 
 
 
+!----------------------------------used for Chris's new solver package--------------------------------
+subroutine find_var_info(var,ele,id)
+  use kind
+  use data, only: NE=>NTE, NOP=>globalNM, MDF, NOPP, sol, Nr, Nz
+
+  implicit none
+  integer(kind=ik) :: var, i, j, k, ele, id
+
+  do i = 1, NE, 1
+     do j = 1, 9, 1
+        do k = 0, MDF(NOP(i,j))-1, 1
+           if (var.eq.k+NOPP(NOP(i,j))) then
+              write(*,*) 'While proc #',id,'was assembling:', ele
+              write(*,*) 'Found at (ele, node, var):', i, j, k
+              write(*,*) '(r,z):', sol(nr+NOPP(NOP(i,j))),  sol(nz+NOPP(NOP(i,j)))
+           end if
+        end do
+     end do
+  end do
+
+
+end subroutine find_var_info
+
+subroutine associate_arrays()
+  use data, only: NV=>NVar, NN=>NTN, rNOP, NE=>NTE, NOP=>globalNM, MDF, NOPP, s_mode, load=>dsol, bas,&
+       DNOP=>RegN
+  use front_mod, only: NVf=>NV, NNf=>NN, rNOPf=>rNOP, NEf=>NE, NOPff=>NOP,&
+       MDFf=>MDF, NOPPf=>NOPP, s_modef=>s_mode, loadf=>load, DNOPf=>DNOP, basf=>bas
+  implicit none
+
+  NVf       => NV
+  NNf       => NN
+  rNOPf     => rNOP
+  NEf       => NE 
+  NOPff     => NOP
+  MDFf      => MDF
+  NOPPf     => NOPP
+  s_modef   => s_mode
+  loadf     => load
+  DNOPf     => DNOP !optional, gives domain info upon ETESTer fails
+  basf      => bas
+  
+end subroutine associate_arrays
+
+
 

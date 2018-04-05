@@ -17,5 +17,6 @@
 Module kind
   !Specifies kind values for integer and real types
   integer*4, parameter :: rk = selected_real_kind(p=15), rk2 = selected_real_kind(p=15), ik = 4
-
+  integer(kind=ik) :: ths    !ths: (MOVED TO KIND) Number of threads, parameter in the kind file (must make clean(wipe)  when changing)
+  
 end Module kind

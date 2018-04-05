@@ -35,23 +35,6 @@ subroutine initialization
   end if
 
 
-  if(ths.eq.1) then
-     call init_front(1, -1, 1)
-  else if(ths.eq.2) then
-     call init_front(1, -2, 1)
-  else if(ths.ge.4) then
-     ! call init_front(1, 9, 16)    !9 is fastest for ptn, always use 16 for ptn2
-     call init_front(1, -3, 1)     !then use ptn = 8, ptn2 = 16, slower
-  else
-     write(*,*) 'error in ths'
-     stop
-  end if
-  !NOP, NOPP, MDF, rNOP, NE etc must be defined before this step
-  !subroutine init_front(init,ptn,ptn2)
-  !init = 1 for first entry, 2 for changing setup after first, 0 for exit
-  !ptn = size of sub rows in middle (-1 for overide single, -2 for overide double, -3 optimal nat/nest), -4 drops
-  !ptn2 = size of sub columns in middle (if ptn<0 make ptn2 1)
-
   step = 0
   time = 0.0_rk
   timestep = 0
@@ -93,8 +76,9 @@ subroutine initialization
        vrintfac_r(3,3,ths), vrintfac_z(3,3,ths), vzintfac_r(3,3,ths), vzintfac_z(3,3,ths), &
        crintfac_r(3,3,ths), crintfac_z(3,3,ths), czintfac_r(3,3,ths), czintfac_z(3,3,ths), &
        Trintfac_r(3,3,ths), Trintfac_z(3,3,ths), Tzintfac_r(3,3,ths), Tzintfac_z(3,3,ths) )
+  
   !multifront module
-  allocate( piv(ths) )
+  call init_front(SOLVER_MODE)
 
 
   return

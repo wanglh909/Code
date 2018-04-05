@@ -4,18 +4,57 @@ program main
   use data
   use NOP_mod
   use basis_f
-  use front_mod, only: determine_offsets
+  use front_mod, only: init_front, assembler, associater, excluder, custom_order, var_finder,&
+       debug_NAN, load_balance_flag, SINGLE, DUAL, DOMAINS, THREADS_FRONT, multifront, &
+       determine_offsets, SWAP_LOCAL_IJ, seed
   implicit none
 
   ! integer(kind=ik):: simple_mesh
   real(kind=rk):: t1, t_program
 
+  !call front_setup   !put at the end of initialization.f90
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!FRONT SETUP!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!This setup must be done once, you can move it to a subroutine if you like
+
+!!!These must be declared external so front can point to them
+  external assemble_local
+  external associate_arrays
+  external find_var_info
+  !external get_custom_numbering
+  !external exclude_check
+
+!!!Point internal front calls to external subroutine
+  assembler => assemble_local               !REQUIRED
+  associater => associate_arrays            !REQUIRED
+  var_finder => find_var_info               !NOT REQUIRED, gives more info for NaN crash
+  !excluder => exclude_check                !NOT REQUIRED, default include all
+  !custom_order => get_custom_numbering     !NOT REQUIRED, default order 1 -> NE
+
+  SWAP_LOCAL_IJ = .FALSE.                     !This determines if your local is transposed
+  debug_NAN = .FALSE.                       !True for NaN debugging (HUGE PERFORMANCE PENALTY)
+  load_balance_flag = .TRUE.                !True for load balancing, good to have on generally
+  ths = 4
+  THREADS_FRONT = ths!ths                       !THREADS for front, must be <= ths
+  SOLVER_MODE = DOMAINS
+  !Call init_front( .... ) with argument of SINGLE, DUAL, or DOMAINS (Those are module vars)
+  !ex: call init_front(DOMAINS)
+  !call before first use, when changing solvers, or when switch which vars are solved
+  !Only call multifront(L2res,time) now, it will use the initialized solver
+
+  !Basically always use DOMAINS, load_balance_flag = .TRUE.
+  !Use single or dual for debugging, same with debug_NAN
+
+   call omp_set_nested(.FALSE.) !Multifront is no longer nested
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!END FRONT SETUP!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   
+  
   t1 = REAL(omp_get_wtime(),rk)
 
   !initial droplet shape
   angle_c_degree = 50.0_rk
   angle_c = angle_c_degree /180.0_rk*pi
-  ths = 2
+  !ths = 2
   no_vapor = 1       !no_vapor = 1: do not solve for vapor phase, impose function flux
   uniflux = 0  !determine if the imposed flux is uniform. Notice: If flux is uniform, still use divergent heat flux.
   call data_folder  !determine xe
@@ -53,7 +92,7 @@ program main
   FTS = 5 !fixed timesteps
 
   !debug flag
-  simple_mesh = 1     ! !1: use simple mesh for quicker calculation
+  simple_mesh = 0     ! !1: use simple mesh for quicker calculation
   graph_mode = 0    !1: graph each step; 0: graph each timestep
   check_0_in_Jac = 0   !1: put 'sj's together as Jac, check Jac
   if( simple_mesh.eq.1 ) then
@@ -64,7 +103,7 @@ program main
      NEV = 3!6
      NES = 2
      NEM_alge = NEM/3*2
-     ths = 1
+     !ths = 1
      dt = 1.0e-5_rk!0.01_rk   !dt in first 5 steps
   end if
   if( no_vapor.eq.0 ) NEV = 3
@@ -82,6 +121,8 @@ program main
   call initial_condition
 ! call split_sol
 
+  seed = NTE  !??see if can be put into initialization
+  
   !switch to mesh-only mode
   MDF(:) = 2
   s_mode = 1
