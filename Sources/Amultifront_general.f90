@@ -3,6 +3,8 @@ module front_mod
   use kind, only: rk, ik, ths
   use omp_lib
 
+  integer(kind=ik):: check_pivot=0
+  
   !Search for "USER_SPECIFIED" to find parts in need of modification
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!USER_SPECIFIED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
   !Must be suuplied from a user module
@@ -2114,7 +2116,7 @@ contains
        PIVOT = front(CPIV,RPIV)
        !Check if pivot too small
        if (ABS(PIVOT).le.1.0e-18_rk) then
-          write(*,*) 'Small Pivot:', PIVOT, id, ele, rvs
+          if(check_pivot.eq.1) write(*,*) 'Small Pivot:', PIVOT, id, ele, rvs
            if(IT(1,l_i+l_i_inc).ne.0) write(*,*) 'o is not 0', IT(1, l_i+l_i_inc), id, ele
           !call find_var_info(iPG(RPIV),ele,id)
           piv(id) = piv(id)+1
