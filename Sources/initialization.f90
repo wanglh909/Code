@@ -2,11 +2,29 @@ subroutine initialization
   use kind
   use data
   use Ldata
-  use front_mod, only: init_front, piv
+  use front_mod, only: init_front, &!piv, &
+       assembler, associater, excluder, custom_order, var_finder, seed
 
 
   implicit none
 
+!---------------------------------------FRONT SETUP------------------------------------
+  !This setup must be done once
+  
+  !These must be declared external so front can point to them
+  external assemble_local
+  external associate_arrays
+  external find_var_info
+  !external get_custom_numbering
+  !external exclude_check
+
+  !Point internal front calls to external subroutine
+  assembler => assemble_local               !REQUIRED
+  associater => associate_arrays            !REQUIRED
+  var_finder => find_var_info               !NOT REQUIRED, gives more info for NaN crash
+  !excluder => exclude_check                !NOT REQUIRED, default include all
+  !custom_order => get_custom_numbering     !NOT REQUIRED, default order 1 -> NE
+!------------------------------------------------------------------------------------
 
   
   allocate( sol(NVar), dsol(NVar) )
@@ -76,10 +94,19 @@ subroutine initialization
        vrintfac_r(3,3,ths), vrintfac_z(3,3,ths), vzintfac_r(3,3,ths), vzintfac_z(3,3,ths), &
        crintfac_r(3,3,ths), crintfac_z(3,3,ths), czintfac_r(3,3,ths), czintfac_z(3,3,ths), &
        Trintfac_r(3,3,ths), Trintfac_z(3,3,ths), Tzintfac_r(3,3,ths), Tzintfac_z(3,3,ths) )
-  
+
+
+
+!--------------------------------------multifront------------------------------------
+  call omp_set_nested(.FALSE.) !Multifront is no longer nested
+
   !multifront module
   call init_front(SOLVER_MODE)
+  
+  seed = NTE  !??see if can be put into initialization
 
 
+  
+  
   return
 end subroutine initialization
