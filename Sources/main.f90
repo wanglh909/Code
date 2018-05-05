@@ -4,30 +4,12 @@ program main
   use data
   use NOP_mod
   use basis_f
-  use front_mod, only: &!init_front, assembler, associater, excluder, custom_order, var_finder,&
-       debug_NAN, load_balance_flag, SINGLE, DUAL, DOMAINS, THREADS_FRONT, multifront, &
-       determine_offsets, SWAP_LOCAL_IJ!, seed
+  use front_mod, only: debug_NAN, load_balance_flag, SINGLE, DUAL, DOMAINS, &
+       THREADS_FRONT, multifront, determine_offsets, SWAP_LOCAL_IJ!, seed
   implicit none
 
   real(kind=rk):: t1, t_program
 
-!----------------------------------front settings-------------------------------------
-  SWAP_LOCAL_IJ = .FALSE.                     !This determines if your local is transposed
-  debug_NAN = .FALSE.                       !True for NaN debugging (HUGE PERFORMANCE PENALTY)
-  load_balance_flag = .TRUE.                !True for load balancing, good to have on generally
-  ths = 4
-  THREADS_FRONT = ths!ths                       !THREADS for front, must be <= ths
-  SOLVER_MODE = DOMAINS
-  !Call init_front( .... ) with argument of SINGLE, DUAL, or DOMAINS (Those are module vars) (ex: call init_front(DOMAINS) )
-  !call before first use, when changing solvers, or when switch which vars are solved
-  !Only call multifront(L2res,time) now, it will use the initialized solver
-
-  !Basically always use DOMAINS, load_balance_flag = .TRUE.
-  !Use single or dual for debugging, same with debug_NAN
-  !----------------------------------done settings------------------------------------
-  
-   
-  
   t1 = REAL(omp_get_wtime(),rk)
 
   !initial droplet shape
@@ -45,6 +27,22 @@ program main
   NEV = 50 !200!     1000!  !input
   NES = 5   !10!  30  !input
   NEM_alge = 90!450!90   !  135!NEM/3*2    !decide in data_folder
+  
+!----------------------------------front settings-------------------------------------
+  SWAP_LOCAL_IJ = .FALSE.             !This determines if your local is transposed
+  debug_NAN = .FALSE.                !True for NaN debugging (HUGE PERFORMANCE PENALTY)
+  load_balance_flag = .TRUE.        !True for load balancing, good to have on generally
+  ths = 4
+  THREADS_FRONT = ths                       !THREADS for front, must be <= ths
+  SOLVER_MODE = DOMAINS
+  !Call init_front( .... ) with argument of SINGLE, DUAL, or DOMAINS (Those are module vars) (ex: call init_front(DOMAINS) )
+  !call before first use, when changing solvers, or when switch which vars are solved
+  !Only call multifront(L2res,time) now, it will use the initialized solver
+
+  !Basically always use DOMAINS, load_balance_flag = .TRUE.
+  !Use single or dual for debugging, same with debug_NAN
+!-----------------------------------done settings------------------------------------
+  
   !set terms option
   NStrans = 1
   Inert = 1
@@ -71,7 +69,7 @@ program main
   FTS = 5 !fixed timesteps
 
   !debug flag
-  simple_mesh = 0     ! !1: use simple mesh for quicker calculation
+  simple_mesh = 1     ! !1: use simple mesh for quicker calculation
   graph_mode = 0    !1: graph each step; 0: graph each timestep
   check_0_in_Jac = 0   !1: put 'sj's together as Jac, check Jac
   if( simple_mesh.eq.1 ) then
@@ -82,10 +80,14 @@ program main
      NEV = 3!6
      NES = 2
      NEM_alge = NEM/3*2
-     !ths = 1
+     !--------solver setting-------------
+     ths = 1
+     THREADS_FRONT = ths                      !THREADS for front, must be <= ths
+     SOLVER_MODE = single
+     !-------end solver------------------
      dt = 1.0e-5_rk!0.01_rk   !dt in first 5 steps
   end if
-  if( no_vapor.eq.0 ) NEV = 3
+  if( no_vapor.eq.0 ) NEV = 3 !?
   if( ( outer.eq.1.0_rk .or. substrate.eq.0.0_rk ) .and. no_vapor.eq.1 ) NEV = 0
   
   if(substrate.eq.0.0_rk) NES = 0
@@ -96,7 +98,7 @@ program main
   call NOP   ! NNR1, NNR1p, NNX, NTN, NTE, globalNM, rowNM(eleN), columnNM, regN(eleN), WFLAG(eleN)
   call variableN    !NOPP(NTN), MDF(NTN), NVar, rNOP(NTN,4,2), iBW
   call basis_function
-  call initialization   !allocate, make everything 0, call init_front
+  call initialization   !allocate, make everything 0, call multifront preparation(init_front, assembler, associater, excluder, custom_order, var_finder, seed)
   call initial_condition
 ! call split_sol
 

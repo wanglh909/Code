@@ -1,4 +1,4 @@
-GFORTRAN module version '0' created from Sources/AAAkind.f90 on Wed May  2 22:09:44 2018
+GFORTRAN module version '0' created from Sources/AAAkind.f90 on Wed May  2 22:24:08 2018
 MD5:d3862c87b492d86b3f757ff2da4cafc7 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () () ()
