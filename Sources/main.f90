@@ -18,6 +18,7 @@ program main
   !ths = 2
   no_vapor = 1       !no_vapor = 1: do not solve for vapor phase, impose function flux
   uniflux = 0  !determine if the imposed flux is uniform. Notice: If flux is uniform, still use divergent heat flux.
+  if(uniflux.eq.1) no_vapor = 1
   call data_folder  !determine xe
 
   !set mesh parameters
@@ -58,6 +59,9 @@ program main
   Tdiff = 1
   TtimeS = 1
   TdiffS = 1
+  cptime = 1
+  cpconv = 1
+  cpdiff = 1
   !set flow parameters
   call parameter_values
 
@@ -69,7 +73,7 @@ program main
   FTS = 5 !fixed timesteps
 
   !debug flag
-  simple_mesh = 1     ! !1: use simple mesh for quicker calculation
+  simple_mesh = 0     ! !1: use simple mesh for quicker calculation
   graph_mode = 0    !1: graph each step; 0: graph each timestep
   check_0_in_Jac = 0   !1: put 'sj's together as Jac, check Jac
   if( simple_mesh.eq.1 ) then
@@ -87,7 +91,7 @@ program main
      !-------end solver------------------
      dt = 1.0e-5_rk!0.01_rk   !dt in first 5 steps
   end if
-  if( no_vapor.eq.0 ) NEV = 3 !?
+  if( no_vapor.eq.0 ) NEV = 3 !? should be deleted?
   if( ( outer.eq.1.0_rk .or. substrate.eq.0.0_rk ) .and. no_vapor.eq.1 ) NEV = 0
   
   if(substrate.eq.0.0_rk) NES = 0
@@ -99,6 +103,7 @@ program main
   call variableN    !NOPP(NTN), MDF(NTN), NVar, rNOP(NTN,4,2), iBW
   call basis_function
   call initialization   !allocate, make everything 0, call multifront preparation(init_front, assembler, associater, excluder, custom_order, var_finder, seed)
+  !?still need to initialize local data
   call initial_condition
 ! call split_sol
 
@@ -137,7 +142,7 @@ program main
      end if
 
      call flag_mesh   !flag for mesh establish(mesh_size_change & initial_vapor_solv)
-      
+
      !calculate contact angle & flux
      if((initial_vapor_solving.eq.1 .or. initial_vapor_solved.eq.1).and. diverge.eq.0)  call variable_cal
 
@@ -145,7 +150,7 @@ program main
      open(unit = 20, file = trim(folder)//'cal_time.dat', status = 'old', access = 'append')
      write(20, '(A)') ' '
      write(20,'(A,es13.6,A,es13.6,A,es13.6,A,es13.6,A)') 'total:', t_program,'s, ', &
-          t_program/60.0,'min, ', t_program/60.0/60.0,'hr, ', t_program/60.0/60.0/24.0,'d'
+          t_program/60.0_rk,'min, ', t_program/60.0_rk/60.0_rk,'hr, ', t_program/60.0_rk/60.0_rk/24.0_rk,'d'
      close(20)
 
      !***********************************conditions to stop time loop*********************************

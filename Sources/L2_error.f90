@@ -5,12 +5,12 @@ subroutine L2_error(cal_time)
 
   implicit none
   real(kind=rk), intent(in):: cal_time
-  integer(kind=ik):: i, imaxr, imaxz, imaxu, imaxv, imaxT, imaxp, imaxc, write_node
-  integer(kind=ik):: imaxRsi, imaxReta, imaxRu, imaxRv, imaxRt, imaxRp, imaxRc
-  real(kind=rk):: dr(NTN), dz(NTN), du(NTN), dv(NTN), dTemp(NTN), dp(NTN), dc(NTN), &   
-       drmax, dzmax, dumax, dvmax, dTmax, dpmax, dcmax      !dTemp dstinct from dt in data
-  real(kind=rk):: Rsi(NTN), Reta(NTN), Ru(NTN), Rv(NTN), Rt(NTN), Rp(NTN), Rc(NTN), &
-       Rsimax, Retamax, Rumax, Rvmax, Rtmax, Rpmax, Rcmax
+  integer(kind=ik):: i, imaxr, imaxz, imaxu, imaxv, imaxT, imaxcp, imaxp, imaxc, write_node
+  integer(kind=ik):: imaxRsi, imaxReta, imaxRu, imaxRv, imaxRt, imaxRcp, imaxRp, imaxRc
+  real(kind=rk):: dr(NTN), dz(NTN), du(NTN), dv(NTN), dTemp(NTN), dcp(NTN), dpress(NTN), dc(NTN), &   
+       drmax, dzmax, dumax, dvmax, dTmax, dcpmax, dpmax, dcmax      !dTemp dstinct from dt in data
+  real(kind=rk):: Rsi(NTN), Reta(NTN), Ru(NTN), Rv(NTN), Rt(NTN), Rcp(NTN), Rp(NTN), Rc(NTN), &
+       Rsimax, Retamax, Rumax, Rvmax, Rtmax, Rcpmax, Rpmax, Rcmax
   
   write_node = 1  !1: write which node gives the greatest error
   
@@ -20,6 +20,7 @@ subroutine L2_error(cal_time)
   umax = 0.0_rk
   vmax = 0.0_rk
   Tmax = 0.0_rk
+  cpmax = 0.0_rk
   pmax = 0.0_rk
   cmax = 0.0_rk
   do i = 1, NTN
@@ -30,13 +31,14 @@ subroutine L2_error(cal_time)
      if( abs(usol(i)) .gt. umax ) umax = abs(usol(i))
      if( abs(vsol(i)) .gt. vmax ) vmax = abs(vsol(i))
      if( abs(Tsol(i)) .gt. Tmax ) Tmax = abs(Tsol(i))
+     if( abs(cpsol(i)) .gt. cpmax ) cpmax = abs(cpsol(i))
      if( abs(psol(i)) .gt. pmax ) pmax = abs(psol(i))
      if( no_vapor.eq.0 .and. abs(csol(i)) .gt. cmax ) cmax = abs(csol(i))
   end do
 
   if (timestep.eq.0 .and. step.eq.1 .and. ( size_function_change.eq.1 .or. read_coordinate_value.eq.1 ) ) then
      open(unit = 11, file = trim(folder)//'max_value.dat', status = 'replace')
-     write(11, '(A)') 'variables = "rmax", "zmax", "umax", "vmax", "Tmax", "pmax", "cmax" '
+     write(11, '(A)') 'variables = "rmax", "zmax", "umax", "vmax", "Tmax", "cpmax", "pmax", "cmax" '
   else
      open(unit = 11, file = trim(folder)//'max_value.dat', status = 'old', access = 'append')
   end if
@@ -45,9 +47,9 @@ subroutine L2_error(cal_time)
      write(11, '(A, 2es15.7, i8, A)') '----------------', time, dt, timestep, '---------------------'
      write(11, '(A)') ' '
   end if
-  write(11,'(7es14.6)') rmax, zmax, umax, vmax, Tmax, pmax, cmax
+  write(11,'(8es14.6)') rmax, zmax, umax, vmax, Tmax, cpmax, pmax, cmax
   close(11)
-  ! write(*,*) rmax, zmax, umax, vmax, Tmax, pmax, cmax  
+  ! write(*,*) rmax, zmax, umax, vmax, Tmax, cpmax, pmax, cmax  
 
 
   
@@ -55,6 +57,7 @@ subroutine L2_error(cal_time)
   if(Tmax.eq.0.0_rk) Tmax = 1.0_rk
   if(umax.eq.0.0_rk) umax = 1.0_rk
   if(vmax.eq.0.0_rk) vmax = 1.0_rk
+  if(cpmax.eq.0.0_rk) cpmax = 1.0_rk
   if(pmax.eq.0.0_rk) pmax = 1.0_rk
   if(cmax.eq.0.0_rk) cmax = 1.0_rk
   
@@ -69,6 +72,7 @@ subroutine L2_error(cal_time)
               if( VN(i).eq.0 .or. VN(i).eq.2 ) then
                  error2 = error2 + ( dsol(NOPP(i)+Nu)/umax )**2
                  error2 = error2 + ( dsol(NOPP(i)+Nv)/vmax )**2
+                 error2 = error2 + ( dsol(NOPP(i)+Ncp)/cpmax )**2
                  if(PN(i).eq.1) error2 = error2 + ( dsol(NOPP(i)+Np)/pmax )**2
               end if
            end if
@@ -98,7 +102,7 @@ subroutine L2_error(cal_time)
   end if
   write(11,200) 'Res. Error =', error1, '    Sol. Error =', error2, '    step =', step
   close(11)
-200 format (A,es11.5,A,es11.5,A,i4)
+200 format (A,es12.5,A,es12.5,A,i4)
 
   !calculate Sol error seperately, Linf norm
   dr(:) = 0.0_rk         
@@ -106,7 +110,8 @@ subroutine L2_error(cal_time)
   du(:) = 0.0_rk
   dv(:) = 0.0_rk
   dTemp(:) = 0.0_rk
-  dp(:) = 0.0_rk
+  dcp(:) = 0.0_rk
+  dpress(:) = 0.0_rk
   dc(:) = 0.0_rk
   do i = 1, NTN, 1
      dr(i) = abs( dsol( NOPP(i) + Nr ) / rmax )
@@ -116,7 +121,8 @@ subroutine L2_error(cal_time)
            du(i) = abs( dsol( NOPP(i) + Nu ) / umax )
            dv(i) = abs( dsol( NOPP(i) + Nv ) / vmax )
            dTemp(i) = abs( dsol( NOPP(i) + NT ) / Tmax )
-           if ( PN(i).eq.1 ) dp(i) = abs( dsol( NOPP(i) + Np ) / pmax )
+           dcp(i) = abs( dsol( NOPP(i) + Ncp ) / cpmax )
+           if ( PN(i).eq.1 ) dpress(i) = abs( dsol( NOPP(i) + Np ) / pmax )
         end if
         if( (VN(i).eq.1 .or. VN(i).eq.2) ) then
            if(no_vapor.eq.0) dc(i) = abs( dsol( NOPP(i) + MDF(i)-1 ) / cmax )
@@ -135,6 +141,7 @@ subroutine L2_error(cal_time)
   dumax = 0.0_rk
   dvmax = 0.0_rk
   dTmax = 0.0_rk
+  dcpmax = 0.0_rk
   dpmax = 0.0_rk
   dcmax = 0.0_rk
   imaxr = 0
@@ -142,6 +149,7 @@ subroutine L2_error(cal_time)
   imaxu = 0
   imaxv = 0
   imaxT = 0
+  imaxcp = 0
   imaxp = 0
   imaxc = 0
 
@@ -168,8 +176,12 @@ subroutine L2_error(cal_time)
         dTmax = dTemp(i)
         imaxT = i
      end if
-     if( dp(i) .gt. dpmax ) then
-        dpmax = dp(i)
+     if( dcp(i) .gt. dcpmax ) then
+        dcpmax = dcp(i)
+        imaxcp = i
+     end if
+     if( dpress(i) .gt. dpmax ) then
+        dpmax = dpress(i)
         imaxp = i
      end if
      if( no_vapor.eq.0 .and. dc(i) .gt. dcmax ) then
@@ -181,7 +193,7 @@ subroutine L2_error(cal_time)
 
   if (timestep.eq.0 .and. step.eq.1 .and. ( size_function_change.eq.1 .or. read_coordinate_value.eq.1 ) ) then
      open(unit = 10, file = trim(folder)//'error_Sol.dat', status = 'replace')
-     write(10, '(A)') 'variables = "dr", "dz", "du", "dv", "dT", "dp", "dc" '
+     write(10, '(A)') 'variables = "dr", "dz", "du", "dv", "dT", "dcp", "dp", "dc" '
   else
      open(unit = 10, file = trim(folder)//'error_Sol.dat', status = 'old', access = 'append')
   end if
@@ -190,8 +202,8 @@ subroutine L2_error(cal_time)
      write(10, '(A, 2es15.7, i8, A)') '----------------', time, dt, timestep, '---------------------'
      write(10, '(A)') ' '
   end if
-  write(10,'(7es12.5)') drmax, dzmax, dumax, dvmax, dTmax, dpmax, dcmax
-  if(write_node.eq.1) write(10,'(7i12)') imaxr, imaxz, imaxu, imaxv, imaxT, imaxp, imaxc
+  write(10,'(8es12.5)') drmax, dzmax, dumax, dvmax, dTmax, dcpmax, dpmax, dcmax
+  if(write_node.eq.1) write(10,'(8i12)') imaxr, imaxz, imaxu, imaxv, imaxT, imaxcp, imaxp, imaxc
   write(10,'(es14.7)') error2
   write(10,'(A)') ' '
   close(10)
@@ -203,6 +215,7 @@ subroutine L2_error(cal_time)
   Ru(:) = 0.0_rk
   Rv(:) = 0.0_rk
   Rt(:) = 0.0_rk
+  Rcp(:) = 0.0_rk
   Rp(:) = 0.0_rk
   Rc(:) = 0.0_rk
   do i = 1, NTN, 1
@@ -212,6 +225,7 @@ subroutine L2_error(cal_time)
         Ru(i) = abs( load_dum( NOPP(i) + Nu ) )
         Rv(i) = abs( load_dum( NOPP(i) + Nv ) )
         Rt(i) = abs( load_dum( NOPP(i) + NT ) )
+        Rcp(i) = abs( load_dum( NOPP(i) + Ncp ) )
         if ( MDF(i) .gt. Np )     Rp(i) = abs( load_dum( NOPP(i) + Np ) )
      end if
      if( (VN(i).eq.1 .or. VN(i).eq.2) .and. s_mode.eq.0) then
@@ -227,6 +241,7 @@ subroutine L2_error(cal_time)
   Rumax = 0.0_rk
   Rvmax = 0.0_rk
   Rtmax = 0.0_rk
+  Rcpmax = 0.0_rk
   Rpmax = 0.0_rk
   Rcmax = 0.0_rk
   imaxRsi = 0
@@ -234,6 +249,7 @@ subroutine L2_error(cal_time)
   imaxRu = 0
   imaxRv = 0
   imaxRt = 0
+  imaxRcp = 0
   imaxRp = 0
   imaxRc = 0
   do i = 1, NTN
@@ -259,6 +275,10 @@ subroutine L2_error(cal_time)
         Rtmax = Rt(i)
         imaxRt = i
      end if
+     if( Rcp(i) .gt. Rcpmax ) then
+        Rcpmax = Rcp(i)
+        imaxRcp = i
+     end if
      if( Rp(i) .gt. Rpmax ) then
         Rpmax = Rp(i)
         imaxRp = i
@@ -271,7 +291,7 @@ subroutine L2_error(cal_time)
 
   if (timestep.eq.0 .and. step.eq.1 .and. ( size_function_change.eq.1 .or. read_coordinate_value.eq.1 ) ) then
      open(unit = 12, file = trim(folder)//'error_Res.dat', status = 'replace')
-     write(12, '(A)') 'variables = "Rsi", "Reta", "Ru", "Rv", "Rt", "Rp", "Rc" '
+     write(12, '(A)') 'variables = "Rsi", "Reta", "Ru", "Rv", "Rt", "Rcp", "Rp", "Rc" '
   else
      open(unit = 12, file = trim(folder)//'error_Res.dat', status = 'old', access = 'append')
   end if
@@ -280,8 +300,8 @@ subroutine L2_error(cal_time)
      write(12, '(A, 2es15.7, i8, A)') '----------------', time, dt, timestep, '---------------------'
      write(12, '(A)') ' '
   end if
-  write(12,'(7es12.5)') Rsimax, Retamax, Rumax, Rvmax, Rtmax, Rpmax, Rcmax
-  if(write_node.eq.1) write(12,'(7i12)') imaxRsi, imaxReta, imaxRu, imaxRv, imaxRt, imaxRp, imaxRc
+  write(12,'(8es12.5)') Rsimax, Retamax, Rumax, Rvmax, Rtmax, Rcpmax, Rpmax, Rcmax
+  if(write_node.eq.1) write(12,'(8i12)') imaxRsi, imaxReta, imaxRu, imaxRv, imaxRt, imaxRcp, imaxRp, imaxRc
   write(12,'(es14.7)') error1
   write(12,'(A)') ' '
   close(12)

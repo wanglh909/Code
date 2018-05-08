@@ -3,7 +3,7 @@ subroutine values_in_an_element(m,id)
   use kind
   use data
   use Ldata
-
+!??make things related cp initialized
 
   implicit none
   integer(kind=ik), intent(in):: m, id
@@ -22,15 +22,16 @@ subroutine values_in_an_element(m,id)
         if( VE(m).eq.0 ) then
            ulocal(j,id) = sol( NOPP( globalNM(m,j) ) + Nu )
            vlocal(j,id) = sol( NOPP( globalNM(m,j) ) + Nv )  
-           Tlocal(j,id) = sol( NOPP( globalNM(m,j) ) + NT )
-           if( PN( globalNM(m,j) ) .eq. 1 )  plocal(j,id) = sol( NOPP( globalNM(m,j) ) + Np ) 
-           ! plocal(2, 4, 5, 6, 8) remain unchanged
+           Tlocal(j,id) = sol( NOPP( globalNM(m,j) ) + NT ) 
+           cplocal(j,id) = sol( NOPP( globalNM(m,j) ) + Ncp )
+           if( PN( globalNM(m,j) ) .eq. 1 )  plocal(j,id) = sol( NOPP( globalNM(m,j) ) + Np )   ! plocal(2, 4, 5, 6, 8) remain unchanged
 
            rdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Nr )
            zdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Nz )
            udotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Nu )
            vdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Nv )
            Tdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + NT )
+           cpdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Ncp )
         else if( VE(m).eq.1 ) then
            clocal(j,id) = sol( NOPP( globalNM(m,j) ) + MDF( globalNM(m,j) ) - 1 )
         else  !VE = 5
@@ -98,6 +99,8 @@ subroutine values_in_an_element(m,id)
         vzintfac(:,:,id) = 0.0_rk
         Trintfac(:,:,id) = 0.0_rk
         Tzintfac(:,:,id) = 0.0_rk
+        cprintfac(:,:,id) = 0.0_rk
+        cpzintfac(:,:,id) = 0.0_rk
         pintfac(:,:,id) = 0.0_rk
 
         rdotintfac(:,:,id) = 0.0_rk
@@ -105,6 +108,7 @@ subroutine values_in_an_element(m,id)
         udotintfac(:,:,id) = 0.0_rk
         vdotintfac(:,:,id) = 0.0_rk
         Tdotintfac(:,:,id) = 0.0_rk
+        cpdotintfac(:,:,id) = 0.0_rk
 
         do k = 1, 3
            do l = 1, 3
@@ -118,6 +122,8 @@ subroutine values_in_an_element(m,id)
                  vzintfac(k,l,id) = vzintfac(k,l,id) +  vlocal(n,id)*phiz(k,l,n,id)
                  Trintfac(k,l,id) = Trintfac(k,l,id) +  Tlocal(n,id)*phir(k,l,n,id)
                  Tzintfac(k,l,id) = Tzintfac(k,l,id) +  Tlocal(n,id)*phiz(k,l,n,id)
+                 cprintfac(k,l,id) = cprintfac(k,l,id) +  cplocal(n,id)*phir(k,l,n,id)
+                 cpzintfac(k,l,id) = cpzintfac(k,l,id) +  cplocal(n,id)*phiz(k,l,n,id)
                  pintfac(k,l,id) =  pintfac(k,l,id) +  plocal(n,id)*psi(k,l,n)
 
                  rdotintfac(k,l,id) = rdotintfac(k,l,id) + rdotlocal(n,id)*phi(k,l,n)
@@ -125,6 +131,7 @@ subroutine values_in_an_element(m,id)
                  udotintfac(k,l,id) = udotintfac(k,l,id) + udotlocal(n,id)*phi(k,l,n)
                  vdotintfac(k,l,id) = vdotintfac(k,l,id) + vdotlocal(n,id)*phi(k,l,n)
                  Tdotintfac(k,l,id) = Tdotintfac(k,l,id) + Tdotlocal(n,id)*phi(k,l,n)
+                 cpdotintfac(k,l,id) = cpdotintfac(k,l,id) + cpdotlocal(n,id)*phi(k,l,n)
               end do
 
            end do
@@ -186,6 +193,8 @@ subroutine values_in_an_element(m,id)
   reta_right(:,id) = 0.0_rk
   zeta_right(:,id) = 0.0_rk
   Teta_right(:,id) = 0.0_rk
+  cpeta_right(:,id) = 0.0_rk
+  cpintfac_right(:,id) = 0.0_rk
 
   rintfac_right(:,id) = 0.0_rk
   uintfac_right(:,id) = 0.0_rk
@@ -194,8 +203,9 @@ subroutine values_in_an_element(m,id)
   zdotintfac_right(:,id) = 0.0_rk
   
   dTdsi(:,id) = 0.0_rk
+  dcpdsi(:,id) = 0.0_rk
   dcdsi(:,id) = 0.0_rk
-  dTdeta(:,id) = 0.0_rk
+  !dTdeta(:,id) = 0.0_rk
   dcdeta(:,id) = 0.0_rk
   rsi_right(:,id) = 0.0_rk
   zsi_right(:,id) = 0.0_rk
@@ -284,6 +294,9 @@ subroutine values_in_an_element(m,id)
               zdotintfac_right(k,id) = zdotintfac_right(k,id) + zdotlocal(npp,id) * phi_1d(k,n)
 
               Teta_right(k,id) = Teta_right(k,id) + Tlocal(npp,id) * phix_1d(k,n)
+              cpeta_right(k,id) = cpeta_right(k,id) + cplocal(npp,id) * phix_1d(k,n)
+
+              cpintfac_right(k,id) = cpintfac_right(k,id) + cplocal(npp,id)*phi_1d(k,n)
 
            end if  !for s_mode=0
         end do  !end for n
@@ -291,6 +304,7 @@ subroutine values_in_an_element(m,id)
         if(s_mode.eq.0) then
            do n = 1, 9, 1 !the summation of nine terms, eg: csi = sum( clocal(1-9)*phisi_1d(1-9) )
               dTdsi(k,id) = dTdsi(k,id) + Tlocal(n,id) * phisi1_1d(k,n)
+              dcpdsi(k,id) = dcpdsi(k,id) + cplocal(n,id) * phisi1_1d(k,n)
               rsi_right(k,id) = rsi_right(k,id) + rlocal(n,id) * phisi1_1d(k,n)
               zsi_right(k,id) = zsi_right(k,id) + zlocal(n,id) * phisi1_1d(k,n)
            end do  !end for n
@@ -369,12 +383,15 @@ go to 122
   vzintfac(:,:,id) = 0.0_rk
   Trintfac(:,:,id) = 0.0_rk
   Tzintfac(:,:,id) = 0.0_rk
+  cprintfac(:,:,id) = 0.0_rk
+  cpzintfac(:,:,id) = 0.0_rk
   pintfac(:,:,id) = 0.0_rk
   rdotintfac(:,:,id) = 0.0_rk
   zdotintfac(:,:,id) = 0.0_rk
   udotintfac(:,:,id) = 0.0_rk
   vdotintfac(:,:,id) = 0.0_rk
   Tdotintfac(:,:,id) = 0.0_rk
+  cpdotintfac(:,:,id) = 0.0_rk
   crintfac(:,:,id) = 0.0_rk
   czintfac(:,:,id) = 0.0_rk
   rsi_down(:,id) = 0.0_rk
@@ -386,14 +403,17 @@ go to 122
   reta_right(:,id) = 0.0_rk
   zeta_right(:,id) = 0.0_rk
   Teta_right(:,id) = 0.0_rk
+  cpeta_right(:,id) = 0.0_rk
   rintfac_right(:,id) = 0.0_rk
   uintfac_right(:,id) = 0.0_rk
   vintfac_right(:,id) = 0.0_rk
+  cpintfac_right(:,id) = 0.0_rk
   rdotintfac_right(:,id) = 0.0_rk
   zdotintfac_right(:,id) = 0.0_rk
   dTdsi(:,id) = 0.0_rk
+  dcpdsi(:,id) = 0.0_rk
   dcdsi(:,id) = 0.0_rk
-  dTdeta(:,id) = 0.0_rk
+  !dTdeta(:,id) = 0.0_rk
   dcdeta(:,id) = 0.0_rk
   rsi_right(:,id) = 0.0_rk
   zsi_right(:,id) = 0.0_rk

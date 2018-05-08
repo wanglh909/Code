@@ -1,11 +1,12 @@
 subroutine parameter_values
   use kind
   use data, only: Re, Ca, Kdi, Pe, KBCgroup, REH, beta, Oh, Grav, R, Hum, F0, kR, folder, substrate, outer, &
-       NStrans, Inert, Capil, Viscous, GravI, Ttime, Tconv, Tdiff, TtimeS, TdiffS, NEM, NEL, NES, NEV, NEM_alge, T_sub, uniflux
+       NStrans, Inert, Capil, Viscous, GravI, Ttime, Tconv, Tdiff, TtimeS, TdiffS, NEM, NEL, NES, NEV, NEM_alge, T_sub, uniflux, &
+       diameterp, Dp, Pep, kboltz, pi
   implicit none
 
   integer(kind=ik):: Ltype !, water, octane, hexanol
-  real(kind=rk):: rho, mu, kT, cp, alpha, beta0, Diff, csat, Hv, sigmac, lc, vc, Tc, ks, rhos, cpS, alphaS, Mmolar
+  real(kind=rk):: rho, mu, kT, cpl, alpha, beta0, Diff, csat, Hv, sigmac, lc, vc, Tc, ks, rhos, cpS, alphaS, Mmolar
 
   substrate = 0.15_rk!   3.0_rk! !1.0_rk  !0.15_rk   
   outer = 1.3_rk    !10.0_rk!   20.0_rk, 1.3_rk
@@ -18,8 +19,8 @@ subroutine parameter_values
      rho = 9.97e2_rk!(kg/m^3)
      mu =  8.90e-4_rk!(Pa.s)
      kT = 0.58_rk!(W/m/K)
-     cp = 4.18e3_rk!(J/kg/K)
-     alpha = kT/rho/cp     !1.3917e-7_rk  !
+     cpl = 4.18e3_rk!(J/kg/K)
+     alpha = kT/rho/cpl     !1.3917e-7_rk  !
      beta0 = -1.657e-4_rk!(N/m/K)  -0.1657dyn/cm/K
      sigmac = 71.97e-3_rk!(N/m)(25C   71.97_rk dyn/cm  
      lc = 1.0e-3_rk!(m)
@@ -28,8 +29,8 @@ subroutine parameter_values
      rho = 6.986e2_rk     !(kg/m^3)
      mu = 5.151e-4_rk  !(Pa.s)
      kT = 0.18_rk!(W/m/K)
-     cp = 255.68_rk*Mmolar  !(J/mol/K)*(kg/mol) = (J/kg/K)
-     alpha = kT/rho/cp     
+     cpl = 255.68_rk*Mmolar  !(J/mol/K)*(kg/mol) = (J/kg/K)
+     alpha = kT/rho/cpl     
      beta0 = -0.0935e-3_rk !(N/m/K)  
      sigmac = 21.14e-3_rk!(N/m)(25C   
      lc = 2.0e-3_rk
@@ -38,7 +39,7 @@ subroutine parameter_values
      rho = 8.136e2_rk     !(kg/m^3)
      mu = 4.578e-3_rk  !(Pa.s)
      kT = 0.15_rk!(W/m/K)
-     !cp = 255.68*Mmolar  !(J/mol/K)*(kg/mol) = (J/kg/K)
+     !cpl = 255.68*Mmolar  !(J/mol/K)*(kg/mol) = (J/kg/K)
      alpha = 7.84e-8_rk   !(m^2/s)
      beta0 = -8.0e-5_rk !(N/m/K) 
      sigmac = 2.581e-2_rk!(N/m)(25C 
@@ -71,7 +72,14 @@ subroutine parameter_values
   rhos = 2.70e3_rk!(kg/m^3)
   cpS = 0.84e3_rk!(J/kg/K)
   alphaS = ks/rhos/cpS
-  T_sub = 25 !     80 !(C)  !25 if not heated
+  T_sub = 25.0_rk !     80 !(C)  !25 if not heated
+
+  !particle
+  diameterp=1.0e-7_rk !(m) !particle diameter
+  Dp = kboltz*(25.0_rk+273.15_rk)/(6.0_rk*pi*mu*diameterp)   !2.45e-12 (m^2/s)
+  !cp0 = 2.5e-4  !(kg/kg)  !??not used yet
+
+  
 
   !characteristic
   !sigmac & lc defined in liquid
@@ -88,6 +96,7 @@ subroutine parameter_values
   beta = Tc/sigmac*beta0 ! -5.87e-3_rk      0.0_rk!
   F0 = alphaS*(lc/vc)/(lc**2)!?
   kR = ks/kT  !relative thermal conductivity
+  Pep = lc*vc/Dp    !267.35_rk
 
   !change for equations
   Re = Re*Ca
@@ -95,7 +104,7 @@ subroutine parameter_values
   Grav = 0.0_rk  !input
   R = 1.0_rk
 
-  T_sub = (T_sub-25)/Tc
+  T_sub = (T_sub-25.0_rk)/Tc
 
   open(unit = 10, file = trim(folder)//'parameter_values.dat', status = 'replace')
   write(10,'(A, es14.7)') 'lc =', lc
@@ -104,12 +113,14 @@ subroutine parameter_values
   write(10,'(A, es14.7)') 'Re =', Re/Ca
   write(10,'(A, es14.7)') 'Ca =', Ca
   write(10,'(A, es14.7)') 'Pe =', Pe
+  write(10,'(A, es14.7)') 'Pep =', Pep
   write(10,'(A, es14.7)') 'F0 =', F0
   write(10,'(A, es14.7)') 'kR =', kR
   write(10,'(A, es14.7)') 'Grav =', Grav
   write(10,'(A, es14.7)') 'substrate =', substrate
   write(10,'(A, es14.7)') 'outer =', outer
   write(10,'(A, es14.7)') 'T_sub =', T_sub
+  write(10,'(A, es14.7)') 'diameterp =', diameterp
   write(10,'(A)') ' '
 
   write(10,'(A, es14.7)') 'KBCgroup =', KBCgroup
@@ -141,8 +152,8 @@ subroutine parameter_values
 
 
   write(*,*) 'KBCgroup =', KBCgroup
-  write(*,*) 'REH =', REH
-  write(*,*) 'beta =', beta
+  !write(*,*) 'REH =', REH
+  !write(*,*) 'beta =', beta
 
   return
 end subroutine parameter_values

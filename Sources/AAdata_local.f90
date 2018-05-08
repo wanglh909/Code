@@ -6,25 +6,25 @@ module Ldata
 
   !for subroutine values_in_an_element
   real(kind=rk), allocatable:: rlocal(:,:), zlocal(:,:), &
-       ulocal(:,:), vlocal(:,:), Tlocal(:,:), plocal(:,:), clocal(:,:)
+       ulocal(:,:), vlocal(:,:), Tlocal(:,:), plocal(:,:), clocal(:,:), cplocal(:,:)
   integer(kind=ik), parameter:: NNr = 1, NNz = 2, NNu = 3, NNv = 4, NNp = 6
   real(kind=rk), allocatable:: rintfac(:,:,:), rsi(:,:,:), reta(:,:,:), zsi(:,:,:), zeta(:,:,:)
   real(kind=rk), allocatable:: Jp(:,:,:), Jpsign(:,:,:), s_orth(:,:,:)
   real(kind=rk), allocatable:: phir(:,:,:,:), phiz(:,:,:,:)
   real(kind=rk), allocatable:: uintfac(:,:,:), urintfac(:,:,:), uzintfac(:,:,:), &
        vintfac(:,:,:), vrintfac(:,:,:), vzintfac(:,:,:), pintfac(:,:,:), &
-       crintfac(:,:,:), czintfac(:,:,:), Trintfac(:,:,:), Tzintfac(:,:,:)
+       crintfac(:,:,:), czintfac(:,:,:), Trintfac(:,:,:), Tzintfac(:,:,:), cprintfac(:,:,:), cpzintfac(:,:,:)
   real(kind=rk), allocatable:: rdotintfac(:,:,:), zdotintfac(:,:,:), &
-       udotintfac(:,:,:), vdotintfac(:,:,:), Tdotintfac(:,:,:)
+       udotintfac(:,:,:), vdotintfac(:,:,:), Tdotintfac(:,:,:), cpdotintfac(:,:,:)
   real(kind=rk), allocatable:: udotlocal(:,:), vdotlocal(:,:), &
-       rdotlocal(:,:), zdotlocal(:,:), Tdotlocal(:,:)
+       rdotlocal(:,:), zdotlocal(:,:), Tdotlocal(:,:), cpdotlocal(:,:)
   real(kind=rk), allocatable:: rsi_down(:,:),  zsi_down(:,:), &
        rsi_left(:,:), zsi_left(:,:), reta_left(:,:), zeta_left(:,:), &
-       reta_right(:,:), zeta_right(:,:), rsi_right(:,:), zsi_right(:,:), Teta_right(:,:)
-  real(kind=rk), allocatable:: rintfac_right(:,:), uintfac_right(:,:), vintfac_right(:,:), &
+       reta_right(:,:), zeta_right(:,:), rsi_right(:,:), zsi_right(:,:), Teta_right(:,:), cpeta_right(:,:)
+  real(kind=rk), allocatable:: rintfac_right(:,:), uintfac_right(:,:), vintfac_right(:,:), cpintfac_right(:,:), &
        rdotintfac_right(:,:), zdotintfac_right(:,:), Jp_r_right(:,:), Jp_z_right(:,:), Jp_right(:,:)
 
-  real(kind=rk), allocatable:: dcdsi(:,:), dcdeta(:,:) ,dTdsi(:,:) ,dTdeta(:,:)
+  real(kind=rk), allocatable:: dcdsi(:,:), dcdeta(:,:) ,dTdsi(:,:) ,dcpdsi(:,:) !,dTdeta(:,:)
 
   !for subroutine define_sf
   real(kind=rk), allocatable:: Aterm(:,:,:), Bterm(:,:,:)
@@ -43,7 +43,8 @@ module Ldata
   real(kind=rk), allocatable:: urintfac_r(:,:,:), urintfac_z(:,:,:), uzintfac_r(:,:,:), uzintfac_z(:,:,:), &
        vrintfac_r(:,:,:), vrintfac_z(:,:,:), vzintfac_r(:,:,:), vzintfac_z(:,:,:), &
        crintfac_r(:,:,:), crintfac_z(:,:,:), czintfac_r(:,:,:), czintfac_z(:,:,:), &
-       Trintfac_r(:,:,:), Trintfac_z(:,:,:), Tzintfac_r(:,:,:), Tzintfac_z(:,:,:)
+       Trintfac_r(:,:,:), Trintfac_z(:,:,:), Tzintfac_r(:,:,:), Tzintfac_z(:,:,:), &
+       cprintfac_r(:,:,:), cprintfac_z(:,:,:), cpzintfac_r(:,:,:), cpzintfac_z(:,:,:)
 
 
   ! !for subroutine values_in_an_element

@@ -319,6 +319,7 @@ close(10)
         vsol(i) = 0.0_rk
         Tsol(i) = 0.0_rk!?
         psol(i) = 2.0_rk!/Ca    !include p at the node and p needed to be interpolated
+        cpsol(i) = 1.0_rk
      end if
 
      if( VN(i).eq.1 .or. VN(i).eq.2 ) then
@@ -353,6 +354,7 @@ close(10)
         sol( NOPP(i) + Nu ) = usol(i)
         sol( NOPP(i) + Nv ) = vsol(i)
         sol( NOPP(i) + NT ) = Tsol(i)
+        sol( NOPP(i) + Ncp ) = cpsol(i)
         if ( PN(i).eq.1 )  then
            sol( NOPP(i) + Np ) = psol(i)
         end if

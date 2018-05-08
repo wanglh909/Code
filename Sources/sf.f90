@@ -13,8 +13,8 @@ subroutine define_sf(m,i, sf, LNVar, LNOPP,id)
 
   integer(kind=ik):: k, l, ipp   !no i (i is the i in main program)
   real(kind=rk):: intRsi_V(Ng,Ng), intReta_V(Ng,Ng), &
-       intRu_V(Ng,Ng), intRv_V(Ng,Ng), intRt_V(Ng,Ng), intRp(Ng,Ng), intRc(Ng,Ng)
-  real(kind=rk):: intRsi_S(Ng), intReta_S(Ng), intRu_S(Ng), intRv_S(Ng), intRt_S(Ng)
+       intRu_V(Ng,Ng), intRv_V(Ng,Ng), intRt_V(Ng,Ng), intRm_V(Ng,Ng), intRp(Ng,Ng), intRc(Ng,Ng)
+  real(kind=rk):: intRsi_S(Ng), intReta_S(Ng), intRu_S(Ng), intRv_S(Ng), intRt_S(Ng), intRm_S(Ng)
   real(kind=rk):: conv, flux
   
   intRsi_V(:,:) = 0.0_rk 
@@ -22,6 +22,7 @@ subroutine define_sf(m,i, sf, LNVar, LNOPP,id)
   intRu_V(:,:) = 0.0_rk 
   intRv_V(:,:) = 0.0_rk 
   intRt_V(:,:) = 0.0_rk 
+  intRm_V(:,:) = 0.0_rk 
   intRp(:,:) = 0.0_rk 
   intRc(:,:) = 0.0_rk 
   intRsi_S(:) = 0.0_rk
@@ -29,6 +30,7 @@ subroutine define_sf(m,i, sf, LNVar, LNOPP,id)
   intRu_S(:) = 0.0_rk
   intRv_S(:) = 0.0_rk
   intRt_S(:) = 0.0_rk
+  intRm_S(:) = 0.0_rk
 
   do k = 1, MDF( globalNM(m,i) )
      sf(LNOPP(i) + k-1) = 0.0_rk
@@ -107,7 +109,7 @@ if(VE(m).eq.0) then
    !      Oh*( ( uzintfac(k,l,id) + vrintfac(k,l,id) ) *phir(k,l,i,id) + 2.0_rk*vzintfac(k,l,id)*phiz(k,l,i,id) ) ) &
    !      *rintfac(k,l,id)*abs(Jp(k,l,id))
 
-   !evaporation cooling on free surface, no volume integral
+   !(evaporation cooling & particle accumulation) on free surface, no volume integral
    if( BCflagN( globalNM(m,i), 3 ).ne.1 .and. BCflagN( globalNM(m,i), 3 ).ne.3 )  then
       if(Ttime.eq.1) &
            intRt_V(k,l) = intRt_V(k,l) + Pe*phi(k,l,i)*( Tdotintfac(k,l,id) &
@@ -121,6 +123,20 @@ if(VE(m).eq.0) then
            intRt_V(k,l) = intRt_V(k,l) + ( &
            phir(k,l,i,id)*Trintfac(k,l,id) + phiz(k,l,i,id)*Tzintfac(k,l,id) ) &
            *rintfac(k,l,id)*abs(Jp(k,l,id))
+      
+      if(cptime.eq.1) &
+           intRm_V(k,l) = intRm_V(k,l) + Pep*phi(k,l,i)*( cpdotintfac(k,l,id) &
+           - rdotintfac(k,l,id) *cprintfac(k,l,id)  - zdotintfac(k,l,id) *cpzintfac(k,l,id) ) &
+           *rintfac(k,l,id)*abs(Jp(k,l,id))
+      if(cpconv.eq.1) &
+           intRm_V(k,l) = intRm_V(k,l) + Pep*phi(k,l,i)*(  &
+           uintfac(k,l,id) *cprintfac(k,l,id) + vintfac(k,l,id) *cpzintfac(k,l,id) ) &
+           *rintfac(k,l,id)*abs(Jp(k,l,id))
+      if(cpdiff.eq.1) &
+           intRm_V(k,l) = intRm_V(k,l) + ( &
+           phir(k,l,i,id)*cprintfac(k,l,id) + phiz(k,l,i,id)*cpzintfac(k,l,id) ) &
+           *rintfac(k,l,id)*abs(Jp(k,l,id))
+
    end if
 
    if( PN( globalNM(m,i) ).eq.1 ) then
@@ -168,6 +184,7 @@ end if    !for VE=0
            else  !base nodes
               sf(LNOPP(i)+NT) = gaussian_quadrature(intRt_V)/kR
            end if
+           sf(LNOPP(i)+Ncp) = gaussian_quadrature(intRm_V)
         end if
 
         if( PN( globalNM(m,i) ).eq.1 )  sf(LNOPP(i)+Np) = gaussian_quadrature(intRp)
@@ -287,14 +304,19 @@ if( (BCflagN( globalNM(m,i), 3 ).eq.1 .or. BCflagN( globalNM(m,i), 3 ).eq.3) .an
    ipp = i/3  !phix_1d(k,ipp)
    do k = 1, Ng, 1    !three gausspoints
 
-!KBC2 & cooling2 added here if impose the flux with no vapor phase solving
+!KBC2 & cooling2 & accmulation2 added here if impose the flux with no vapor phase solving
 if(no_vapor.eq.1) then  !flux:  flux( angle_c,rintfac_right(k,id) ) 
    !KBC2
    intRsi_S(k) = phi_1d(k,ipp)* flux( angle_c,rintfac_right(k,id) ) * &
         ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk *rintfac_right(k,id)
    !evaporation cooling 2
    intRt_S(k) = REH * intRsi_S(k)
+
+   !KBC2 with uniflux: flux = 1.0_rk, only apply in KBC & accumulation: Rsi&Rm
    if(uniflux.eq.1) intRsi_S(k) = intRsi_S(k) / flux( angle_c,rintfac_right(k,id) )
+
+   !particle accumulation 2
+   intRm_S(k) = intRsi_S(k) * cpintfac_right(k,id)
 end if
 
 !KBC1
@@ -321,12 +343,19 @@ intRt_S(k) = intRt_S(k) - phi_1d(k,ipp) * ( &
      Teta_right(k,id)* ( rsi_right(k,id)*reta_right(k,id) + zsi_right(k,id)*zeta_right(k,id) ) &
       ) *rintfac_right(k,id) /Jp_right(k,id)
 
+!particle accumulation 1
+intRm_S(k) = intRm_S(k) + KBCgroup/Pep* ( phi_1d(k,ipp) * ( &
+     -dcpdsi(k,id)* ( reta_right(k,id)**2 + zeta_right(k,id)**2 ) + &
+     cpeta_right(k,id)* ( rsi_right(k,id)*reta_right(k,id) + zsi_right(k,id)*zeta_right(k,id) ) &
+      ) *rintfac_right(k,id) /Jp_right(k,id) )
+
    end do
 
    sf(LNOPP(i)+Nr) = sf(LNOPP(i)+Nr) + gaussian_quadrature_1d(intRsi_S)
    sf(LNOPP(i)+Nu) = sf(LNOPP(i)+Nu) + gaussian_quadrature_1d(intRu_S)!/Ca
    sf(LNOPP(i)+Nv) = sf(LNOPP(i)+Nv) + gaussian_quadrature_1d(intRv_S)!/Ca
    sf(LNOPP(i)+NT) = sf(LNOPP(i)+NT) + gaussian_quadrature_1d(intRt_S)
+   sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + gaussian_quadrature_1d(intRm_S)
 
 end if
 
@@ -352,9 +381,13 @@ intRsi_S(k) = phi_1d(k,ipp)*( &
 !evaporative cooling 2
 intRt_S(k) = REH* intRsi_S(k)
 
+!particle accumulation 2
+intRm_S(k) = intRsi_S(k) * cpintfac_right(k,id)
+
    end do
       sf(LNOPP(i)+Nr) = sf(LNOPP(i)+Nr) + gaussian_quadrature_1d(intRsi_S)
       sf(LNOPP(i)+NT) = sf(LNOPP(i)+NT) + gaussian_quadrature_1d(intRt_S)
+      sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + gaussian_quadrature_1d(intRm_S)
 end if  !free surface nodes
 end if  !solve for vapor
 

@@ -20,9 +20,10 @@ module data
   integer(kind=ik):: NND, NNV, NNS, ED, EV, ES
   !NND: number of nodes of droplet,   NNV: number of nodes of vapor
   !ED: number of elements of droplet, EV: number of elements of vapor
-  integer(kind=ik):: NNVar1 = 6, NNVar2 = 3, NNVar3 = 3    !NNVar: node number of variable (r,z,u,v,p --> 5)
+  integer(kind=ik):: NNVar1 = 7, NNVar2 = 3, NNVar3 = 3    !NNVar: node number of variable (r,z,u,v,p --> 5)
+  !NNVar1: r,z,T,u,v,cp,p; NNVar2: r,z,c; Nnvar3: r,z,T
 
-  integer(kind=ik), parameter:: Nr = 0, Nz = 1, Nu = 3, Nv = 4, NT = 2, Np = 5, NTs = 2 !Nc = MDF(i)-1
+  integer(kind=ik), parameter:: Nr = 0, Nz = 1, Nu = 3, Nv = 4, NT = 2, Ncp = 5, Np = 6, NTs = 2 !Nc = MDF(i)-1
 
   integer(kind=ik):: timestep, step
 
@@ -37,7 +38,7 @@ module data
 
 
   real(kind=rk):: time
-  real(kind=rk), allocatable:: rcoordinate(:), zcoordinate(:), usol(:), vsol(:), Tsol(:), psol(:), csol(:)
+  real(kind=rk), allocatable:: rcoordinate(:), zcoordinate(:), usol(:), vsol(:), Tsol(:), psol(:), csol(:), cpsol(:)
   !solp & dtp means previous solution & dt, solpred means the predicted solution
   real(kind=rk), allocatable:: sol(:), solp(:), soldot(:), soldotp(:), soldotpp(:), solpred(:)
 
@@ -101,7 +102,7 @@ module data
   integer(kind=ik):: graph_mode !1: graph each step; 0: graph each timestep
 
   !temperature convection control
-  integer(kind=ik):: Ttime, Tconv, Tdiff, TtimeS, TdiffS
+  integer(kind=ik):: Ttime, Tconv, Tdiff, TtimeS, TdiffS, cptime, cpconv, cpdiff
   integer(kind=ik):: NStrans, Inert, Capil, Viscous, GravI
 
   real(kind=rk):: EvapSpeed, EvapSpeedp=0.0_rk, VolEvap1=0.0_rk, VolEvap2=0.0_rk, VolEvap3=0.0_rk
@@ -119,7 +120,7 @@ module data
   !substrate phase
   ! integer(kind=ik):: SN
 
-  real(kind=rk):: rmax, zmax, umax, vmax, Tmax, pmax, cmax
+  real(kind=rk):: rmax, zmax, umax, vmax, Tmax, cpmax, pmax, cmax
   integer(kind=ik):: graph_step   !graph every how many timestep
 
   character(LEN=40):: folder
@@ -137,5 +138,19 @@ module data
   integer(kind=ik):: read_coordinate_value
 
   real(kind=rk):: T_sub
+
+
+  real(kind=rk):: diameterp, Dp, Pep, kboltz = 1.3806485279e-23 !(J/K)
+
+
+
+
+
+
+
+
+
+
+  
 
 end module data

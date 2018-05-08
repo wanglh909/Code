@@ -16,7 +16,7 @@ subroutine variable_cal
   real(kind=rk):: retap(3), zetap(3), v_surf(3), eta1, eta2, eta3, usolp, vsolp, r_change
   real(kind=rk):: Rp, angle_c_sphe, err_sphe, z_sphe
   real(kind=rk):: MaranD, gradP, peta, Teta(3), gradT(3)
-  real(kind=rk):: p0, Pep
+  real(kind=rk):: p0, Pe_change
   real(kind=rk):: t
   real(kind=rk):: v_surf_p(3), h_surf, dPdr(3), zsolp
 
@@ -131,7 +131,7 @@ subroutine variable_cal
 
 
   !peclet number
-  Pep = Pe*vmax*ztop
+  Pe_change = Pe*vmax*ztop
 
   if(timestep.eq.1) then
      open(unit = 22, file = trim(folder)//'Pe.dat', status = 'replace')
@@ -139,7 +139,7 @@ subroutine variable_cal
   else
      open(unit = 22, file = trim(folder)//'Pe.dat', status = 'old', access = 'append')
   end if
-  write(22,'(f6.3, es13.6)') angle_c_degree, Pep
+  write(22,'(f6.3, es13.6)') angle_c_degree, Pe_change
 
   close(22)
 

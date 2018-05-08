@@ -74,6 +74,10 @@ phiz_z(k,l,n,id) = -1.0_rk/Jp(k,l,id)**2 *Jp_z(k,l,id)*( -phisi(k,l,n)*reta(k,l,
               Trintfac_z(k,l,id) = 0.0_rk
               Tzintfac_r(k,l,id) = 0.0_rk
               Tzintfac_z(k,l,id) = 0.0_rk
+              cprintfac_r(k,l,id) = 0.0_rk
+              cprintfac_z(k,l,id) = 0.0_rk
+              cpzintfac_r(k,l,id) = 0.0_rk
+              cpzintfac_z(k,l,id) = 0.0_rk
               do n = 1, 9
                  urintfac_r(k,l,id) = urintfac_r(k,l,id) + ulocal(n,id)*phir_r(k,l,n,id)
                  urintfac_z(k,l,id) = urintfac_z(k,l,id) + ulocal(n,id)*phir_z(k,l,n,id)
@@ -87,6 +91,10 @@ phiz_z(k,l,n,id) = -1.0_rk/Jp(k,l,id)**2 *Jp_z(k,l,id)*( -phisi(k,l,n)*reta(k,l,
                  Trintfac_z(k,l,id) = Trintfac_z(k,l,id) + Tlocal(n,id)*phir_z(k,l,n,id)
                  Tzintfac_r(k,l,id) = Tzintfac_r(k,l,id) + Tlocal(n,id)*phiz_r(k,l,n,id)
                  Tzintfac_z(k,l,id) = Tzintfac_z(k,l,id) + Tlocal(n,id)*phiz_z(k,l,n,id)
+                 cprintfac_r(k,l,id) = cprintfac_r(k,l,id) + cplocal(n,id)*phir_r(k,l,n,id)
+                 cprintfac_z(k,l,id) = cprintfac_z(k,l,id) + cplocal(n,id)*phir_z(k,l,n,id)
+                 cpzintfac_r(k,l,id) = cpzintfac_r(k,l,id) + cplocal(n,id)*phiz_r(k,l,n,id)
+                 cpzintfac_z(k,l,id) = cpzintfac_z(k,l,id) + cplocal(n,id)*phiz_z(k,l,n,id)
               end do
 
            else if(VE(m).eq.1) then

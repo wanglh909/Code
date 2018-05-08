@@ -15,8 +15,8 @@ subroutine SI_in_sj(m,i,j, sj, LNVar, LNOPP, id)                     !adding SI 
   real(kind=rk):: intRsi_u_S(Ng), intRsi_v_S(Ng), intRsi_c_S(Ng), &
        intRu_r_S(Ng), intRu_z_S(Ng), intRv_r_S(Ng), intRv_z_S(Ng), &
        intRu_T_S(Ng), intRv_T_S(Ng)
-
   real(kind=rk):: intRt_r_S(Ng), intRt_z_S(Ng), intRt_c_S(Ng), intRt_T_S(Ng)
+  real(kind=rk):: intRm_r_S(Ng), intRm_z_S(Ng), intRm_cp_S(Ng), intRm_c_S(Ng)
   intRsi_r_S(:) = 0.0_rk
   intRsi_z_S(:) = 0.0_rk
   intReta_r_S(:) = 0.0_rk
@@ -34,6 +34,10 @@ subroutine SI_in_sj(m,i,j, sj, LNVar, LNOPP, id)                     !adding SI 
   intRt_z_S(:) = 0.0_rk
   intRt_c_S(:) = 0.0_rk
   intRt_T_S(:) = 0.0_rk
+  intRm_r_S(:) = 0.0_rk
+  intRm_z_S(:) = 0.0_rk
+  intRm_cp_S(:) = 0.0_rk
+  intRm_c_S(:) = 0.0_rk
 
 
   !axis
@@ -240,11 +244,24 @@ if(no_vapor.eq.1) then  !flux: flux( angle_c,rintfac_right(k,id) )
    !evaporation cooling 2
    intRt_r_S(k) = REH* intRsi_r_S(k)
    intRt_z_S(k) = REH* intRsi_z_S(k)
+
+   
+   !KBC2 with uniflux: flux = 1.0_rk, only apply in KBC & accumulation: Rsi&Rm
    if(uniflux.eq.1) then
       intRsi_r_S(k) = intRsi_r_S(k) / flux( angle_c,rintfac_right(k,id) )
       intRsi_z_S(k) = intRsi_z_S(k) / flux( angle_c,rintfac_right(k,id) )
    end if
-end if
+
+   
+   !particle accumulation 2
+   intRm_r_S(k) = intRsi_r_S(k) * cpintfac_right(k,id)
+   intRm_z_S(k) = intRsi_z_S(k) * cpintfac_right(k,id)
+   
+   intRm_cp_S(k) = phi_1d(k,ipp)* flux( angle_c,rintfac_right(k,id) ) *phi_1d(k,jpp)*&
+        rintfac_right(k,id)* ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(0.5_rk)
+   if(uniflux.eq.1) intRm_cp_S(k) = intRm_cp_S(k) / flux( angle_c,rintfac_right(k,id) )
+   
+end if   !no_vapor=1
 
 
 !KBC1
@@ -354,6 +371,32 @@ intRt_T_S(k) = intRt_T_S(k) - phi_1d(k,ipp)*( -phisi1_1d(k,j)*( reta_right(k,id)
       sj(LNOPP(i)+NT,LNOPP(j)+Nr) = sj(LNOPP(i)+NT,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRt_r_S)
       sj(LNOPP(i)+NT,LNOPP(j)+Nz) = sj(LNOPP(i)+NT,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRt_z_S)
       sj(LNOPP(i)+NT,LNOPP(j)+NT ) = sj(LNOPP(i)+NT,LNOPP(j)+NT ) + gaussian_quadrature_1d(intRt_T_S)
+
+      !particle accumulation 1
+      do k = 1, Ng, 1    !three gausspoints
+intRm_r_S(k) =  intRm_r_S(k) + KBCgroup/Pep* phi_1d(k,ipp)*( (-dcpdsi(k,id)*2.0_rk*reta_right(k,id)* phieta1_1d(k,j) +   &
+     cpeta_right(k,id)*( rsi_right(k,id)*phieta1_1d(k,j) + reta_right(k,id)*phisi1_1d(k,j) ) &
+     ) *rintfac_right(k,id)/Jp_right(k,id) + &
+
+     ( -dcpdsi(k,id)*( reta_right(k,id)**2 + zeta_right(k,id)**2 ) + &
+     cpeta_right(k,id)*( zsi_right(k,id)*zeta_right(k,id) + rsi_right(k,id)*reta_right(k,id) ) ) *&
+     (phi1_1d(k,j)/Jp_right(k,id) - rintfac_right(k,id)/Jp_right(k,id)**2 * Jp_r_right(k,id) ) )
+
+intRm_z_S(k) = intRm_z_S(k) + KBCgroup/Pep* phi_1d(k,ipp)*( (-dcpdsi(k,id)*2.0_rk*zeta_right(k,id)* phieta1_1d(k,j) + &
+     cpeta_right(k,id)*( zeta_right(k,id)*phisi1_1d(k,j) + zsi_right(k,id)*phieta1_1d(k,j) ) &
+     ) *rintfac_right(k,id)/Jp_right(k,id) + &
+
+     ( -dcpdsi(k,id)*( reta_right(k,id)**2 + zeta_right(k,id)**2 ) + &
+     cpeta_right(k,id)*( zsi_right(k,id)*zeta_right(k,id) + rsi_right(k,id)*reta_right(k,id) ) ) *&
+     (-rintfac_right(k,id))/Jp_right(k,id)**2 * Jp_z_right(k,id) )
+
+intRm_cp_S(k) = intRm_cp_S(k) + KBCgroup/Pep* phi_1d(k,ipp)*( -phisi1_1d(k,j)*( reta_right(k,id)**2 + zeta_right(k,id)**2 ) + &
+     phieta1_1d(k,j)*( zsi_right(k,id)*zeta_right(k,id) + rsi_right(k,id)*reta_right(k,id) ) ) * &
+     rintfac_right(k,id)/Jp_right(k,id)
+      end do
+      sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRm_r_S)
+      sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRm_z_S)
+      sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) = sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) + gaussian_quadrature_1d(intRm_cp_S)
       
 
    end if   !for i = 1,4,7 on the free surface
@@ -396,6 +439,19 @@ intRt_r_S(k) = REH* intRsi_r_S(k)
 intRt_z_S(k) = REH* intRsi_z_S(k)
 intRt_c_S(k) = REH* intRsi_c_S(k)
 
+!particle accumulation 2  !??
+intRm_r_S(k) = cpintfac_right(k,id) * intRsi_r_S(k)
+intRm_z_S(k) = cpintfac_right(k,id) * intRsi_z_S(k)
+intRm_c_S(k) = cpintfac_right(k,id) * intRsi_c_S(k)
+
+if( BCflagN( globalNM(m,j),3 ).eq.1 .or. BCflagN( globalNM(m,j),3 ).eq.3 ) then
+   jpp = j/3 + 1  !phi_1d(k,l)
+intRm_cp_S(k) = phi_1d(k,ipp)*( &
+     -dcdsi(k,id)*( reta_right(k,id)**2 + zeta_right(k,id)**2 ) + &
+     dcdeta(k,id)*( zsi_right(k,id)*zeta_right(k,id) + rsi_right(k,id)*reta_right(k,id) ) &
+     ) *phi_1d(k,jpp) *rintfac_right(k,id)/Jp_right(k,id)
+end if
+
 
      end do
      
@@ -408,6 +464,15 @@ intRt_c_S(k) = REH* intRsi_c_S(k)
      sj(LNOPP(i)+NT,LNOPP(j)+Nz) = sj(LNOPP(i)+NT,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRt_z_S)
      sj(LNOPP(i)+NT,LNOPP(j)+ MDF( globalNM(m,j) ) -1 ) = &
           sj(LNOPP(i)+NT,LNOPP(j)+ MDF( globalNM(m,j) ) -1 ) + gaussian_quadrature_1d(intRt_c_S)
+     
+     sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRm_r_S)
+     sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRm_z_S)
+     sj(LNOPP(i)+Ncp,LNOPP(j)+ MDF( globalNM(m,j) ) -1 ) = &
+          sj(LNOPP(i)+Ncp,LNOPP(j)+ MDF( globalNM(m,j) ) -1 ) + gaussian_quadrature_1d(intRm_c_S)
+     
+     if( BCflagN( globalNM(m,j),3 ).eq.1 .or. BCflagN( globalNM(m,j),3 ).eq.3 ) &
+          sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) = &
+          sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) + gaussian_quadrature_1d(intRm_cp_S)
      
 
   end if   !for i = 1,4,7 on the free surface

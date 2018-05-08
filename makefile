@@ -61,7 +61,7 @@ LD=gfortran
 
 ifeq ($(opt),debug)
 CFLAGS=-pg
-FFLAGS = $(INC) -JModules -fcray-pointer -fimplicit-none -ffree-form -fbackslash -pg -g -fbounds-check -Wconversion -ffpe-trap=invalid,zero,overflow -Wconversion-extra
+FFLAGS = $(INC) -JModules -fcray-pointer -fimplicit-none -ffree-form -fbackslash -pg -g -fbounds-check -Wconversion -ffpe-trap=invalid,zero,overflow #-Wconversion-extra
 LDFLAGS = -JModules -pg -fbounds-check -fopenmp -ffpe-trap=invalid,zero,overflow
 
 else ifeq ($(opt),debug2)

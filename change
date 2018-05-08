@@ -19,3 +19,8 @@ merged uniflux and no_vapor(same meaning: impose flux), change true_uniflux to u
 
 graph: diverge=1, conditions to replace "divergence.dat"
 graph: write "contact angle=" on temperature.dat, notice: each timestep has 2 zones, so also change the way to calculate zone (zone_d, zone_T)
+
+
+
+----------------------------------------------------------------------
+add equations for cp: AAdata, AAdata_local, L2_error, flux, graph, initial_condition, initialization, main, parameter, prediction, sf, sj_SI, sj_VI, split_sol, values_in_an_element, values_in_sj, var_cal
