@@ -254,8 +254,8 @@ if(no_vapor.eq.1) then  !flux: flux( angle_c,rintfac_right(k,id) )
 
    
    !particle accumulation 2
-   intRm_r_S(k) = intRsi_r_S(k) * cpintfac_right(k,id)
-   intRm_z_S(k) = intRsi_z_S(k) * cpintfac_right(k,id)
+   intRm_r_S(k) = intRsi_r_S(k) * (cpintfac_right(k,id) + 1.0_rk)
+   intRm_z_S(k) = intRsi_z_S(k) * (cpintfac_right(k,id) + 1.0_rk)
    
    intRm_cp_S(k) = phi_1d(k,ipp)* flux( angle_c,rintfac_right(k,id) ) *phi_1d(k,jpp)*&
         rintfac_right(k,id)* ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(0.5_rk)
@@ -440,9 +440,9 @@ intRt_z_S(k) = REH* intRsi_z_S(k)
 intRt_c_S(k) = REH* intRsi_c_S(k)
 
 !particle accumulation 2  !??
-intRm_r_S(k) = cpintfac_right(k,id) * intRsi_r_S(k)
-intRm_z_S(k) = cpintfac_right(k,id) * intRsi_z_S(k)
-intRm_c_S(k) = cpintfac_right(k,id) * intRsi_c_S(k)
+intRm_r_S(k) = (cpintfac_right(k,id) + 1.0_rk) * intRsi_r_S(k)
+intRm_z_S(k) = (cpintfac_right(k,id) + 1.0_rk) * intRsi_z_S(k)
+intRm_c_S(k) = (cpintfac_right(k,id) + 1.0_rk) * intRsi_c_S(k)
 
 if( BCflagN( globalNM(m,j),3 ).eq.1 .or. BCflagN( globalNM(m,j),3 ).eq.3 ) then
    jpp = j/3 + 1  !phi_1d(k,l)

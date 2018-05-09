@@ -57,6 +57,7 @@ subroutine initialization
   step = 0
   time = 0.0_rk
   timestep = 0
+  read_coordinate_value = 0
   size_function_change = 0
   final_size = 0
   initial_vapor_solved = 0   !start with 0, adjust the vapor concentration before solving for dynamics

@@ -24,3 +24,8 @@ graph: write "contact angle=" on temperature.dat, notice: each timestep has 2 zo
 
 ----------------------------------------------------------------------
 add equations for cp: AAdata, AAdata_local, L2_error, flux, graph, initial_condition, initialization, main, parameter, prediction, sf, sj_SI, sj_VI, split_sol, values_in_an_element, values_in_sj, var_cal
+
+initialize read_coordinate_value: initialization
+
+a new way to non-dimensionlize cp: initial_condition, sf, sj_SI
+restrict dtmin: predition

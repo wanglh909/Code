@@ -9,6 +9,7 @@ subroutine prediction
 
   integer(kind=ik):: i, j, imax, jmax, m
   character(LEN=2) :: var
+  real(kind=rk):: dtmin=5.0e-6_rk, dtmax=1.0e-1_rk
   ! real(kind=rk):: rmax, zmax, umax, vmax, Tmax, pmax, cmax
 
 if(diverge.eq.0) then
@@ -157,9 +158,20 @@ if(diverge.eq.0) then
   !for first 5 steps, dt doesn't need to be redefined; after 5 steps, do the following
   if (timestep.gt.FTS) then
      dt = dtp*( eps/trunerr )**(1.0_rk/3.0_rk)
+     if(dt.lt.dtmin) dt = dtmin
+     !if(dt.gt.dtmax) dt = dtmax
   end if
   time = time + dt
   write(*,*) 'time:', time, '    dt:', dt, '    timestep:', timestep
+  ! !wirte dt in file
+  ! if (timestep.eq.FTS .and. step.eq.0) then
+  !    open(unit = 10, file = trim(folder)//'dt.dat', status = 'replace')
+  !    write(10, '(A)') 'variables = "time", "dt", "timestep" '
+  ! else
+  !    open(unit = 10, file = trim(folder)//'dt.dat', status = 'old', access = 'append')
+  ! end if
+  !    write(10, '(2es15.7, i8)') time, dt, timestep
+  ! close(10)
 
   soldotpp = soldotp
   soldotp = soldot

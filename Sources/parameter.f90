@@ -8,7 +8,7 @@ subroutine parameter_values
   integer(kind=ik):: Ltype !, water, octane, hexanol
   real(kind=rk):: rho, mu, kT, cpl, alpha, beta0, Diff, csat, Hv, sigmac, lc, vc, Tc, ks, rhos, cpS, alphaS, Mmolar
 
-  substrate = 0.15_rk!   3.0_rk! !1.0_rk  !0.15_rk   
+  substrate = 0.15_rk!   3.0_rk! !1.0_rk  !0.15_rk   0.0_rk!  
   outer = 1.3_rk    !10.0_rk!   20.0_rk, 1.3_rk
 
   Ltype = 1
@@ -93,7 +93,7 @@ subroutine parameter_values
   Pe = vc*lc/alpha !4.36e-2_rk
   KBCgroup = rho*vc*lc/Diff/csat
   REH = Hv*diff*csat/kT/Tc   !1.0_rk    !8.55e-3_rk
-  beta = Tc/sigmac*beta0 ! -5.87e-3_rk      0.0_rk!
+  beta = Tc/sigmac*beta0 ! -5.87e-3_rk     0.0_rk!    
   F0 = alphaS*(lc/vc)/(lc**2)!?
   kR = ks/kT  !relative thermal conductivity
   Pep = lc*vc/Dp    !267.35_rk

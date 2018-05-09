@@ -54,20 +54,20 @@ subroutine initial_condition
      end do
      
 
-else !mesh parameter not same, redefine r&z initial values
-  x1 = (1.0_rk-x)*R
-  x2 = (1.0_rk-x)*R
-  y2 = x*R
-  x3 = sqrt(R**2 - (x*R)**2)
-  y3 = x*R
-  x4 = x_alge*R
-  x6 = (k_alge**2*x_alge*R + sqrt(k_alge**4*x_alge**2*R**2 - &
-       (1.0_rk+k_alge**2)*(k_alge**2*x_alge**2 - 1.0_rk)*R**2))/(1.0_rk+k_alge**2)
-  y6 = sqrt(R**2 - x6**2)
-  x5 = (x4+x6)/2.0_rk
-  y5 = y6/2.0_rk
-  theta1 = atan(x6/y6)
-  theta4 = atan(x3/y3)
+  else !mesh parameter not same, redefine r&z initial values
+     x1 = (1.0_rk-x)*R
+     x2 = (1.0_rk-x)*R
+     y2 = x*R
+     x3 = sqrt(R**2 - (x*R)**2)
+     y3 = x*R
+     x4 = x_alge*R
+     x6 = (k_alge**2*x_alge*R + sqrt(k_alge**4*x_alge**2*R**2 - &
+          (1.0_rk+k_alge**2)*(k_alge**2*x_alge**2 - 1.0_rk)*R**2))/(1.0_rk+k_alge**2)
+     y6 = sqrt(R**2 - x6**2)
+     x5 = (x4+x6)/2.0_rk
+     y5 = y6/2.0_rk
+     theta1 = atan(x6/y6)
+     theta4 = atan(x3/y3)
 
 
 
@@ -312,14 +312,16 @@ else !mesh parameter not same, redefine r&z initial values
 
 end if  !judge if use data value or guess value for r&z
 close(10)
-              
+
+
+
   do i = 1, NTN
      if( VN(i).eq.0 .or. VN(i).eq.2 ) then
         usol(i) = 0.0_rk
         vsol(i) = 0.0_rk
         Tsol(i) = 0.0_rk!?
         psol(i) = 2.0_rk!/Ca    !include p at the node and p needed to be interpolated
-        cpsol(i) = 1.0_rk
+        cpsol(i) = 0.0_rk
      end if
 
      if( VN(i).eq.1 .or. VN(i).eq.2 ) then
