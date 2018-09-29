@@ -22,8 +22,8 @@ program main
 
   !set mesh parameters
   !2 6 4 2 2 simple mesh
-  NEL = 8    !input   
-  NEM = 200  !input     !decide in data_folder
+  NEL = 5!8    !input   
+  NEM = 100!200  !input     !decide in data_folder
   NEV = 50 !200!     1000!  !input
   NES = 5   !10!  30  !input
   NEM_alge = int(real(NEM,rk)/20.0_rk*9.0_rk,ik)!90!450!90   !  135!NEM/3*2    !decide in data_folder
@@ -42,7 +42,7 @@ program main
   !Use single or dual for debugging, same with debug_NAN
 !-----------------------------------done settings------------------------------------
   
-  no_Maran = 0  !1: no Marangoni stress
+  no_Maran = 1  !1: no Marangoni stress
   !set terms option
   NStrans = 1
   Inert = 1

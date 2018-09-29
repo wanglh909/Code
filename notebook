@@ -57,12 +57,20 @@ cancel fixed cp: converge well. so the problem before intern was only with mass 
 13 check if dcp influence dt. 13_1 solve with cp, 13_2 set cp not to change with BC.
 (do not include dcp when calculating truncate error, so that dt is predicted the same as before.)
 
-found that the element number is not the same as before(when cp is not added). change the element numbers to the same as before.
+found that the element number is not the same as before(when cp is not added).
+
+14 change the element numbers to the same as before.
 found that the angle_c_degree is negative for the first mesh change. so added a line in var_cal for angle calculation: for the first time mesh is adjusted, do not calculate angle_c. fixed the bug.
 
 notice that even without solving cp, trunerr still not the same. too large for the new code. use git diff, found that trunerr calculation method changed. change back. now dt is the same.
 
 solved dt-too-small problem.   upload to git!
 
+15 no Maran. see if cp is different.
 
+
+
+
+If Re very small, no need to incorporate inertia.
+include Ma in the parameter value. Gives the idea of real Re, which is origianl Re*Ma.
 

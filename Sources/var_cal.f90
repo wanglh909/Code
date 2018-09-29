@@ -21,7 +21,7 @@ subroutine variable_cal
   real(kind=rk):: t
   real(kind=rk):: v_surf_p(3), h_surf, dPdr(3), zsolp
   
-  real(kind=rk):: particle_m, intMass(3,3), cpintfac, rintfac, Jp
+  real(kind=rk):: particle_m, intMass(3,3), intVol(3,3), cpintfac, rintfac, Jp
   integer(kind=ik):: l, n
 
   t = REAL(omp_get_wtime(),rk)
@@ -39,7 +39,7 @@ subroutine variable_cal
      angle_c_node = i + 2*(NES+1) + 1
   end if
 
-  if(size_function_change.ne.1) then
+  if(s_mode.eq.0) then
   angle_c = atan( zcoordinate(angle_c_node)/ ( rcoordinate(i) - rcoordinate(angle_c_node) ) )
   !atan( solp( NOPP(angle_c_node)+Nz ) / ( solp( NOPP(1)+Nr ) - solp( NOPP(angle_c_node)+Nr ) ) )
   angle_c_degree = angle_c /pi*180.0_rk   !degree
@@ -539,15 +539,9 @@ subroutine variable_cal
 
 
 
-  !-------------------------------total particle mass--------------------------------
-  if(timestep.eq.0) then
-     open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'replace')
-     write(31, '(A)') 'variables = "contact angle", "m", "time" '
-  else
-     open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'old', access = 'append')
-  end if
-
+  !--------------------------total particle mass & drop volume-------------------------
   particle_m = 0.0_rk
+  volume1 = 0.0_rk
   do i = 1, NTE
      if(VE(i).ne.0) cycle
      do j = 1, 9
@@ -555,14 +549,14 @@ subroutine variable_cal
         zlocal(j,1) = zcoordinate( globalNM(i,j) )
         cplocal(j,1) = cpsol( globalNM(i,j) )
      end do
-     rintfac = 0.0_rk
-     cpintfac = 0.0_rk
-     rsi = 0.0_rk
-     reta = 0.0_rk
-     zsi = 0.0_rk
-     zeta = 0.0_rk
      do k = 1, Ng, 1
         do l = 1, Ng, 1
+           rintfac = 0.0_rk
+           rsi = 0.0_rk
+           reta = 0.0_rk
+           zsi = 0.0_rk
+           zeta = 0.0_rk
+           cpintfac = 0.0_rk
            do n = 1, 9, 1
               rintfac = rintfac + rlocal(n,1)*phi(k,l,n)
               cpintfac = cpintfac + cplocal(n,1)*phi(k,l,n)
@@ -574,14 +568,32 @@ subroutine variable_cal
            !define Jp(3,3)
            Jp =  rsi*zeta - reta*zsi
            intMass(k,l) = ( cpintfac + 1.0_rk ) * rintfac * abs( Jp )
+           intVol(k,l) = rintfac * abs( Jp )
         end do
      end do
      particle_m = particle_m + gaussian_quadrature(intMass)
+     volume1 = volume1 + gaussian_quadrature(intVol)
   end do
   write(*,*) 'particle mass', particle_m
-           
+  write(*,*) 'drop volume', volume1, 'particle mass limit', volume1*(cpmax+1.0_rk)
+
+  !write
+  if(timestep.eq.0) then
+     open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'replace')
+     write(31, '(A)') 'variables = "contact angle", "m", "time" '
+     
+     open(unit = 32, file = trim(folder)//'drop_volume.dat', status = 'replace')
+     write(32, '(A)') 'variables = "time", "V", "contact angle" '
+  else
+     open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'old', access = 'append')
+     open(unit = 32, file = trim(folder)//'drop_volume.dat', status = 'old', access = 'append')
+  end if
+  
   write(31, '(3es15.7)') angle_c, particle_m, time
+  write(32, '(3es15.7)') time, volume1, angle_c
+  
   close(31)
+  close(32)
 
 
 
