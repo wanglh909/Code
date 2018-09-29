@@ -10,6 +10,9 @@ real(kind=rk):: J0, lambda
 
 if(r.eq.1.0_rk) then
    flux = 1.0e5_rk
+else if (r.gt.1.0_rk) then
+   write(*,*) '!error of r value for flux, larger than 1.0, r =', r
+   pause
 else
    J0 = (1.0_rk-Hum) *( 0.27_rk*theta**2 + 1.3_rk ) *( 0.6381_rk - 0.2239_rk *( theta - pi/4.0_rk )**2 )
    lambda = 0.5_rk - theta/pi

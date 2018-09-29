@@ -67,6 +67,14 @@ subroutine initialization
   angle_cd = 0.0_rk
 
 
+  rmax = 1.0_rk
+  zmax = 1.0_rk
+  umax = 1.0_rk
+  vmax = 1.0_rk
+  Tmax = 1.0_rk
+  cpmax = 1.0_rk
+  pmax = 1.0_rk
+  cmax = 1.0_rk
 
   !-------------------------------------allocate local data-------------------------------------
   allocate( rlocal(9,ths), zlocal(9,ths), ulocal(9,ths), vlocal(9,ths), &

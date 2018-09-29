@@ -1,0 +1,68 @@
+Timescale for mass transfer:
+Should be the same as fluid because particle convection is dominant.
+Check if dominant:
+
+Check BC of particle
+
+01: contact line not pinning, start from 90 degrees.
+diverge, error1&error2 show NaN
+
+02: check if error1&error2 calculated right with error1p, error2p.
+still NaN
+
+03: check which residual error gives NaN. use simple mesh.
+si & cp on the free surface.??? check sf&sj on free surface(KBC & accumulation)
+jacobian rows of variable si&cp on the free surface also NaN
+these all happened at the second step, which means the first step solves to strange values which exist only in the surface conditions.
+
+check surface integrals within sf: NaN comes from flux. add a proof for flux: if r>1, report the error.
+
+NaN can be checked by setting debug_NAN=.true.
+change the code to write NaN information in a file "NaN_check", where to pause (in newton_raphson)
+
+dynamics.dat from stepwise graph shows that the drop base extend while the height decrease. not know why this happened, because I predicted the drop to shrink with no base movement.
+
+set u=v=0 to see results: NaN in solution. Jac does not have 0 or NaN rows, but solution goes to NaN. do not understand...
+
+change back to no-simple-mesh, only use one thread, strange. change check_0_in_Jac back to 0, solves it.
+
+real mesh, u=v=0: sol error NaN, Rsi NaN.
+no u=v=0: fist step ok, then r>1.
+realize that all these problems come from the divergent flux condition. set flux to be 1 always. solved it.
+
+no u=v=0, flux=1: drop shape not well mantained. solution oafter first step: rmax=~1.8, mesh overlap
+
+back to all normal conditions, fix contact line, only set cp not to change: converge well.
+
+cancel fixed cp: converge well. so the problem before intern was only with mass conservation. killed.
+
+04 not pinned contact line: diverge. if set cp=0, still diverge. if T=cp=0: still diverge. u=v=0: diverge
+
+05 very large diffusion: Pep=0.00001. killed
+
+06 Pep=0.01, initial theta=50. finished. 
+
+07 with T change. did not change back to divergent flux(04,05,06,07). particle concentration behave well. killed.
+
+08 divergent flux: particle concentration still behave well. killed.
+
+09 with substrate: behave well. dt always the smallest. change to a large smallest dt(10t)(5e-6). finished.
+
+10 large dtmin=1e-5: answer same as 09. killed
+
+11 dtmin=1e-4: stopped somehow
+
+12 restart 11, stopped at timestep12, because more than 11 steps are needed to converge, but still quadratic converge, so it is fine. need to change the maximum steps allowed if using dtmin=1e-4.
+
+13 check if dcp influence dt. 13_1 solve with cp, 13_2 set cp not to change with BC.
+(do not include dcp when calculating truncate error, so that dt is predicted the same as before.)
+
+found that the element number is not the same as before(when cp is not added). change the element numbers to the same as before.
+found that the angle_c_degree is negative for the first mesh change. so added a line in var_cal for angle calculation: for the first time mesh is adjusted, do not calculate angle_c. fixed the bug.
+
+notice that even without solving cp, trunerr still not the same. too large for the new code. use git diff, found that trunerr calculation method changed. change back. now dt is the same.
+
+solved dt-too-small problem.   upload to git!
+
+
+

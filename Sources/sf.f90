@@ -315,6 +315,7 @@ if(no_vapor.eq.1) then  !flux:  flux( angle_c,rintfac_right(k,id) )
    !KBC2 with uniflux: flux = 1.0_rk, only apply in KBC & accumulation: Rsi&Rm
    if(uniflux.eq.1) intRsi_S(k) = intRsi_S(k) / flux( angle_c,rintfac_right(k,id) )
 
+   
    !particle accumulation 2
    intRm_S(k) = intRsi_S(k) * (cpintfac_right(k,id) + 1.0_rk)
 end if
@@ -357,6 +358,12 @@ intRm_S(k) = intRm_S(k) + KBCgroup/Pep* ( phi_1d(k,ipp) * ( &
    sf(LNOPP(i)+NT) = sf(LNOPP(i)+NT) + gaussian_quadrature_1d(intRt_S)
    sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + gaussian_quadrature_1d(intRm_S)
 
+   !debug lines
+   if(m.eq.81 .and. gaussian_quadrature_1d(intRm_S) .ne. gaussian_quadrature_1d(intRm_S)) then
+      write(*,*) 'Rsi', flux( angle_c,rintfac_right(1,id) ) ,angle_c,rintfac_right(1,id)
+      pause
+   end if
+   
 end if
 
 

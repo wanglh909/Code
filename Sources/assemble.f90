@@ -79,7 +79,7 @@ subroutine assemble_local(m, locJacTr, locRHS, LNOPP, LNVar, id, dum)
 !------------------------------------debug------------------------------------------------
 
 !for debug, pause for jacobian check
- if( jac_check.eq.1 ) pause
+ if( jac_check.eq.1 .and. s_mode.eq.0) pause
   ! if(  m.eq.ele_c ) pause
 
 !for debug, put 'sj's together as Jac
@@ -101,7 +101,8 @@ if( check_0_in_Jac.eq.1 .and. s_mode.eq.0) then!.and. initial_vapor_solved.eq.1)
 
       end do
 
-     Res( NOPP( globalNM(m,k) ) + i-LNOPP(k) ) = Res( NOPP( globalNM(m,k) ) + i-LNOPP(k) ) + locRes(i)
+      Res( NOPP( globalNM(m,k) ) + i-LNOPP(k) ) = Res( NOPP( globalNM(m,k) ) + i-LNOPP(k) ) + locRes(i)
+
 
    end do
 end if
@@ -118,34 +119,42 @@ end subroutine assemble_local
 !----------------------------------used for Chris's new solver package--------------------------------
 subroutine find_var_info(var,ele,id)
   use kind
-  use data, only: NE=>NTE, NOP=>globalNM, MDF, NOPP, sol, Nr, Nz
+  use data, only: NE=>NTE, NOP=>globalNM, MDF, NOPP, sol, Nr, Nz,BCflagN, folder
 
   implicit none
   integer(kind=ik) :: var, i, j, k, ele, id
 
+  open(unit=10,file = trim(folder)//'NaN_check.dat', status = 'old', access = 'append')
   do i = 1, NE, 1
      do j = 1, 9, 1
         do k = 0, MDF(NOP(i,j))-1, 1
            if (var.eq.k+NOPP(NOP(i,j))) then
-              write(*,*) 'While proc #',id,'was assembling:', ele
-              write(*,*) 'Found at (ele, node, var):', i, j, k
-              write(*,*) '(r,z):', sol(nr+NOPP(NOP(i,j))),  sol(nz+NOPP(NOP(i,j)))
+              !write(10,'(A,i4,A,i4)') 'While proc #',id,'was assembling:', ele
+              write(10,'(A,3i4)') 'Found at (ele, node, var):', i, j, k
+	      ! write(*,*) 'bc flag1 at node',bcflagn(j,1)
+	      ! write(*,*) 'bc flag2 at node',bcflagn(j,2)
+	      ! write(*,*) 'bc flag3 at node',bcflagn(j,3)
+	      ! write(*,*) 'bc flag4 at node',bcflagn(j,4)
+	      ! write(*,*) 'bc flag5 at node',bcflagn(j,5)
+              write(10,'(A,2es13.6)') '(r,z):', sol(nr+NOPP(NOP(i,j))),  sol(nz+NOPP(NOP(i,j)))
+              pause
            end if
         end do
      end do
   end do
+  close(10)
 
 
 end subroutine find_var_info
 
 subroutine associate_arrays()
-  use data, only: NV=>NVar, NN=>NTN, rNOP, NE=>NTE, NOP=>globalNM, MDF, NOPP, s_mode, load=>dsol, bas,&
+  use data, only: NVar=>NVar, NN=>NTN, rNOP, NE=>NTE, NOP=>globalNM, MDF, NOPP, s_mode, load=>dsol, bas,&
        DNOP=>RegN
-  use front_mod, only: NVf=>NV, NNf=>NN, rNOPf=>rNOP, NEf=>NE, NOPff=>NOP,&
+  use front_mod, only: NVf=>NVar, NNf=>NN, rNOPf=>rNOP, NEf=>NE, NOPff=>NOP,&
        MDFf=>MDF, NOPPf=>NOPP, s_modef=>s_mode, loadf=>load, DNOPf=>DNOP, basf=>bas
   implicit none
 
-  NVf       => NV
+  NVf       => NVar
   NNf       => NN
   rNOPf     => rNOP
   NEf       => NE 

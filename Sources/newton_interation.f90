@@ -2,7 +2,7 @@ subroutine newton_raphson
   use kind
   use data
   use NOP_mod, only: damfac
-  use front_mod, only: multifront, load_dum
+  use front_mod, only: multifront, load_dum, debug_NAN
 
   implicit none
   real(kind=rk):: cal_time
@@ -20,13 +20,14 @@ subroutine newton_raphson
      else
         soldot = 2.0_rk*( sol - solp )/dt - soldotp
      end if
-
+    
      call multifront(error1, cal_time) !using subroutine assemble
-     write(*,*) "Solver time:", cal_time
-
+     !write(*,*) "Solver time:", cal_time
      
 ! if(initial_vapor_solved.eq.1) pause
 
+     if(debug_NAN) pause 
+     
      !for debug, put 'sj's together as Jac, check Jac
      if( check_0_in_Jac.eq.1 .and. s_mode.eq.0) then!.and. s_mode.eq.0 .and. initial_vapor_solved.eq.1)  then
         call jac_check_0
@@ -36,7 +37,7 @@ subroutine newton_raphson
      
 
      call L2_error(cal_time)
-    
+     
 
      !update sol
      if( s_mode.eq.1 ) then
@@ -49,10 +50,14 @@ subroutine newton_raphson
      if( graph_mode.eq.1 .or. initial_vapor_solving.eq.1) call graph
 
 
+     !pause
+     
      !bug exsistance, (stop program) or ( diverge=1 and redo this timestep to record )
      !if ( ( step.gt.20 .and. (timestep.ne.0 .and. timestep.ne.1) ) .or. error2.gt.1.0e8_rk  )  then 
-     if ( ( step.gt.10 .and. (timestep.ne.0) ) .or. error2.gt.1.0e8_rk  )  then 
+     if ( ( step.gt.10 .and. (timestep.ne.0) ) .or. error2.gt.1.0e8_rk  )  then
+write(*,*) diverge, s_mode
         if(diverge.eq.1 .or. s_mode.eq.1) then
+           write(*,*) folder
            ! call system('preplot '//trim(folder)//'dynamics.dat')
            ! call system('preplot '//trim(folder)//'mesh.dat')
            ! call system('preplot '//trim(folder)//'divergence.dat')

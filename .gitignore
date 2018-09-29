@@ -5,5 +5,5 @@
 .*
 fort*
 output
-Modules/*.mod
-Objects/*.o
+Modules/
+Objects/

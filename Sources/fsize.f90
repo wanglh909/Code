@@ -69,6 +69,7 @@ subroutine size_function!(size_function_change)  !? not working with vapor phase
      end if
   else if( size_function_change.eq.3 ) then
      z = 0.7_rk
+     angle_c = angle_cd
      k_alge = 3.0_rk
      ! if(angle_cd.lt.pi/8.0_rk) then   !22.5 degree
      !    angle_c = pi/8.0_rk

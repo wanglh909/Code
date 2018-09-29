@@ -9,7 +9,7 @@ subroutine prediction
 
   integer(kind=ik):: i, j, imax, jmax, m
   character(LEN=2) :: var
-  real(kind=rk):: dtmin=5.0e-6_rk, dtmax=1.0e-1_rk
+  real(kind=rk):: dtmin=1.0e-6_rk, dtmax=1.0e-1_rk
   ! real(kind=rk):: rmax, zmax, umax, vmax, Tmax, pmax, cmax
 
 if(diverge.eq.0) then
@@ -17,25 +17,6 @@ if(diverge.eq.0) then
   !prepare for the next time step
   if(timestep.ge.FTS) then
      
-     ! !find maximum value of each variable, used to normalize error
-     ! rmax = 0.0_rk
-     ! zmax = 0.0_rk
-     ! umax = 0.0_rk
-     ! vmax = 0.0_rk
-     ! Tmax = 0.0_rk
-     ! pmax = 0.0_rk
-     ! cmax = 0.0_rk
-     ! do i = 1, NTN
-     !    if( abs(rcoordinate(i)) .gt. rmax ) rmax = abs(rcoordinate(i))
-     !    if( abs(zcoordinate(i)) .gt. zmax ) zmax = abs(zcoordinate(i))
-     !    if( abs(usol(i)) .gt. umax ) umax = abs(usol(i))
-     !    if( abs(vsol(i)) .gt. vmax ) vmax = abs(vsol(i))
-     !    if( abs(Tsol(i)) .gt. Tmax ) Tmax = abs(Tsol(i))
-     !    if( abs(psol(i)) .gt. pmax ) pmax = abs(psol(i))
-     !    if( abs(csol(i)) .gt. cmax ) cmax = abs(csol(i))
-     ! end do
-
-  
      !calculate and write truncate error
      trunerr = 0.0_rk     !Linf norm
      do i = 1, NTN

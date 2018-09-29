@@ -2,13 +2,13 @@ subroutine parameter_values
   use kind
   use data, only: Re, Ca, Kdi, Pe, KBCgroup, REH, beta, Oh, Grav, R, Hum, F0, kR, folder, substrate, outer, &
        NStrans, Inert, Capil, Viscous, GravI, Ttime, Tconv, Tdiff, TtimeS, TdiffS, NEM, NEL, NES, NEV, NEM_alge, T_sub, uniflux, &
-       diameterp, Dp, Pep, kboltz, pi
+       diameterp, Pep, kboltz, pi, no_Maran  !Dp, 
   implicit none
 
   integer(kind=ik):: Ltype !, water, octane, hexanol
   real(kind=rk):: rho, mu, kT, cpl, alpha, beta0, Diff, csat, Hv, sigmac, lc, vc, Tc, ks, rhos, cpS, alphaS, Mmolar
 
-  substrate = 0.15_rk!   3.0_rk! !1.0_rk  !0.15_rk   0.0_rk!  
+  substrate = 0.15_rk!   0.0_rk!  3.0_rk! !1.0_rk  !0.15_rk   
   outer = 1.3_rk    !10.0_rk!   20.0_rk, 1.3_rk
 
   Ltype = 1
@@ -76,8 +76,8 @@ subroutine parameter_values
 
   !particle
   diameterp=1.0e-7_rk !(m) !particle diameter
-  Dp = kboltz*(25.0_rk+273.15_rk)/(6.0_rk*pi*mu*diameterp)   !2.45e-12 (m^2/s)
-  !cp0 = 2.5e-4  !(kg/kg)  !??not used yet
+  !Dp = kboltz*(25.0_rk+273.15_rk)/(6.0_rk*pi*mu*diameterp)*100   !2.45e-12 (m^2/s)
+  !cp0 = 2.5e-4  !(kg/m^3)  !??not used yet
 
   
 
@@ -93,10 +93,14 @@ subroutine parameter_values
   Pe = vc*lc/alpha !4.36e-2_rk
   KBCgroup = rho*vc*lc/Diff/csat
   REH = Hv*diff*csat/kT/Tc   !1.0_rk    !8.55e-3_rk
-  beta = Tc/sigmac*beta0 ! -5.87e-3_rk     0.0_rk!    
+  beta = Tc/sigmac*beta0 ! -5.87e-3_rk     0.0_rk!
   F0 = alphaS*(lc/vc)/(lc**2)!?
   kR = ks/kT  !relative thermal conductivity
-  Pep = lc*vc/Dp    !267.35_rk
+  Pep = 0.01_rk!1.0_rk!lc*vc/Dp    !267.35_rk
+  if(no_Maran.eq.1) then
+     beta = 0.0_rk
+     substrate = 0.0_rk
+  end if
 
   !change for equations
   Re = Re*Ca

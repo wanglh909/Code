@@ -57,7 +57,7 @@ subroutine data_folder
      write(*,*) 'Created directory '//trim(folder)
      call system('mkdir '//trim(folder))
   else
-     write(*,*) 'Acessing directory '//trim(folder)//'?'
+     write(*,*) 'Acessing directory '//trim(folder)!//'?'
      !pause
   end if
 

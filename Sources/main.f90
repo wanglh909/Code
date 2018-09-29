@@ -13,25 +13,23 @@ program main
   t1 = REAL(omp_get_wtime(),rk)
 
   !initial droplet shape
-  angle_c_degree = 50.0_rk
+  angle_c_degree = 50.0_rk   !90.0_rk!
   angle_c = angle_c_degree /180.0_rk*pi
-  !ths = 2
   no_vapor = 1       !no_vapor = 1: do not solve for vapor phase, impose function flux
-  uniflux = 0  !determine if the imposed flux is uniform. Notice: If flux is uniform, still use divergent heat flux.
+  uniflux = 1  !determine if the imposed flux is uniform. Notice: If flux is uniform, still use divergent heat flux.
   if(uniflux.eq.1) no_vapor = 1
   call data_folder  !determine xe
 
   !set mesh parameters
   !2 6 4 2 2 simple mesh
-  NEL = 8!10    !input   
+  NEL = 8    !input   
   NEM = 200  !input     !decide in data_folder
   NEV = 50 !200!     1000!  !input
   NES = 5   !10!  30  !input
-  NEM_alge = 90!450!90   !  135!NEM/3*2    !decide in data_folder
+  NEM_alge = int(real(NEM,rk)/20.0_rk*9.0_rk,ik)!90!450!90   !  135!NEM/3*2    !decide in data_folder
   
 !----------------------------------front settings-------------------------------------
   SWAP_LOCAL_IJ = .FALSE.             !This determines if your local is transposed
-  debug_NAN = .FALSE.                !True for NaN debugging (HUGE PERFORMANCE PENALTY)
   load_balance_flag = .TRUE.        !True for load balancing, good to have on generally
   ths = 4
   THREADS_FRONT = ths                       !THREADS for front, must be <= ths
@@ -44,6 +42,7 @@ program main
   !Use single or dual for debugging, same with debug_NAN
 !-----------------------------------done settings------------------------------------
   
+  no_Maran = 0  !1: no Marangoni stress
   !set terms option
   NStrans = 1
   Inert = 1
@@ -76,8 +75,13 @@ program main
   simple_mesh = 0     ! !1: use simple mesh for quicker calculation
   graph_mode = 0    !1: graph each step; 0: graph each timestep
   check_0_in_Jac = 0   !1: put 'sj's together as Jac, check Jac
+  debug_NAN = .FALSE.  !.true.!      !True for NaN debugging (HUGE PERFORMANCE PENALTY)
+  if(debug_NAN) then
+     open(unit = 10, file = trim(folder)//'NaN_check.dat', status = 'replace')
+     close(10)
+  end if
   if( simple_mesh.eq.1 ) then
-     angle_c_degree = 10.0_rk!90.0_rk
+     angle_c_degree = 90.0_rk
      angle_c = angle_c_degree /180.0_rk*pi
      NEL = 4
      NEM = 5
@@ -144,7 +148,7 @@ program main
      call flag_mesh   !flag for mesh establish(mesh_size_change & initial_vapor_solv)
 
      !calculate contact angle & flux
-     if((initial_vapor_solving.eq.1 .or. initial_vapor_solved.eq.1).and. diverge.eq.0)  call variable_cal
+     if(diverge.eq.0)  call variable_cal   !(initial_vapor_solving.eq.1 .or. initial_vapor_solved.eq.1).and. 
 
      t_program = REAL(omp_get_wtime(),rk) - t1
      open(unit = 20, file = trim(folder)//'cal_time.dat', status = 'old', access = 'append')
@@ -155,7 +159,10 @@ program main
 
      !***********************************conditions to stop time loop*********************************
      !if(timestep.eq.20) stop
-     if(angle_c.le.0.0_rk) stop
+     if(angle_c.le.0.0_rk) then
+        write(*,*) 'contact angle is negative'
+        stop
+     end if
 
      !****************************************************************************************
 

@@ -11,10 +11,13 @@ subroutine L2_error(cal_time)
        drmax, dzmax, dumax, dvmax, dTmax, dcpmax, dpmax, dcmax      !dTemp dstinct from dt in data
   real(kind=rk):: Rsi(NTN), Reta(NTN), Ru(NTN), Rv(NTN), Rt(NTN), Rcp(NTN), Rp(NTN), Rc(NTN), &
        Rsimax, Retamax, Rumax, Rvmax, Rtmax, Rcpmax, Rpmax, Rcmax
+  ! real(kind=rk):: error1p, error2p
+  ! error1p = 0.0_rk
+  ! error2p = 0.0_rk
   
   write_node = 1  !1: write which node gives the greatest error
   
-  !find maximum value of each variable, used to normalize error
+!------------find maximum value of each variable, used to normalize error-------------
   rmax = 1.0_rk!0.0_rk
   zmax = 1.0_rk!0.0_rk
   umax = 0.0_rk
@@ -49,9 +52,13 @@ subroutine L2_error(cal_time)
   end if
   write(11,'(8es14.6)') rmax, zmax, umax, vmax, Tmax, cpmax, pmax, cmax
   close(11)
-  ! write(*,*) rmax, zmax, umax, vmax, Tmax, cpmax, pmax, cmax  
+  ! write(*,*) rmax, zmax, umax, vmax, Tmax, cpmax, pmax, cmax
 
 
+  
+!----------------------calculate & write erro1 & error2--------------------------------
+  
+  !Residual error error1 calculated in Amultifront module as L2res
   
   !calculate solution error error2, L2 norm
   if(Tmax.eq.0.0_rk) Tmax = 1.0_rk
@@ -86,6 +93,7 @@ subroutine L2_error(cal_time)
   !    error2 = error2 + ( dsol(i)/sol(i) )**2
   ! end do
   error2 = sqrt(error2)             !absolute value of dsol
+  
 
   !write Res & Sol error in file error.dat
   write(*,*) 'Res:', error1, ' Sol:', error2, ' step:', step
@@ -104,7 +112,9 @@ subroutine L2_error(cal_time)
   close(11)
 200 format (A,es12.5,A,es12.5,A,i4)
 
-  !calculate Sol error seperately, Linf norm
+  
+  
+!-----------------------calculate Sol error seperately, Linf norm----------------------
   dr(:) = 0.0_rk         
   dz(:) = 0.0_rk
   du(:) = 0.0_rk
@@ -132,9 +142,18 @@ subroutine L2_error(cal_time)
            dTemp(i) = abs( dsol( NOPP(i) + NTs ) / Tmax )
         end if
      end if
+     ! if(dr(i).ne.dr(i)) write(*,*) 'dr', i, dr(i)
+     ! if(dz(i).ne.dz(i)) write(*,*) 'dz', i, dz(i)
+     ! if(du(i).ne.du(i)) write(*,*) 'du', i, du(i)
+     ! if(dv(i).ne.dv(i)) write(*,*) 'dv', i, dv(i)
+     ! if(dTemp(i).ne.dTemp(i)) write(*,*) 'dTemp', i, dTemp(i)
+     ! if(dcp(i).ne.dcp(i)) write(*,*) 'dcp', i, dcp(i)
+     ! if(dpress(i).ne.dpress(i)) write(*,*) 'dp', i, dpress(i)
+     ! if(dc(i).ne.dc(i)) write(*,*) 'dc', i, dc(i)
+     ! error2p = error2p + dr(i)**2 + dz(i)**2 + du(i)**2 + dv(i)**2 + dTemp(i)**2 + dcp(i)**2 + dpress(i)**2 + dc(i)**2
   end do
-
-  !?calculate error2 here, when du, dv... have been splited
+  ! error2p = sqrt(error2p)
+  !calculate error2 here with error2p, when du, dv... have been splited: same results as before
 
   drmax = 0.0_rk
   dzmax = 0.0_rk
@@ -204,12 +223,13 @@ subroutine L2_error(cal_time)
   end if
   write(10,'(8es12.5)') drmax, dzmax, dumax, dvmax, dTmax, dcpmax, dpmax, dcmax
   if(write_node.eq.1) write(10,'(8i12)') imaxr, imaxz, imaxu, imaxv, imaxT, imaxcp, imaxp, imaxc
-  write(10,'(es14.7)') error2
+  write(10,'(2es14.7)') error2!, error2p
   write(10,'(A)') ' '
   close(10)
+!--------------------------------------------------------------------------------------
 
-
-  !calculate Res error seperately, Linf norm
+  
+!-------------------------calculate Res error seperately, Linf norm--------------------
   Rsi(:) = 0.0_rk       
   Reta(:) = 0.0_rk
   Ru(:) = 0.0_rk
@@ -235,7 +255,19 @@ subroutine L2_error(cal_time)
      if (VN(i).eq.5 .and. s_mode.eq.0) then
         Rt(i) = abs( load_dum( NOPP(i) + NTs ) )
      end if
+     ! if(Rsi(i).ne.Rsi(i)) write(*,*) 'si', i, Rsi(i)
+     ! if(Reta(i).ne.Reta(i)) write(*,*) 'eta', i, Reta(i)
+     ! if(Ru(i).ne.Ru(i)) write(*,*) 'u', i, Ru(i)
+     ! if(Rv(i).ne.Rv(i)) write(*,*) 'v', i, Rv(i)
+     ! if(Rt(i).ne.Rt(i)) write(*,*) 't', i, Rt(i)
+     ! if(Rcp(i).ne.Rcp(i)) write(*,*) 'cp', i, Rcp(i)
+     ! if(Rp(i).ne.Rp(i)) write(*,*) 'p', i, Rp(i)
+     ! if(Rc(i).ne.Rc(i)) write(*,*) 'c', i, Rc(i)
+     ! error1p = error1p + Rsi(i)**2 + Reta(i)**2 + Ru(i)**2 + Rv(i)**2 + Rt(i)**2 + Rcp(i)**2 + Rp(i)**2 + Rc(i)**2
   end do
+  ! error1p = sqrt(error1p)
+  ! pause
+  
   Rsimax = 0.0_rk
   Retamax = 0.0_rk
   Rumax = 0.0_rk
@@ -302,7 +334,7 @@ subroutine L2_error(cal_time)
   end if
   write(12,'(8es12.5)') Rsimax, Retamax, Rumax, Rvmax, Rtmax, Rcpmax, Rpmax, Rcmax
   if(write_node.eq.1) write(12,'(8i12)') imaxRsi, imaxReta, imaxRu, imaxRv, imaxRt, imaxRcp, imaxRp, imaxRc
-  write(12,'(es14.7)') error1
+  write(12,'(2es14.7)') error1!, error1p
   write(12,'(A)') ' '
   close(12)
   
@@ -320,6 +352,7 @@ subroutine L2_error(cal_time)
   end if
   write(20,'(i4,f7.3)') step, cal_time
   close(20)
+!--------------------------------------------------------------------------------------
 
 
   return

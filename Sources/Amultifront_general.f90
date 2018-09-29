@@ -1,6 +1,9 @@
 !-*- mode: f90;-*-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 module front_mod
   use kind, only: rk, ik, ths
+  use data, only: rmax, zmax, umax, vmax, Tmax, cpmax, pmax, cmax, &
+       VN, initial_vapor_solved, BCflagN, PN, no_vapor, &
+       Nr, Nz, NT, Nu, Nv, Ncp, Np, NTs
   use omp_lib
 
   integer(kind=ik):: check_pivot=0
@@ -11,7 +14,7 @@ module front_mod
   !rk: real precision, parameter
   !ik: integer size, parameter
   !ths: Number of threads, parameter
-  !NV: Number of unknowns
+  !NVar: Number of unknowns
   !NN: Number of Nodes
   !NE: Number of elements
   !iBW: Bandwidth (warning will be changed by init_front
@@ -19,7 +22,7 @@ module front_mod
   !MDF(NN): Unkowns at given node
   !NOP(NE,9): Local to global nodes
   !NOPP(NN): first var at node
-  !load(NV): Solution goes here
+  !load(NVar): Solution goes here
   !s_mode: Set to 0 if solving full dynamics and 1 if only mesh 
   !(must be zero if solve mesh by putting BC's on all velocity and pressure vars)
   !bas: number of nodes in element (9)
@@ -91,7 +94,7 @@ module front_mod
   procedure (void_type), pointer :: custom_order => null ()   !If left null order is 1 to NE
   procedure (exclude_type), pointer :: excluder => null () !Excluder, default include all
   procedure (find_var_type), pointer :: var_finder => null () !If NaN execute this
-  logical :: debug_NAN = .FALSE.
+  logical :: debug_NAN = .false.		
   logical :: load_balance_flag = .TRUE., SWAP_LOCAL_IJ = .TRUE., REVERSE_FLAG = .TRUE.
   integer(kind=ik) :: seed = 1, THREADS_FRONT = -1
   
@@ -104,7 +107,7 @@ module front_mod
   real(kind=rk) :: tr
 
   !Pointers
-  integer(kind=ik), pointer :: NV, NN, NE, s_mode, bas, MDF(:), NOPP(:), DNOP(:), NOP(:,:), rNOP(:,:,:)
+  integer(kind=ik), pointer :: NVar, NN, NE, s_mode, bas, MDF(:), NOPP(:), DNOP(:), NOP(:,:), rNOP(:,:,:)
   real(kind=rk), pointer :: load(:)
 
   integer(kind=ik), parameter :: DUAL=1, SINGLE=2, DOMAINS=3
@@ -274,8 +277,8 @@ contains
     !Default numbering
     if (iDM.eq.1.or.iDM.eq.2) then
 
-       allocate(loadc(NV),load_dum(NV),lt_i(iDM+1),dm_type(iDM),Etest(NE),&
-            NODf(NV,iDM+1),NOA(NV),ele_list(NE+1,iDM),dm_list(iDM,2),lt_i2(2+1),&
+       allocate(loadc(NVar),load_dum(NVar),lt_i(iDM+1),dm_type(iDM),Etest(NE),&
+            NODf(NVar,iDM+1),NOA(NVar),ele_list(NE+1,iDM),dm_list(iDM,2),lt_i2(2+1),&
             BNOP(0:NE),sBNOP(0:NE))
        ele_list = 0
        k = 0
@@ -365,7 +368,7 @@ contains
     !OVERRIDE FS_MAX HERE
     !fs_max =
     write(*,*) 'FS_MAX:', fs_max
-    allocate(LT(fs_max,NV),IT(3+fs_max,NV))
+    allocate(LT(fs_max,NVar),IT(3+fs_max,NVar))
 
 
   end subroutine init_front
@@ -483,8 +486,8 @@ contains
        !write(*,*) 'Num. Blocks:', rp, zp
     end do
     !pause
-    allocate(loadc(NV),load_dum(NV),lt_i(iDM+1),dm_type(iDM),Etest(NE),&
-         NODf(NV,iDM+1),NOA(NV),ele_list(NE+1,iDM),dm_list(iDM,2),lt_i2(2+1),&
+    allocate(loadc(NVar),load_dum(NVar),lt_i(iDM+1),dm_type(iDM),Etest(NE),&
+         NODf(NVar,iDM+1),NOA(NVar),ele_list(NE+1,iDM),dm_list(iDM,2),lt_i2(2+1),&
          BNOP(NE),sBNOP(0:NE))
     BNOP(:) = 0
     sBNOP(:) = 0
@@ -1022,7 +1025,7 @@ contains
           call check_NODF(NODf(:,ele),fs)
          
           if(fs.gt.fs_max) fs_max = fs
-          do i = 1, NV, 1
+          do i = 1, NVar, 1
              if (NODf(i,ele).eq.NOA(i)) then
                 l_i = l_i + 1
                 NODf(i,ele) = -NODf(i,ele)
@@ -1042,7 +1045,7 @@ contains
           call check_NODF(NODf(:,ele),fs)
          
           if(fs.gt.fs_max) fs_max = fs
-          do i = 1, NV, 1
+          do i = 1, NVar, 1
              if (NODf(i,ele).eq.NOA(i)) then
                 l_i = l_i + 1
                 NODf(i,ele) = -NODf(i,ele)
@@ -1052,7 +1055,7 @@ contains
        lt_i2(3) = l_i
        !write(*,*) 'l_i2:', l_i
     end if
-    lt_i2(2) = NV+1
+    lt_i2(2) = NVar+1
     
     !write(*,*) 'l_i:', l_i
     fs_max = fs_max
@@ -1061,9 +1064,9 @@ contains
   
   subroutine check_NODF(NODf,fs)
     implicit none
-    integer(kind=ik) :: NODf(NV), i, fs
+    integer(kind=ik) :: NODf(NVar), i, fs
     fs = 0
-    do i = 1, NV, 1
+    do i = 1, NVar, 1
        if(NODf(i).gt.0) then      
           fs = fs + 1
        end if
@@ -1181,9 +1184,34 @@ contains
 
     !Calculate L2res
     L2res = 0.0_rk
-    do i = 1, NV, 1
-       L2res = L2res + (load_dum(i))**2
-    end do
+    do i = 1, NN   
+       L2res = L2res + ( load_dum(NOPP(i)+Nr)/rmax )**2
+       if(NTs.eq.2 .or. VN(i).ne.5)  L2res = L2res + ( load_dum(NOPP(i)+Nz)/zmax )**2
+       if(s_mode.eq.0) then
+          if(initial_vapor_solved.eq.1) then
+             if( VN(i).eq.0 .or. VN(i).eq.2 .or. BCflagN(i,2).eq.1) then
+                L2res = L2res + ( load_dum(NOPP(i)+NT)/Tmax )**2
+                if( VN(i).eq.0 .or. VN(i).eq.2 ) then
+                   L2res = L2res + ( load_dum(NOPP(i)+Nu)/umax )**2
+                   L2res = L2res + ( load_dum(NOPP(i)+Nv)/vmax )**2
+                   L2res = L2res + ( load_dum(NOPP(i)+Ncp)/cpmax )**2
+                   if(PN(i).eq.1) L2res = L2res + ( load_dum(NOPP(i)+Np)/pmax )**2
+                end if
+             end if
+             if(VN(i).eq.5) L2res = L2res + ( load_dum(NOPP(i)+NTs)/Tmax )**2
+          end if
+          if(no_vapor.eq.0 .and. ( VN(i).eq.1 .or. VN(i).eq.2 ) ) &
+               L2res = L2res + ( load_dum(NOPP(i)+MDF(i)-1)/cmax )**2
+       end if
+    end do!??
+    ! do i = 1, NVar, 1
+    !    ! if(sol(i).ne.0.0_rk) then
+    !    !    L2res = L2res + ( load_dum(i)/sol(i) )**2
+    !    ! else
+    !    !    L2res = L2res + load_dum(i)**2
+    !    ! end if
+    !    L2res = L2res + (load_dum(i))**2
+    ! end do
     L2res = sqrt(L2res)
 
     !Save total runtime
@@ -1280,12 +1308,37 @@ contains
     L2res = 0.0_rk
     !$omp parallel private(i) reduction(+:L2res)
     !$omp do
-    do i = 1, NV, 1
-       L2res = L2res + (load_dum(i))**2
+    do i = 1, NN   
+       L2res = L2res + ( load_dum(NOPP(i)+Nr)/rmax )**2
+       if(NTs.eq.2 .or. VN(i).ne.5)  L2res = L2res + ( load_dum(NOPP(i)+Nz)/zmax )**2
+       if(s_mode.eq.0) then
+          if(initial_vapor_solved.eq.1) then
+             if( VN(i).eq.0 .or. VN(i).eq.2 .or. BCflagN(i,2).eq.1) then
+                L2res = L2res + ( load_dum(NOPP(i)+NT)/Tmax )**2
+                if( VN(i).eq.0 .or. VN(i).eq.2 ) then
+                   L2res = L2res + ( load_dum(NOPP(i)+Nu)/umax )**2
+                   L2res = L2res + ( load_dum(NOPP(i)+Nv)/vmax )**2
+                   L2res = L2res + ( load_dum(NOPP(i)+Ncp)/cpmax )**2
+                   if(PN(i).eq.1) L2res = L2res + ( load_dum(NOPP(i)+Np)/pmax )**2
+                end if
+             end if
+             if(VN(i).eq.5) L2res = L2res + ( load_dum(NOPP(i)+NTs)/Tmax )**2
+          end if
+          if(no_vapor.eq.0 .and. ( VN(i).eq.1 .or. VN(i).eq.2 ) ) &
+               L2res = L2res + ( load_dum(NOPP(i)+MDF(i)-1)/cmax )**2
+       end if
     end do
+    ! do i = 1, NVar, 1
+    !    ! if(sol(i).ne.0.0_rk) then
+    !    !    L2res = L2res + ( load_dum(i)/sol(i) )**2
+    !    ! else
+    !    !    L2res = L2res + load_dum(i)**2
+    !    ! end if
+    !    L2res = L2res + (load_dum(i))**2
+    ! end do
     !$omp end do
     !$omp end parallel
-    L2res = sqrt(L2res)
+    L2res = sqrt(L2res)    
 
     !Save total runtime
     t = REAL(omp_get_wtime(),rk) - t1
@@ -1348,7 +1401,7 @@ contains
        call determine_offsets()
        if(fs_max.gt.k) then
           deallocate(LT,IT)
-          allocate(LT(fs_max,NV),IT(3+fs_max,NV))
+          allocate(LT(fs_max,NVar),IT(3+fs_max,NVar))
        end if
 
     end if
@@ -1375,7 +1428,7 @@ contains
     logical :: is_master, ASSEMBLED(0:iDM+1), MERGED(0:iDM+1), ASSEMBLING(0:iDM+1), MERGING(0:iDM+1), e
     integer(kind=ik) :: Domain_state(iDM), next_merge(2),&
          next_assemble(2), num_assembled(2), job_id, side, num_merged(2), merge_id, master_id,&
-         assemble_id, l_i_master, thsl, l_i_inc, l_i_end(2), MC(iDM), AC(iDM), LC(NV), NEW_THREADS
+         assemble_id, l_i_master, thsl, l_i_inc, l_i_end(2), MC(iDM), AC(iDM), LC(NVar), NEW_THREADS
     integer(kind=ik), parameter :: WAIT = 0, ASSEMBLE = 1, MERGE = 2, J_CYCLE = 3, J_EXIT = 4
 
     if (iDM.lt.3) then
@@ -1599,17 +1652,42 @@ contains
     !Perform back substitution
     call back_sub(3,l_i, l_i_end)
 
+    
     !Calculate L2res
     L2res = 0.0_rk
     !$omp parallel private(i) reduction(+:L2res)
     !$omp do
-    do i = 1, NV, 1
-       L2res = L2res + (load_dum(i))**2
+    do i = 1, NN   
+       L2res = L2res + ( load_dum(NOPP(i)+Nr)/rmax )**2
+       if(NTs.eq.2 .or. VN(i).ne.5)  L2res = L2res + ( load_dum(NOPP(i)+Nz)/zmax )**2
+       if(s_mode.eq.0) then
+          if(initial_vapor_solved.eq.1) then
+             if( VN(i).eq.0 .or. VN(i).eq.2 .or. BCflagN(i,2).eq.1) then
+                L2res = L2res + ( load_dum(NOPP(i)+NT)/Tmax )**2
+                if( VN(i).eq.0 .or. VN(i).eq.2 ) then
+                   L2res = L2res + ( load_dum(NOPP(i)+Nu)/umax )**2
+                   L2res = L2res + ( load_dum(NOPP(i)+Nv)/vmax )**2
+                   L2res = L2res + ( load_dum(NOPP(i)+Ncp)/cpmax )**2
+                   if(PN(i).eq.1) L2res = L2res + ( load_dum(NOPP(i)+Np)/pmax )**2
+                end if
+             end if
+             if(VN(i).eq.5) L2res = L2res + ( load_dum(NOPP(i)+NTs)/Tmax )**2
+          end if
+          if(no_vapor.eq.0 .and. ( VN(i).eq.1 .or. VN(i).eq.2 ) ) &
+               L2res = L2res + ( load_dum(NOPP(i)+MDF(i)-1)/cmax )**2
+       end if
     end do
+    ! do i = 1, NVar, 1
+    !    ! if(sol(i).ne.0.0_rk) then
+    !    !    L2res = L2res + ( load_dum(i)/sol(i) )**2
+    !    ! else
+    !    !    L2res = L2res + load_dum(i)**2
+    !    ! end if
+    !    L2res = L2res + (load_dum(i))**2
+    ! end do
     !$omp end do
     !$omp end parallel
     L2res = sqrt(L2res)
-
 
     !Save total runtime
     t = REAL(omp_get_wtime(),rk) - ti
@@ -1620,7 +1698,7 @@ contains
   subroutine back_sub(mode,last, last_sides)
     implicit none
     integer(kind=ik) :: i, j, k, l, mode, last, last_sides(2), id, l_i_inc(2),lvl2
-    !integer(kind=ik) :: ITT(NV)
+    !integer(kind=ik) :: ITT(NVar)
     l_i_inc(1) = 1
     l_i_inc(2) = -1
 
@@ -1731,13 +1809,13 @@ contains
        
     end if
     ! k = 0
-    ! do i = 1, NV, 1
+    ! do i = 1, NVar, 1
     !    if(ITT(i).ne.1) then
     !       write(*,*) 'Error for var:', i, 'with', ITT(i)
     !       k = k + 1
     !    end if
     ! end do
-    ! write(*,*) k, 'of', NV, 'errors'
+    ! write(*,*) k, 'of', NVar, 'errors'
 
   end subroutine back_sub
 
@@ -2072,7 +2150,7 @@ contains
     !write(*,*) 'Called'
     !eliminate fully summed full pivotal choice
     elim = rvs
-    if (l_i+l_i_inc.lt.1.or.l_i+l_i_inc.gt.NV) write(*,*) 'Error l_i', l_i, NV, l_i_inc
+    if (l_i+l_i_inc.lt.1.or.l_i+l_i_inc.gt.NVar) write(*,*) 'Error l_i', l_i, NVar, l_i_inc
     do i = 1, elim, 1
 
        !Find sufficiently large pivot
@@ -2232,7 +2310,7 @@ contains
 
   subroutine nullifier()
     implicit none
-    NULLIFY(NV)
+    NULLIFY(NVar)
     NULLIFY(NN)
     NULLIFY(NE)
     NULLIFY(s_mode)
@@ -2248,8 +2326,8 @@ contains
   subroutine check_associated()
     implicit none
 
-    if(.not.ASSOCIATED(NV)) then
-       write(*,*) 'Error in multifront: NV not set'
+    if(.not.ASSOCIATED(NVar)) then
+       write(*,*) 'Error in multifront: NVar not set'
        stop
     end if
 

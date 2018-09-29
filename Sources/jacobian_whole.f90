@@ -52,7 +52,8 @@ subroutine jac_check_0
      write(10, '(es14.7)',ADVANCE='yes')
   end do
   close(10)
-  pause
+  write(*,*) 'checked Jac rows'
+  !pause
 
 
   return
