@@ -211,7 +211,7 @@ contains
        !write headlines
        if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
           if(Nregion.eq.1) then
-             write(11, '(A)') 'variables = "r", "z", "u", "v", "T", "cp", "p"'
+             write(11, '(A)') 'variables = "r", "z", "u", "v", "T", "cp", "cp_flag", "p"'
              ! write(11, '(A,es13.6,A)') 'DATASETAUXDATA Umax = "', umax, '"'
              ! write(11, '(A,es13.6,A)') 'DATASETAUXDATA Vmax = "', vmax, '"'
 
@@ -248,7 +248,7 @@ contains
           
        else  !diverge=1 & graph_mode=1 --> repeat diverging timestep
           
-          write(11, '(A)') 'variables = "r", "z", "u", "v", "T", "cp", "p", "c"'
+          write(11, '(A)') 'variables = "r", "z", "u", "v", "T", "cp", "cp_flag", "p", "c"'
           write(11,201) 'Zone T = "step:', step_indicator, &!', RGN: ', Nregion, &
                '", STRANDID = 1, SOLUTIONTIME =', time_indicator, &
                ', Datapacking = Point, Zonetype = FEQuadrilateral, N =', Nnode, ', E =', Nele, &
@@ -264,7 +264,7 @@ contains
 
           if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
              if(Nregion.eq.1) then
-                write(11,'(7es15.7)') rcoordinate(i), zcoordinate(i), usol(i), vsol(i), Tsol(i), cpsol(i), psol(i)
+write(11,'(6es15.7,i4,es15.7)') rcoordinate(i), zcoordinate(i), usol(i), vsol(i), Tsol(i), cpsol(i), pack_flag(i), psol(i)
              end if
              if(Nregion.eq.1 .or. Nregion.eq.3) then
                 write(12,'(7es15.7)') rcoordinate(i), zcoordinate(i), Tsol(i)
@@ -274,7 +274,7 @@ contains
              end if
              
           else   !diverge=1 & graph_mode=1 --> repeat diverging timestep
-             write(11,'(8es15.7)') rcoordinate(i), zcoordinate(i), usol(i), vsol(i), Tsol(i), cpsol(i), psol(i), csol(i)
+write(11,'(7es15.7,i4,es15.7)') rcoordinate(i), zcoordinate(i), usol(i), vsol(i), Tsol(i), cpsol(i), pack_flag(i), psol(i), csol(i)
           end if
           
        end do

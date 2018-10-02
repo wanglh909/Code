@@ -68,6 +68,31 @@ solved dt-too-small problem.   upload to git!
 
 15 no Maran. see if cp is different.
 
+16: try to figure out the mass conservation failure. particle mass exceeds volume*cpmax, so cpintfac is wrong. figured out and fixed the problem: rintfac, cpintfac, etc need to be set 0 within (k,l) loop. this is why cp mass not conserved, and also why drop volume was 26 instead of less than 1. fixed.
+
+
+
+It seems that the Marangoni flow does not have much influence on particel concentration. is Ma very small near the end? If so, concentration is capillary affected.
+17: increase beta to see under what condition does Marangoni flow affect particle concentration. in "parameter", insert "beta0=1000*beta0"
+this lead to sharp jump in the first timestep, may need to damp soln in the first timestep.may need to increase beta little by little.??? not finished. worry about later.
+
+
+18: maximum packing condition: the particle mass was not conserved.???
+
+found that the Pep was set to be very small because of previous debugging process. That is why no difference shows: particle diffuse uniformly instead of affected by flow profile/convection.
+
+
+
+
+
+
+
+
+figure out a method to observe the difference between plug flow and Marangoni flow results. Difficulties:
+1. hard to find a same contact angle. therefore, a fixed dt is necessary. figure out appropriate fixed dt: observe the dt used in adaptive timestep method. find an average value for each simulation. make capillary simulation several times of Marangoni simulation.???
+2. a value to quantatively compare particle distribution. surface concentration, S-L interface concentration, radial mass (how to calculate?) 
+
+
 
 
 

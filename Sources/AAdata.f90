@@ -140,14 +140,15 @@ module data
   real(kind=rk):: T_sub
 
 
-  real(kind=rk):: diameterp, Pep, kboltz = 1.3806485279e-23 !(J/K)   Dp, 
+  real(kind=rk):: diameterp, Dp, Pep, kboltz = 1.3806485279e-23 !(J/K)    
 
 
   integer(kind=ik):: no_Maran
 
 
-
-
+  !maximum packing
+  integer(kind=ik), allocatable:: pack_flag(:)
+  real(kind=rk):: cp_pack, pack_condition
 
 
 

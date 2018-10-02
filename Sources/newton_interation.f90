@@ -90,5 +90,10 @@ write(*,*) diverge, s_mode
      ! if(final_size.eq.0 .and. ( error1.lt.1.0e-2_rk.and.error2.lt.1.0e-2_rk )) exit
   end do
 
+  do i = 1, NTN
+     if(cpsol(i).ge.cp_pack) pack_flag(i) = 1
+  end do
+
+  
   return
 end subroutine newton_raphson

@@ -30,8 +30,11 @@ subroutine split_sol
         end if
      end if
      
-     ! !the contact line
-     ! if( BCflagN(i,3).eq.3 )  sol( NOPP(i) + Nr ) = R!1.0_rk
+     !the contact line
+     if( BCflagN(i,3).eq.3 )  sol( NOPP(i) + Nr ) = R!1.0_rk
+
+     !maximum packing
+     if(pack_flag(i).eq.1) sol(NOPP(i) + Ncp) = cp_pack
      
      !substrate base
      if( BCflagN(i,5).ne.0 ) then

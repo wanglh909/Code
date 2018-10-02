@@ -575,26 +575,38 @@ subroutine variable_cal
      volume1 = volume1 + gaussian_quadrature(intVol)
   end do
   write(*,*) 'particle mass', particle_m
-  write(*,*) 'drop volume', volume1, 'particle mass limit', volume1*(cpmax+1.0_rk)
 
-  !write
+  !write particle mass
   if(timestep.eq.0) then
      open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'replace')
      write(31, '(A)') 'variables = "contact angle", "m", "time" '
-     
-     open(unit = 32, file = trim(folder)//'drop_volume.dat', status = 'replace')
-     write(32, '(A)') 'variables = "time", "V", "contact angle" '
   else
      open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'old', access = 'append')
-     open(unit = 32, file = trim(folder)//'drop_volume.dat', status = 'old', access = 'append')
   end if
-  
   write(31, '(3es15.7)') angle_c, particle_m, time
-  write(32, '(3es15.7)') time, volume1, angle_c
-  
   close(31)
-  close(32)
 
+  ! !write drop volume
+  ! write(*,*) 'drop volume', volume1, 'particle mass limit', volume1*(cpmax+1.0_rk)
+  ! if(timestep.eq.0) then
+  !    open(unit = 32, file = trim(folder)//'drop_volume.dat', status = 'replace')
+  !    write(32, '(A)') 'variables = "time", "V", "contact angle" '
+  ! else
+  !    open(unit = 32, file = trim(folder)//'drop_volume.dat', status = 'old', access = 'append')
+  ! end if
+  ! write(32, '(3es15.7)') time, volume1, angle_c
+  ! close(32)
+  
+  !---------------------------------------------------------------------------------------
+
+
+  !flag to judge if maximum packing everywhere
+  pack_condition = 1.0_rk
+  do i = 1, NTN
+     pack_condition = pack_condition * real(pack_flag(i),rk)
+     if(pack_condition.eq.0.0_rk) exit
+  end do
+     
 
 
   
