@@ -76,10 +76,29 @@ It seems that the Marangoni flow does not have much influence on particel concen
 17: increase beta to see under what condition does Marangoni flow affect particle concentration. in "parameter", insert "beta0=1000*beta0"
 this lead to sharp jump in the first timestep, may need to damp soln in the first timestep.may need to increase beta little by little.??? not finished. worry about later.
 
-
-18: maximum packing condition: the particle mass was not conserved.???
-
 found that the Pep was set to be very small because of previous debugging process. That is why no difference shows: particle diffuse uniformly instead of affected by flow profile/convection.
+
+results with maximum packing, but wrong BC for packing
+18: dtmin=1e-6, no Marangoni. killed.
+
+19: dtmin=5e-5, no Marangoni. ran 13h.
+20: no include cp when calculating trunerr, no Marangoni
+21: Marangoni
+
+results with no packing
+22: no Marangoni. (not converge at timestep2)resolved: due to BC change but split_sol didn't change.
+Dp=Dp*10
+results in timestep1 presents large cp at the top of the drop, which is wrong, should be the contact line area.
+
+23: physical Dp, no Marangoni
+
+24: Marangoni
+
+
+
+pack_condition=NaN was cause by 2^1111, too large
+maximum packing condition: the particle mass was not conserved.need to change BC for maximum packing boundary.not done???
+
 
 
 

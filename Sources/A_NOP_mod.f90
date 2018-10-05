@@ -31,7 +31,7 @@ contains
     !NNXV = 2*NEV + 1
     NTN = NNX3456*( 2*NEM + 1 ) + NNR1278
     NTE = (2*NEL+NES)*NEM + (NEL+NES)*NEL + NEV*NES
-    top_node = NTN
+    top_node = NTN   !if vapor exists, top_node needs to be changed
     top_element = NTE
     CL_element = NES*(NEV+1) + 1
 
@@ -532,11 +532,11 @@ end do
 ! close(10)
 
 
-open(unit = 10, file = trim(folder)//'VN.dat', status = 'replace' )
-do i = 1, NTN
-   write(10, '(2i8)' ) i, VN(i), pack_flag(i)
-end do
-close(10)
+! open(unit = 10, file = trim(folder)//'VN.dat', status = 'replace' )
+! do i = 1, NTN
+!    write(10, '(3i8)' ) i, VN(i), pack_flag(i)
+! end do
+! close(10)
 
 ! open(unit = 10, file = trim(folder)//'VE.dat', status = 'replace' )
 ! do i = 1, NTE

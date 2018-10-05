@@ -38,6 +38,8 @@ subroutine variable_cal
   else !no_vapor=1
      angle_c_node = i + 2*(NES+1) + 1
   end if
+  ! write(*,*) 'angle_c_node', angle_c_node
+  ! write(*,*) 'top_node', top_node
 
   if(s_mode.eq.0) then
   angle_c = atan( zcoordinate(angle_c_node)/ ( rcoordinate(i) - rcoordinate(angle_c_node) ) )
@@ -603,6 +605,7 @@ subroutine variable_cal
   !flag to judge if maximum packing everywhere
   pack_condition = 1.0_rk
   do i = 1, NTN
+     if(pack_flag(i).eq.2) cycle
      pack_condition = pack_condition * real(pack_flag(i),rk)
      if(pack_condition.eq.0.0_rk) exit
   end do

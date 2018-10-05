@@ -113,13 +113,13 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
         locRes(j) = 0.0_rk
      end if
      
-     !maximum packing
-     if( pack_flag( globalNM(m,i) ).eq.1 ) then
-        j = LNOPP(i) + Ncp     !The location of Rt(i) in locRes
-        locJac(j,:) = 0.0_rk
-        locJac(j,j) = 1.0_rk               !dRti/dTi
-        locRes(j) = 0.0_rk
-     end if
+     ! !maximum packing
+     ! if( pack_flag( globalNM(m,i) ).eq.1 ) then
+     !    j = LNOPP(i) + Ncp     !The location of Rt(i) in locRes
+     !    locJac(j,:) = 0.0_rk
+     !    locJac(j,j) = 1.0_rk               !dRti/dTi
+     !    locRes(j) = 0.0_rk
+     ! end if
 
 !----------------------------------ALGEBRAIC MESH------------------------------------- 
      !drop corner algebraic mesh
