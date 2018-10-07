@@ -145,7 +145,8 @@ module data
 
   integer(kind=ik):: no_Maran
 
-
+  integer(kind=ik):: init_stability
+  
   !maximum packing
   integer(kind=ik), allocatable:: pack_flag(:)
   real(kind=rk):: cp_pack, pack_condition

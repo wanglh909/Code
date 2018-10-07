@@ -22,7 +22,7 @@ subroutine variable_cal
   real(kind=rk):: v_surf_p(3), h_surf, dPdr(3), zsolp
   
   real(kind=rk):: particle_m, intMass(3,3), intVol(3,3), cpintfac, rintfac, Jp
-  integer(kind=ik):: l, n
+  integer(kind=ik):: l, n, flag
 
   t = REAL(omp_get_wtime(),rk)
 
@@ -101,7 +101,7 @@ subroutine variable_cal
 !   close(22)
 
 
-!   !pressure of free surface
+!   !-----------------------------pressure of free surface-----------------------------
 !   if(timestep.eq.1) then
 !      open(unit = 20, file = trim(folder)//'pressure.dat', status = 'replace')
 !   else
@@ -265,7 +265,7 @@ subroutine variable_cal
 !      open(unit = 14, file = trim(folder)//'surf_flow_dir.dat', status = 'old', access = 'append')
 !   end if
 
-!   if(timestep.gt.0) then
+  if(timestep.gt.0) then
 !      r_change = 0.0_rk 
 !      do i = 1, NTE
 !         if(BCflagE(i,3).eq.1) then  !surface element
@@ -407,19 +407,37 @@ subroutine variable_cal
 !         end if   !surface element
 !      end do  !element loop
 
-!      ! do i = 1, NTN
-!      !    if(BCflagN(i,3).ne.1) cycle
-!      !    do j = i+1, NTN
-!      !       if(BCflagN(j,3).eq.1) exit
-!      !    end do
-!      !    if( usol(i)*usol(j).lt.0.0_rk ) then
-!      !       r_change = ( rcoordinate(i) + rcoordinate(j) )/2.0_rk 
-!      !       write(14, '(3es15.7)') time, angle_c_degree, r_change
-!      !       write(*,*) 'r_change =', r_change
-!      !       exit   !?not strict
-!      !    end if
-!      ! end do
-!   end if
+     ! do i = 1, NTN
+     !    if(BCflagN(i,3).ne.1) cycle
+     !    do j = i+1, NTN
+     !       if(BCflagN(j,3).eq.1) exit
+     !    end do
+     !    if( usol(i)*usol(j).lt.0.0_rk ) then
+     !       r_change = ( rcoordinate(i) + rcoordinate(j) )/2.0_rk 
+     !       write(14, '(3es15.7)') time, angle_c_degree, r_change
+     !       write(*,*) 'r_change =', r_change
+     !       exit   !?not strict
+     !    end if
+     ! end do
+
+     !check initial stability for init_stability
+     if(init_stability.eq.0) then
+        flag = 0
+        do i = 1, NTN
+           if(BCflagN(i,3).ne.1) cycle
+           do j = i+1, NTN
+              if(BCflagN(j,3).eq.1) exit
+           end do
+           if( usol(i)*usol(j).lt.0.0_rk ) then
+              write(*,*) 'stag exist', rcoordinate(i), rcoordinate(j)
+              flag = 1
+              exit   !?not strict
+           end if
+        end do
+        if(flag.eq.0) init_stability = 1
+     end if
+     
+  end if !timestep>0
   
 !   close(30)
 !   close(14)
@@ -576,7 +594,7 @@ subroutine variable_cal
      particle_m = particle_m + gaussian_quadrature(intMass)
      volume1 = volume1 + gaussian_quadrature(intVol)
   end do
-  write(*,*) 'particle mass', particle_m
+  ! write(*,*) 'particle mass', particle_m
 
   !write particle mass
   if(timestep.eq.0) then
