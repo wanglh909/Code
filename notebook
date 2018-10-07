@@ -87,14 +87,19 @@ results with maximum packing, but wrong BC for packing
 
 results with no packing
 22: no Marangoni. (not converge at timestep2)resolved: due to BC change but split_sol didn't change.
-Dp=Dp*10
-results in timestep1 presents large cp at the top of the drop, which is wrong, should be the contact line area.
-
-23: physical Dp, no Marangoni
-
-24: Marangoni
+Dp=Dp*10, 1um particles.(results in timestep1 presents large cp at the top of the drop, which is wrong, should be the contact line area.)
+mainly accumulate at the contact line.accumulcate alittle at the top, and this affect is more obvious in the very initial stage, and much less later because corner accumulcation is too dominant.
 
 
+23: 100nm particles, no Marangoni. accumulation at the top is too much, always dominant. cp values at the surface and the contact line is ridiculously large
+
+24: Marangoni, 100nm. lost stability, cp chaos.
+[idea]: make temperature and streamlines stable first, set up the stable circulation first; then add partile. this may avoid the chaos due to multicirculation at the initial instable stage.???
+25: Marangoni with 1um particles. still stable cangle=49.807
+26: from 90 degree.
+
+27: use [idea].
+found that fixed cp BC was not correctly set up before: need to judge if the element is in drop phase first, or Ncp points to other variables maybe for other nodes.
 
 pack_condition=NaN was cause by 2^1111, too large
 maximum packing condition: the particle mass was not conserved.need to change BC for maximum packing boundary.not done???

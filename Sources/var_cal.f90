@@ -620,13 +620,13 @@ subroutine variable_cal
   !---------------------------------------------------------------------------------------
 
 
-  !flag to judge if maximum packing everywhere
-  pack_condition = 1.0_rk
-  do i = 1, NTN
-     if(pack_flag(i).eq.2) cycle
-     pack_condition = pack_condition * real(pack_flag(i),rk)
-     if(pack_condition.eq.0.0_rk) exit
-  end do
+  ! !flag to judge if maximum packing everywhere
+  ! pack_condition = 1.0_rk
+  ! do i = 1, NTN
+  !    if(pack_flag(i).eq.2) cycle
+  !    pack_condition = pack_condition * real(pack_flag(i),rk)
+  !    if(pack_condition.eq.0.0_rk) exit
+  ! end do
      
 
 
