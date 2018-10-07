@@ -165,9 +165,9 @@ program main
      else if(angle_c_degree.le.3.0_rk) then
         write(*,*) 'contact angle is less than 3 degrees'
         stop
-     else if( pack_condition.ne.0.0_rk ) then
-        write(*,*) 'no cp change anymore'
-        stop
+     ! else if( pack_condition.ne.0.0_rk ) then
+     !    write(*,*) 'no cp change anymore'
+     !    stop
      end if
 
      !****************************************************************************************
