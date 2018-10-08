@@ -317,7 +317,7 @@ if(no_vapor.eq.1) then  !flux:  flux( angle_c,rintfac_right(k,id) )
 
    
    !particle accumulation 2
-   intRm_S(k) = intRsi_S(k) * (cpintfac_right(k,id) + 1.0_rk)
+   intRm_S(k) = intRsi_S(k) * cpintfac_right(k,id)
 end if
 
 !KBC1
@@ -389,7 +389,7 @@ intRsi_S(k) = phi_1d(k,ipp)*( &
 intRt_S(k) = REH* intRsi_S(k)
 
 !particle accumulation 2
-intRm_S(k) = intRsi_S(k) * (cpintfac_right(k,id) + 1.0_rk)
+intRm_S(k) = intRsi_S(k) * cpintfac_right(k,id)
 
    end do
       sf(LNOPP(i)+Nr) = sf(LNOPP(i)+Nr) + gaussian_quadrature_1d(intRsi_S)

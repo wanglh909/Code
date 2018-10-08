@@ -37,8 +37,8 @@ subroutine split_sol
      ! if(pack_flag(i).eq.1) sol(NOPP(i) + Ncp) = cp_pack
 
      
-     !for the initial stage when stability hasn't been set up, cp not change
-     if( init_stability.eq.0 .and. ( VN(i).eq.0 .or. VN(i).eq.2 ) ) sol(NOPP(i) + Ncp) = 0.0_rk
+     ! !for the initial stage when stability hasn't been set up, cp not change
+     ! if( init_stability.eq.0 .and. ( VN(i).eq.0 .or. VN(i).eq.2 ) ) sol(NOPP(i) + Ncp) = 1.0_rk
 
      
      !substrate base

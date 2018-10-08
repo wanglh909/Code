@@ -8,7 +8,7 @@ subroutine parameter_values
   integer(kind=ik):: Ltype !, water, octane, hexanol
   real(kind=rk):: rho, mu, kT, cpl, alpha, beta0, Diff, csat, Hv, sigmac, lc, vc, Tc, ks, rhos, cpS, alphaS, Mmolar
 
-  substrate = 0.15_rk!   0.0_rk!  3.0_rk! !1.0_rk  !0.15_rk   
+  substrate = 0.0_rk!  0.15_rk!   3.0_rk! !1.0_rk  !0.15_rk   
   outer = 1.3_rk    !10.0_rk!   20.0_rk, 1.3_rk
 
   Ltype = 1
@@ -75,10 +75,10 @@ subroutine parameter_values
   T_sub = 25.0_rk !     80 !(C)  !25 if not heated
 
   !particle
-  diameterp = 1.0e-6_rk  !1.0e-7_rk  !  (m) particle diameter
+  diameterp = 1.0e-5_rk  !1.0e-7_rk  !  (m) particle diameter
   Dp = kboltz*(25.0_rk+273.15_rk)/(6.0_rk*pi*mu*diameterp)   !2.45e-12 (m^2/s)
   !cp0 = 2.5e-4  !(kg/m^3)  !??not used yet
-  cp_pack = 1.0_rk
+  cp_pack = 5.0_rk
   
 
   !characteristic

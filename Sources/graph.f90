@@ -274,7 +274,7 @@ write(11,'(6es15.7,i4,es15.7)') rcoordinate(i), zcoordinate(i), usol(i), vsol(i)
              end if
              
           else   !diverge=1 & graph_mode=1 --> repeat diverging timestep
-write(11,'(7es15.7,i4,es15.7)') rcoordinate(i), zcoordinate(i), usol(i), vsol(i), Tsol(i), cpsol(i), pack_flag(i), psol(i), csol(i)
+write(11,'(6es15.7,i4,2es15.7)') rcoordinate(i), zcoordinate(i), usol(i), vsol(i), Tsol(i), cpsol(i), pack_flag(i), psol(i), csol(i)
           end if
           
        end do

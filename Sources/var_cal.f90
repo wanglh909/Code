@@ -604,7 +604,7 @@ subroutine variable_cal
            end do
            !define Jp(3,3)
            Jp =  rsi*zeta - reta*zsi
-           intMass(k,l) = ( cpintfac + 1.0_rk ) * rintfac * abs( Jp )
+           intMass(k,l) = cpintfac * rintfac * abs( Jp )
            intVol(k,l) = rintfac * abs( Jp )
         end do
      end do

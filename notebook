@@ -11,7 +11,7 @@ diverge, error1&error2 show NaN
 still NaN
 
 03: check which residual error gives NaN. use simple mesh.
-si & cp on the free surface.??? check sf&sj on free surface(KBC & accumulation)
+si & cp on the free surface.? check sf&sj on free surface(KBC & accumulation)
 jacobian rows of variable si&cp on the free surface also NaN
 these all happened at the second step, which means the first step solves to strange values which exist only in the surface conditions.
 
@@ -79,6 +79,9 @@ this lead to sharp jump in the first timestep, may need to damp soln in the firs
 found that the Pep was set to be very small because of previous debugging process. That is why no difference shows: particle diffuse uniformly instead of affected by flow profile/convection.
 
 results with maximum packing, but wrong BC for packing
+
+pack_condition=NaN was cause by 2^1111, too large
+
 18: dtmin=1e-6, no Marangoni. killed.
 
 19: dtmin=5e-5, no Marangoni. ran 13h.
@@ -106,12 +109,16 @@ found that fixed cp BC was not correctly set up before: need to judge if the ele
 
 27_1: 100nm particles. numerical instability happened soon. consider putting cp into trun_err.
 
-28: include stagnation location. 1um particle, Marangoni. draw surface cp.
-29: 100nm, include cp trun_err
-30: 1um, start from 90
+28: include stagnation location. 1um particle, Marangoni. draw surface cp. numerical instability happened early. graph every step to see?
+29: 100nm, include cp trun_err. instability angle=49.771, this is around the time when dt reaches 1e-6.
+30: 1um, start from 90. instable from the very first timestep for cp.
 
+31: no substrate. need to comment out size_change_3. not using the initial cp fixed BC. instable right from the start.
 
-pack_condition=NaN was cause by 2^1111, too large
+32: no substrate 50 degrees. initial mesh change back to size_3.
+
+33: dimensionless cp change back to cp/cp0 instead of (cp-cp0)/cp0
+
 maximum packing condition: the particle mass was not conserved.need to change BC for maximum packing boundary.not done???
 
 
