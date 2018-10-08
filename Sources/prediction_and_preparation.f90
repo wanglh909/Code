@@ -50,12 +50,12 @@ if(diverge.eq.0) then
                     imax = i
                     var = 'v'
                  end if
-                 ! !skip calculating cp change
-                 ! if (ABS( sol(NOPP(i)+Ncp) - solpred(NOPP(i)+Ncp) )/cpmax .gt.trunerr) then
-                 !    trunerr = ABS( sol(NOPP(i)+Ncp) - solpred(NOPP(i)+Ncp) ) /cpmax
-                 !    imax = i
-                 !    var = 'cp'
-                 ! end if
+                 !skip calculating cp change?
+                 if (ABS( sol(NOPP(i)+Ncp) - solpred(NOPP(i)+Ncp) )/cpmax .gt.trunerr) then
+                    trunerr = ABS( sol(NOPP(i)+Ncp) - solpred(NOPP(i)+Ncp) ) /cpmax
+                    imax = i
+                    var = 'cp'
+                 end if
                  
                  ! if(PN(i).eq.1) then    ! skip calculating P change
                  !    if (ABS( sol(NOPP(i)+Np) - solpred(NOPP(i)+Np) )/pmax .gt.trunerr) then
