@@ -94,12 +94,22 @@ mainly accumulate at the contact line.accumulcate alittle at the top, and this a
 23: 100nm particles, no Marangoni. accumulation at the top is too much, always dominant. cp values at the surface and the contact line is ridiculously large
 
 24: Marangoni, 100nm. lost stability, cp chaos.
-[idea]: make temperature and streamlines stable first, set up the stable circulation first; then add partile. this may avoid the chaos due to multicirculation at the initial instable stage.???
-25: Marangoni with 1um particles. still stable cangle=49.807
-26: from 90 degree.
+[idea]: make temperature and streamlines stable first, set up the stable circulation first; then add partile. this may avoid the chaos due to multicirculation at the initial instable stage.worked!
+25: Marangoni with 1um particles. behaved well except it stopped due to full max packing
+25_1: no packing stop condition. stopped due to "bus error core dumped", not sure what it is, but may be related to being run with elastic. rerun with thunder.???
 
-27: use [idea].
+26: from 90 degree. stopped due to the "cp no change anymore" condition. behaved well before that.
+26_1: run with no cp stop condition. goes to wrong solutions. cp can not be lower than -1. so need to decrease dt by incorporating cp in trun_err.???
+
+27: use [idea]. stopped due to "cp no change anymore". need to rerun
 found that fixed cp BC was not correctly set up before: need to judge if the element is in drop phase first, or Ncp points to other variables maybe for other nodes.
+
+27_1: 100nm particles. numerical instability happened soon. consider putting cp into trun_err.
+
+28: include stagnation location. 1um particle, Marangoni. draw surface cp.
+29: 100nm, include cp trun_err
+30: 1um, start from 90
+
 
 pack_condition=NaN was cause by 2^1111, too large
 maximum packing condition: the particle mass was not conserved.need to change BC for maximum packing boundary.not done???
