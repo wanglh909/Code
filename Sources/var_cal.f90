@@ -124,39 +124,41 @@ subroutine variable_cal
 
 
   !----------------------------temperature&cp of free surface-------------------------
-  if(timestep.eq.1) then
-     open(unit = 13, file = trim(folder)//'temp_surface.dat', status = 'replace')   
-  else
-     open(unit = 13, file = trim(folder)//'temp_surface.dat', status = 'old', access = 'append')
-  end if
-  
-  if(timestep.eq.1) then 
-     open(unit = 113, file = trim(folder)//'cp_surface.dat', status = 'replace')    
-  else
-     open(unit = 113, file = trim(folder)//'cp_surface.dat', status = 'old', access = 'append')
-  end if
+  if(timestep.ne.0) then
+     if(timestep.eq.1 ) then
+        open(unit = 13, file = trim(folder)//'temp_surface.dat', status = 'replace')   
+     else
+        open(unit = 13, file = trim(folder)//'temp_surface.dat', status = 'old', access = 'append')
+     end if
 
-  if(timestep.le.5 .or. mod(timestep,graph_step).eq.0) then   !write data every several timestep
-     write(13, '(A)') 'variables = "r", "T"'
-     write(13, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
-     do i = 1, NTN
-        if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) .or. &
-             ( VN(i).eq.1 .and. BCflagN(i,2).eq.1 ) )  &
-             write(13,'(2es15.7)')  rcoordinate(i), Tsol(i)
-     end do
-     
-     write(113, '(A)') 'variables = "r", "cp"'
-     write(113, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
-     do i = 1, NTN
-        if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) .or. &
-             ( VN(i).eq.1 .and. BCflagN(i,2).eq.1 ) )  &
-             write(113,'(2es15.7)')  rcoordinate(i), cpsol(i)
-     end do
-  end if
+     if(timestep.eq.1) then 
+        open(unit = 113, file = trim(folder)//'cp_surface.dat', status = 'replace')    
+     else
+        open(unit = 113, file = trim(folder)//'cp_surface.dat', status = 'old', access = 'append')
+     end if
 
-  close(13)
-  close(113)
+     if(timestep.le.5 .or. mod(timestep,graph_step).eq.0) then   !write data every several timestep
+        write(13, '(A)') 'variables = "r", "T"'
+        write(13, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
+        do i = 1, NTN
+           if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) .or. &
+                ( VN(i).eq.1 .and. BCflagN(i,2).eq.1 ) )  &
+                write(13,'(2es15.7)')  rcoordinate(i), Tsol(i)
+        end do
 
+        write(113, '(A)') 'variables = "r", "cp"'
+        write(113, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
+        do i = 1, NTN
+           if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) .or. &
+                ( VN(i).eq.1 .and. BCflagN(i,2).eq.1 ) )  &
+                write(113,'(2es15.7)')  rcoordinate(i), cpsol(i)
+        end do
+     end if
+
+     close(13)
+     close(113)
+
+  end if  !timestep.ne.0
 
 !   !-------------------------------graph spherical cap--------------------------------
 !   if(timestep.eq.1) then
@@ -257,30 +259,30 @@ subroutine variable_cal
 
 
   !--------velocity direction change location on free surface & grad(T) direction------
-
-  if(timestep.eq.1) then
-     open(unit = 18, file = trim(folder)//'surf_gradT_dir.dat', status = 'replace')
-     write(18, '(A)') 'variables = "contact angle", "r", "time", "element" '
-  else
-     open(unit = 18, file = trim(folder)//'surf_gradT_dir.dat', status = 'old', access = 'append')
-  end if
-
-  if(timestep.eq.1) then
-     open(unit = 30, file = trim(folder)//'v0_lubrication.dat', status = 'replace')
-     write(30, '(A)') 'variables = "contact angle", "r", "time", "element" '
-  else
-     open(unit = 30, file = trim(folder)//'v0_lubrication.dat', status = 'old', access = 'append')
-  end if
-
-
-  if(timestep.eq.1) then
-     open(unit = 14, file = trim(folder)//'surf_flow_dir.dat', status = 'replace')
-     write(14, '(A)') 'variables = "contact angle", "r", "time", "element" '
-  else
-     open(unit = 14, file = trim(folder)//'surf_flow_dir.dat', status = 'old', access = 'append')
-  end if
-
   if(timestep.gt.0) then
+   
+     if(timestep.eq.1) then
+        open(unit = 18, file = trim(folder)//'surf_gradT_dir.dat', status = 'replace')
+        write(18, '(A)') 'variables = "contact angle", "r", "time", "element" '
+     else
+        open(unit = 18, file = trim(folder)//'surf_gradT_dir.dat', status = 'old', access = 'append')
+     end if
+     
+     if(timestep.eq.1) then
+        open(unit = 30, file = trim(folder)//'v0_lubrication.dat', status = 'replace')
+        write(30, '(A)') 'variables = "contact angle", "r", "time", "element" '
+     else
+        open(unit = 30, file = trim(folder)//'v0_lubrication.dat', status = 'old', access = 'append')
+     end if
+
+
+     if(timestep.eq.1) then
+        open(unit = 14, file = trim(folder)//'surf_flow_dir.dat', status = 'replace')
+        write(14, '(A)') 'variables = "contact angle", "r", "time", "element" '
+     else
+        open(unit = 14, file = trim(folder)//'surf_flow_dir.dat', status = 'old', access = 'append')
+     end if
+
      r_change = 0.0_rk 
      do i = 1, NTE
         if(BCflagE(i,3).eq.1) then  !surface element
@@ -452,11 +454,11 @@ subroutine variable_cal
         if(flag.eq.0) init_stability = 1
      end if
      
-  end if !timestep>0
+     close(30)
+     close(14)
+     close(18)
   
-  close(30)
-  close(14)
-  close(18)
+  end if !timestep>0
 
 
 !   !---------------------------flux on nodes of free surface---------------------------
