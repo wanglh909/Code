@@ -79,7 +79,7 @@ subroutine L2_error(cal_time)
               if( VN(i).eq.0 .or. VN(i).eq.2 ) then
                  error2 = error2 + ( dsol(NOPP(i)+Nu)/umax )**2
                  error2 = error2 + ( dsol(NOPP(i)+Nv)/vmax )**2
-                 error2 = error2 + ( dsol(NOPP(i)+Ncp)/cpmax )**2
+                 error2 = error2 + ( dsol(NOPP(i)+Ncp) )**2   !/cpmax
                  if(PN(i).eq.1) error2 = error2 + ( dsol(NOPP(i)+Np)/pmax )**2
               end if
            end if
@@ -131,7 +131,7 @@ subroutine L2_error(cal_time)
            du(i) = abs( dsol( NOPP(i) + Nu ) / umax )
            dv(i) = abs( dsol( NOPP(i) + Nv ) / vmax )
            dTemp(i) = abs( dsol( NOPP(i) + NT ) / Tmax )
-           dcp(i) = abs( dsol( NOPP(i) + Ncp ) / cpmax )
+           dcp(i) = abs( dsol( NOPP(i) + Ncp ) )   ! / cpmax
            if ( PN(i).eq.1 ) dpress(i) = abs( dsol( NOPP(i) + Np ) / pmax )
         end if
         if( (VN(i).eq.1 .or. VN(i).eq.2) ) then

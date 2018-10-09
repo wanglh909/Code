@@ -136,10 +136,14 @@ if(diverge.eq.0) then
   timestep = timestep + 1
   solp = sol
 
+  if(timestep_stable.eq.1 .and. timestep_stable.le.FTS) then
+     timestep_stable = timestep_stable + 1
+  end if
+
   !define dt
   dtp = dt
   !for first 5 steps, dt doesn't need to be redefined; after 5 steps, do the following
-  if (timestep.gt.FTS) then
+  if (timestep.gt.FTS .and. (timestep_stable.eq.0 .or. timestep_stable.gt.FTS)) then
      dt = dtp*( eps/trunerr )**(1.0_rk/3.0_rk)
      if(dt.lt.dtmin) dt = dtmin
      !if(dt.gt.dtmax) dt = dtmax
@@ -160,7 +164,7 @@ if(diverge.eq.0) then
   soldotp = soldot
 
   !define solpred, viz. the initial guess for each time step
-  if (timestep.le.FTS) then
+  if (timestep.le.FTS .or. (timestep_stable.gt.0 .and. timestep_stable.le.FTS) ) then
      solpred = solp
      !solpred = solp
   else
@@ -173,7 +177,7 @@ if(diverge.eq.0) then
   !u v r z at boundary is already 0
 
   !define CTJ: the coefficient of time term in Jac. CTJ will be used when difining Jac
-  if (timestep.le.FTS) then
+  if (timestep.le.FTS .or. (timestep_stable.gt.0 .and. timestep_stable.le.FTS) ) then
      CTJ = 1.0_rk
   else
      CTJ = 2.0_rk

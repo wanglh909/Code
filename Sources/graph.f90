@@ -66,17 +66,33 @@ write(*,*) 'write mesh'
      
      if(graph_mode.eq.0) then
         step_indicator = timestep
-     else
+     else  !graph_mode.eq.1
         step_indicator = step
      end if
      
-     if(diverge.eq.1 .and. graph_mode.eq.1) then
+     if(diverge.eq.1 .and. graph_mode.eq.1) then  !write in divergence.dat
         if(step_indicator.eq.0) then
            open(unit = 11, file = trim(folder)//'divergence.dat', status = 'replace')
         else
            open(unit = 11, file = trim(folder)//'divergence.dat', status = 'old', access = 'append')
         end if
-     else  !not diverge or right before divergence
+        
+     else if(graph_mode.eq.1) then   !write each step in dynamics.dat
+        
+        if(step_indicator.eq.0) then
+           open(unit = 11, file = trim(folder)//'dynamics.dat', status = 'replace')
+           open(unit = 12, file = trim(folder)//'temperature.dat', status = 'replace')
+           if(no_vapor.eq.0) &
+                open(unit = 13, file = trim(folder)//'vapor_concentration.dat', status = 'replace')
+        else
+           open(unit = 11, file = trim(folder)//'dynamics.dat', status = 'old', access = 'append')
+           open(unit = 12, file = trim(folder)//'temperature.dat', status = 'old', access = 'append')
+           if(no_vapor.eq.0) &
+                open(unit = 13, file = trim(folder)//'vapor_concentration.dat', status = 'old', access = 'append')
+        end if
+        
+     else  !not diverge or right before divergence, write timesteps in dynamics.dat
+        
         if(no_vapor.eq.0 .and. step_indicator.eq.0) then
            open(unit = 11, file = trim(folder)//'dynamics.dat', status = 'replace')
            open(unit = 12, file = trim(folder)//'temperature.dat', status = 'replace')
@@ -88,6 +104,7 @@ write(*,*) 'write mesh'
            if(no_vapor.eq.0) &
                 open(unit = 13, file = trim(folder)//'vapor_concentration.dat', status = 'old', access = 'append')
         end if
+        
      end if
 
 write(*,*) 'write dynamics'

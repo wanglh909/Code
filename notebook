@@ -115,9 +115,20 @@ found that fixed cp BC was not correctly set up before: need to judge if the ele
 
 31: no substrate. need to comment out size_change_3. not using the initial cp fixed BC. instable right from the start.
 
-32: no substrate 50 degrees. initial mesh change back to size_3.
+32: no substrate 50 degrees. initial mesh change back to size_3. cp<-1 from the very start.
 
-33: dimensionless cp change back to cp/cp0 instead of (cp-cp0)/cp0
+33: dimensionless cp change back to cp/cp0 instead of (cp-cp0)/cp0. cp<0 from the very start.
+
+34: cp l2error, not divided by max value. did not converge. timestep=1, cp goes more and more negative by step. may need smaller initial dt.
+
+35: smaller initial dt 1e-6. still unstable.
+
+cp change after flow stable, but changed the stability criteria. initial dt back to 1e-5. graph everystep to see, graph_mode change to 1 after stability is setup.   graph subroutine is wrong, when graph_mode change to 1, not restart writing dynamics.dat
+
+36 change graph subroutine to solve the above problem. graph subroutine is good now.
+but, dt when cp starts to be solved is too large. set back to 1e-6 when starting to solve cp.
+
+37: dt is set back to 1e-6 when starting to solve cp, and treat as just start calculating in prediction subroutine.
 
 maximum packing condition: the particle mass was not conserved.need to change BC for maximum packing boundary.not done???
 

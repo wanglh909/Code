@@ -445,13 +445,19 @@ subroutine variable_cal
            do j = i+1, NTN
               if(BCflagN(j,3).eq.1) exit
            end do
-           if( usol(i)*usol(j).lt.0.0_rk ) then
+           if( usol(i)*usol(j).lt.0.0_rk .and. &
+                (1.0_rk-rcoordinate(i))*(1.0_rk-rcoordinate(j)).gt.1.0e-6_rk ) then
               write(*,*) 'stag exist', rcoordinate(i), rcoordinate(j)
               flag = 1
               exit   !?not strict
            end if
         end do
-        if(flag.eq.0) init_stability = 1
+        if(flag.eq.0) then
+           init_stability = 1
+           dt = 1.0e-6_rk
+           timestep_stable = 1
+           graph_mode = 1
+        end if
      end if
      
      close(30)

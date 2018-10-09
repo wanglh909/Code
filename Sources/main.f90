@@ -136,10 +136,10 @@ program main
      call newton_raphson  !calculating part, use multifront, jac_check_0, l2_error, split_sol, graph
 
      if(graph_mode.eq.1 .and. diverge.eq.0) then
-        !if(s_mode.eq.0) then
+        if(s_mode.eq.0 .and. init_stability.eq.1) then
            write(*,*) 'pause for every timestep if solve for dynamics and graph each step'
            pause
-        !end if
+        end if
      else if( timestep.le.20 .or. mod(timestep,graph_step).eq.0 .or. diverge.eq.1 ) then  
         call graph          !graph every 'graph_step' timesteps or right before divergence
         if(diverge.eq.1)  graph_mode = 1
