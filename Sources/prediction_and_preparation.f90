@@ -9,7 +9,7 @@ subroutine prediction
 
   integer(kind=ik):: i, j, imax, jmax, m
   character(LEN=2) :: var
-  real(kind=rk):: dtmin=1.0e-6_rk, dtmax=1.0e-1_rk
+  real(kind=rk):: dtmin=1.0e-8_rk, dtmax=1.0e-1_rk
   ! real(kind=rk):: rmax, zmax, umax, vmax, Tmax, pmax, cmax
 
 if(diverge.eq.0) then

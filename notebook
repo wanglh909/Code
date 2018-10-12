@@ -126,9 +126,47 @@ found that fixed cp BC was not correctly set up before: need to judge if the ele
 cp change after flow stable, but changed the stability criteria. initial dt back to 1e-5. graph everystep to see, graph_mode change to 1 after stability is setup.   graph subroutine is wrong, when graph_mode change to 1, not restart writing dynamics.dat
 
 36 change graph subroutine to solve the above problem. graph subroutine is good now.
-but, dt when cp starts to be solved is too large. set back to 1e-6 when starting to solve cp.
+but, dt when cp starts to be solved is too largem may be the reason to cause instabality. set back to 1e-6 when starting to solve cp.
 
-37: dt is set back to 1e-6 when starting to solve cp, and treat as just start calculating in prediction subroutine.
+37: dt is set back to 1e-6 when starting to solve cp, and treat as just start calculating in prediction subroutine. not converge
+
+38: dt=1e-7. need smaller dt
+
+39: dt=1e-8. need smaller dt
+
+40: dt=1e-9, graph_mode always 0. dt is still too big
+
+------------------used wrong Pe: too large, it is for 100um particles---------
+
+
+41: dt=1e-5, start cp right away(init_stability=1), Dp=1nm. behave well. killed
+41_1: not include cp in trunerr. still need to analyze the resultsbehave well. maybe compare with 41_2 on the surface cp to see how much difference are there.????????????????????????????????????????
+
+41_2: continue 41. behaved well till 5.236, dt not always small, as large as 1e-4 when angle (16,47).
+
+42: Dp=10nm. may be unstable, cp lower than 0.99 emerged at angle=49.921. killed
+
+43: Dp=100nm. unstable because dtmin is still too big for 100nm particles. killed.
+
+44: no Marangoni, trunerr not include cp, 100nm particle. behaved well except cp at the surface and the contact line is too high, not physical.
+
+45: no Marangoni, trunerr include cp, 1nm.?1
+
+46: Marangoni, 100nm, trunerr include cp, start cp after profile stable.? start cp with FTS of 1e-5 is too large, diverge. next, try a smaller FTS.
+
+46_2: FTS 1e-7. still diverge.
+
+---------------------------use no substrate to get quicker results-------------
+
+47: Marangoni, 1nm, add substrate, trunerr include cp, start cp after profile stable. did not converge once cp was solved.
+
+48: Marangoni with substrate, 1nm, start cp right away.
+
+
+
+if these works, add the substrate.
+
+
 
 maximum packing condition: the particle mass was not conserved.need to change BC for maximum packing boundary.not done???
 

@@ -12,7 +12,7 @@ subroutine variable_cal
   integer(kind=ik):: i,j,k,n1, n2, n3, angle_c_node
   real(kind=rk):: rsi, reta, zsi, zeta, csi, ceta, rsi1, reta1, zsi1, zeta1, csi1, ceta1, rdot, zdot
   real(kind=rk), allocatable:: flux(:), flux1(:), Dflux(:), flux_gp(:)
-  real(kind=rk):: J0, volume1, volume2
+  real(kind=rk):: J0, volume0, volume1, volume2
   ! real(kind=rk):: a, b, c, eta0, eta01, eta02, r_change
   real(kind=rk):: retap(3), zetap(3), v_surf(3), eta1, eta2, eta3, usolp, vsolp, r_change
   real(kind=rk):: Rp, angle_c_sphe, err_sphe, z_sphe
@@ -21,7 +21,7 @@ subroutine variable_cal
   real(kind=rk):: t
   real(kind=rk):: v_surf_p(3), h_surf, dPdr(3), zsolp
   
-  real(kind=rk):: particle_m, intMass(3,3), intVol(3,3), cpintfac, rintfac, Jp
+  real(kind=rk):: particle_m, intMass(3,3), intVol(3,3), cpintfac, rintfac, Jp, cp_average
   integer(kind=ik):: l, n, flag
 
   t = REAL(omp_get_wtime(),rk)
@@ -72,6 +72,69 @@ subroutine variable_cal
 
 !   close(12)
 
+
+  !--------------------------total particle mass & drop volume-------------------------
+  if(s_mode.eq.0) then
+     particle_m = 0.0_rk
+     volume1 = 0.0_rk
+     do i = 1, NTE
+        if(VE(i).ne.0) cycle
+        do j = 1, 9
+           rlocal(j,1) = rcoordinate( globalNM(i,j) )
+           zlocal(j,1) = zcoordinate( globalNM(i,j) )
+           cplocal(j,1) = cpsol( globalNM(i,j) )
+        end do
+        do k = 1, Ng, 1
+           do l = 1, Ng, 1
+              rintfac = 0.0_rk
+              rsi = 0.0_rk
+              reta = 0.0_rk
+              zsi = 0.0_rk
+              zeta = 0.0_rk
+              cpintfac = 0.0_rk
+              do n = 1, 9, 1
+                 rintfac = rintfac + rlocal(n,1)*phi(k,l,n)
+                 cpintfac = cpintfac + cplocal(n,1)*phi(k,l,n)
+                 rsi = rsi + rlocal(n,1)*phisi(k,l,n)
+                 reta = reta + rlocal(n,1)*phieta(k,l,n)
+                 zsi = zsi + zlocal(n,1)*phisi(k,l,n)
+                 zeta = zeta + zlocal(n,1)*phieta(k,l,n)
+              end do
+              !define Jp(3,3)
+              Jp =  rsi*zeta - reta*zsi
+              intMass(k,l) = cpintfac * rintfac * abs( Jp )
+              intVol(k,l) = rintfac * abs( Jp )
+           end do
+        end do
+        particle_m = particle_m + gaussian_quadrature(intMass)
+        volume1 = volume1 + gaussian_quadrature(intVol)
+        if(timestep.eq.1) volume0 = volume1
+     end do
+     ! write(*,*) 'particle mass', particle_m
+
+     !write particle mass
+     if(timestep.eq.0) then
+        open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'replace')
+        write(31, '(A)') 'variables = "contact angle", "m", "time" '
+     else
+        open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'old', access = 'append')
+     end if
+     write(31, '(3es15.7)') angle_c, particle_m, time
+     close(31)
+
+     ! !write drop volume
+     ! write(*,*) 'drop volume', volume1, 'particle mass limit', volume1*(cpmax+1.0_rk)
+     ! if(timestep.eq.0) then
+     !    open(unit = 32, file = trim(folder)//'drop_volume.dat', status = 'replace')
+     !    write(32, '(A)') 'variables = "time", "V", "contact angle" '
+     ! else
+     !    open(unit = 32, file = trim(folder)//'drop_volume.dat', status = 'old', access = 'append')
+     ! end if
+     ! write(32, '(3es15.7)') time, volume1, angle_c
+     ! close(32)
+  end if
+  
+  !---------------------------------------------------------------------------------------
 
 
 !   !--------------------------------------max value-----------------------------------
@@ -136,22 +199,33 @@ subroutine variable_cal
      else
         open(unit = 113, file = trim(folder)//'cp_surface.dat', status = 'old', access = 'append')
      end if
+     
+     if(timestep.eq.1) then 
+        open(unit = 114, file = trim(folder)//'normalized_cp_surface.dat', status = 'replace')    
+     else
+        open(unit = 114, file = trim(folder)//'normalized_cp_surface.dat', status = 'old', access = 'append')
+     end if
 
      if(timestep.le.5 .or. mod(timestep,graph_step).eq.0) then   !write data every several timestep
         write(13, '(A)') 'variables = "r", "T"'
         write(13, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
         do i = 1, NTN
-           if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) .or. &
-                ( VN(i).eq.1 .and. BCflagN(i,2).eq.1 ) )  &
+           if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) )  &
                 write(13,'(2es15.7)')  rcoordinate(i), Tsol(i)
         end do
 
         write(113, '(A)') 'variables = "r", "cp"'
         write(113, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
+        write(114, '(A)') 'variables = "r", "cp"'
+        write(114, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
+        cp_average = volume0/volume1
+print *, 'cp_average', cp_average
         do i = 1, NTN
            if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) .or. &
-                ( VN(i).eq.1 .and. BCflagN(i,2).eq.1 ) )  &
-                write(113,'(2es15.7)')  rcoordinate(i), cpsol(i)
+                ( VN(i).eq.1 .and. BCflagN(i,2).eq.1 ) )  then
+              write(113,'(2es15.7)')  rcoordinate(i), cpsol(i)
+              write(113,'(2es15.7)')  rcoordinate(i), cpsol(i)/cp_average
+           end if
         end do
      end if
 
@@ -454,9 +528,9 @@ subroutine variable_cal
         end do
         if(flag.eq.0) then
            init_stability = 1
-           dt = 1.0e-6_rk
+           dt = 1.0e-7_rk
            timestep_stable = 1
-           graph_mode = 1
+           !graph_mode = 1
         end if
      end if
      
@@ -581,66 +655,6 @@ subroutine variable_cal
 !   deallocate(flux, flux1, Dflux)
 
 
-
-  !--------------------------total particle mass & drop volume-------------------------
-  particle_m = 0.0_rk
-  volume1 = 0.0_rk
-  do i = 1, NTE
-     if(VE(i).ne.0) cycle
-     do j = 1, 9
-        rlocal(j,1) = rcoordinate( globalNM(i,j) )
-        zlocal(j,1) = zcoordinate( globalNM(i,j) )
-        cplocal(j,1) = cpsol( globalNM(i,j) )
-     end do
-     do k = 1, Ng, 1
-        do l = 1, Ng, 1
-           rintfac = 0.0_rk
-           rsi = 0.0_rk
-           reta = 0.0_rk
-           zsi = 0.0_rk
-           zeta = 0.0_rk
-           cpintfac = 0.0_rk
-           do n = 1, 9, 1
-              rintfac = rintfac + rlocal(n,1)*phi(k,l,n)
-              cpintfac = cpintfac + cplocal(n,1)*phi(k,l,n)
-              rsi = rsi + rlocal(n,1)*phisi(k,l,n)
-              reta = reta + rlocal(n,1)*phieta(k,l,n)
-              zsi = zsi + zlocal(n,1)*phisi(k,l,n)
-              zeta = zeta + zlocal(n,1)*phieta(k,l,n)
-           end do
-           !define Jp(3,3)
-           Jp =  rsi*zeta - reta*zsi
-           intMass(k,l) = cpintfac * rintfac * abs( Jp )
-           intVol(k,l) = rintfac * abs( Jp )
-        end do
-     end do
-     particle_m = particle_m + gaussian_quadrature(intMass)
-     volume1 = volume1 + gaussian_quadrature(intVol)
-  end do
-  ! write(*,*) 'particle mass', particle_m
-
-  !write particle mass
-  if(timestep.eq.0) then
-     open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'replace')
-     write(31, '(A)') 'variables = "contact angle", "m", "time" '
-  else
-     open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'old', access = 'append')
-  end if
-  write(31, '(3es15.7)') angle_c, particle_m, time
-  close(31)
-
-  ! !write drop volume
-  ! write(*,*) 'drop volume', volume1, 'particle mass limit', volume1*(cpmax+1.0_rk)
-  ! if(timestep.eq.0) then
-  !    open(unit = 32, file = trim(folder)//'drop_volume.dat', status = 'replace')
-  !    write(32, '(A)') 'variables = "time", "V", "contact angle" '
-  ! else
-  !    open(unit = 32, file = trim(folder)//'drop_volume.dat', status = 'old', access = 'append')
-  ! end if
-  ! write(32, '(3es15.7)') time, volume1, angle_c
-  ! close(32)
-  
-  !---------------------------------------------------------------------------------------
 
 
   !flag to judge if maximum packing everywhere

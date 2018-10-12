@@ -65,7 +65,7 @@ subroutine initialization
   diverge = 0
   pack_condition = 0.0_rk
   if(no_Maran.eq.0) then  !change from 0 to 1 if solving for Marangoni cases
-     init_stability = 0
+     init_stability = 1
   else
      init_stability = 1
   end if
