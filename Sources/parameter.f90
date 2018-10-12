@@ -143,6 +143,7 @@ subroutine parameter_values
   write(10,'(A, i8)') 'TtimeS =', TtimeS
   write(10,'(A, i8)') 'TdiffS =', TdiffS
   write(10,'(A, i8)') 'uniflux =', uniflux
+  write(10,'(A, i8)') 'no_Maran =', no_Maran
 
   write(10,'(A)') ' '
 

@@ -12,7 +12,7 @@ subroutine variable_cal
   integer(kind=ik):: i,j,k,n1, n2, n3, angle_c_node
   real(kind=rk):: rsi, reta, zsi, zeta, csi, ceta, rsi1, reta1, zsi1, zeta1, csi1, ceta1, rdot, zdot
   real(kind=rk), allocatable:: flux(:), flux1(:), Dflux(:), flux_gp(:)
-  real(kind=rk):: J0, volume0, volume1, volume2
+  real(kind=rk):: J0, volume1, volume2
   ! real(kind=rk):: a, b, c, eta0, eta01, eta02, r_change
   real(kind=rk):: retap(3), zetap(3), v_surf(3), eta1, eta2, eta3, usolp, vsolp, r_change
   real(kind=rk):: Rp, angle_c_sphe, err_sphe, z_sphe
@@ -219,7 +219,7 @@ subroutine variable_cal
         write(114, '(A)') 'variables = "r", "cp"'
         write(114, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
         cp_average = volume0/volume1
-print *, 'cp_average', cp_average
+        ! print *, 'cp_average', cp_average
         do i = 1, NTN
            if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) .or. &
                 ( VN(i).eq.1 .and. BCflagN(i,2).eq.1 ) )  then
