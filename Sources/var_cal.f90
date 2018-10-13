@@ -342,12 +342,12 @@ subroutine variable_cal
         open(unit = 18, file = trim(folder)//'surf_gradT_dir.dat', status = 'old', access = 'append')
      end if
      
-     if(timestep.eq.1) then
-        open(unit = 30, file = trim(folder)//'v0_lubrication.dat', status = 'replace')
-        write(30, '(A)') 'variables = "contact angle", "r", "time", "element" '
-     else
-        open(unit = 30, file = trim(folder)//'v0_lubrication.dat', status = 'old', access = 'append')
-     end if
+     ! if(timestep.eq.1) then
+     !    open(unit = 30, file = trim(folder)//'v0_lubrication.dat', status = 'replace')
+     !    write(30, '(A)') 'variables = "contact angle", "r", "time", "element" '
+     ! else
+     !    open(unit = 30, file = trim(folder)//'v0_lubrication.dat', status = 'old', access = 'append')
+     ! end if
 
 
      if(timestep.eq.1) then
@@ -534,7 +534,7 @@ subroutine variable_cal
         end if
      end if
      
-     close(30)
+     ! close(30)
      close(14)
      close(18)
   

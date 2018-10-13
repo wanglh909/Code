@@ -16,13 +16,13 @@ program main
   angle_c_degree = 50.0_rk   !90.0_rk!
   angle_c = angle_c_degree /180.0_rk*pi
   no_vapor = 1       !no_vapor = 1: do not solve for vapor phase, impose function flux
-  uniflux = 1  !determine if the imposed flux is uniform. Notice: If flux is uniform, still use divergent heat flux.
+  uniflux = 0  !determine if the imposed flux is uniform. Notice: If flux is uniform, still use divergent heat flux.
   if(uniflux.eq.1) no_vapor = 1
   call data_folder  !determine xe
 
   !set mesh parameters
   !2 6 4 2 2 simple mesh
-  NEL = 15   !8    !  input   
+  NEL = 8    !15   !  input   
   NEM = 200  !input     !decide in data_folder
   NEV = 50 !200!     1000!  !input
   NES = 5   !10!  30  !input
@@ -42,7 +42,7 @@ program main
   !Use single or dual for debugging, same with debug_NAN
 !-----------------------------------done settings------------------------------------
   
-  no_Maran = 1  !1: no Marangoni stress
+  no_Maran = 0  !1: no Marangoni stress
   !set terms option
   NStrans = 1
   Inert = 1

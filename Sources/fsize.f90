@@ -131,7 +131,7 @@ print *, 'final size'
            if (RegN(i).eq.3) then
               fsi_size(i) = (y-x8)*real(columnNM(i),rk)/real(NEL-1,rk) + x8 - (y-x8)/real(NEL-1,rk)
            else    !RegN = 4
-              fsi_size(i) = (y-x5)*real(columnNM(i),rk)/real(1-NEL,rk) + x5 - 2.0_rk*(y-x5)*real(NEL,rk)/real(1-NEL,rk)
+              fsi_size(i) = (y-x4)*real(columnNM(i),rk)/real(1-NEL,rk) + x4 - 2.0_rk*(y-x4)*real(NEL,rk)/real(1-NEL,rk)
            end if
         end if
 

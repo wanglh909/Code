@@ -2,13 +2,13 @@ subroutine parameter_values
   use kind
   use data, only: Re, Ca, Kdi, Pe, KBCgroup, REH, beta, Oh, Grav, R, Hum, F0, kR, folder, substrate, outer, &
        NStrans, Inert, Capil, Viscous, GravI, Ttime, Tconv, Tdiff, TtimeS, TdiffS, NEM, NEL, NES, NEV, NEM_alge, T_sub, uniflux, &
-       diameterp, Pep, kboltz, pi, no_Maran, cp_pack, Dp 
+       diameterp, Pep, kboltz, pi, no_Maran, cp_pack, Dp, no_vapor
   implicit none
 
   integer(kind=ik):: Ltype !, water, octane, hexanol
   real(kind=rk):: rho, mu, kT, cpl, alpha, beta0, Diff, csat, Hv, sigmac, lc, vc, Tc, ks, rhos, cpS, alphaS, Mmolar
 
-  substrate = 0.0_rk!  0.15_rk!   3.0_rk! !1.0_rk  !0.15_rk   
+  substrate = 0.15_rk!   0.0_rk!   3.0_rk! !1.0_rk  !0.15_rk   
   outer = 1.3_rk    !10.0_rk!   20.0_rk, 1.3_rk
 
   Ltype = 1
@@ -75,7 +75,7 @@ subroutine parameter_values
   T_sub = 25.0_rk !     80 !(C)  !25 if not heated
 
   !particle
-  diameterp = 1.0e-8_rk  !1.0e-7_rk  !  (m) particle diameter
+  diameterp = 1.0e-7_rk  !1.0e-7_rk  !  (m) particle diameter
   Dp = kboltz*(25.0_rk+273.15_rk)/(6.0_rk*pi*mu*diameterp)   !2.45e-12 (m^2/s)
   !cp0 = 2.5e-4  !(kg/m^3)  !??not used yet
   cp_pack = 5.0_rk
@@ -142,6 +142,7 @@ subroutine parameter_values
   write(10,'(A, i8)') 'Tdiff =', Tdiff
   write(10,'(A, i8)') 'TtimeS =', TtimeS
   write(10,'(A, i8)') 'TdiffS =', TdiffS
+  write(10,'(A, i8)') 'no_vapor =', no_vapor
   write(10,'(A, i8)') 'uniflux =', uniflux
   write(10,'(A, i8)') 'no_Maran =', no_Maran
 
@@ -152,6 +153,11 @@ subroutine parameter_values
   write(10,'(A, i8)') 'NEV = ', NEV
   write(10,'(A, i8)') 'NES = ', NES
   write(10,'(A, i8)') 'NEM_alge = ', NEM_alge
+  if(no_vapor.eq.1) then
+     write(10,'(A, i8)') 'rad_ele =', NEL*2+NES
+  else ! no_vapor=0
+     write(10,'(A, i8)') 'rad_ele =', NEL*2+NES+NEV
+  end if
 
   close(10)
 
