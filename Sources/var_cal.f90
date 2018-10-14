@@ -21,7 +21,7 @@ subroutine variable_cal
   real(kind=rk):: t
   real(kind=rk):: v_surf_p(3), h_surf, dPdr(3), zsolp
   
-  real(kind=rk):: particle_m, intMass(3,3), intVol(3,3), cpintfac, rintfac, Jp, cp_average
+  real(kind=rk):: particle_m, intMass(3,3), intVol(3,3), cpintfac, rintfac, Jp
   integer(kind=ik):: l, n, flag
 
   t = REAL(omp_get_wtime(),rk)
@@ -41,7 +41,7 @@ subroutine variable_cal
   ! write(*,*) 'angle_c_node', angle_c_node
   ! write(*,*) 'top_node', top_node
 
-  if(s_mode.eq.0) then
+  if(final_size.eq.1) then
   angle_c = atan( zcoordinate(angle_c_node)/ ( rcoordinate(i) - rcoordinate(angle_c_node) ) )
   !atan( solp( NOPP(angle_c_node)+Nz ) / ( solp( NOPP(1)+Nr ) - solp( NOPP(angle_c_node)+Nr ) ) )
   angle_c_degree = angle_c /pi*180.0_rk   !degree
@@ -74,7 +74,7 @@ subroutine variable_cal
 
 
   !--------------------------total particle mass & drop volume-------------------------
-  if(s_mode.eq.0) then
+  if(final_size.eq.1) then
      particle_m = 0.0_rk
      volume1 = 0.0_rk
      do i = 1, NTE
@@ -219,7 +219,7 @@ subroutine variable_cal
         write(114, '(A)') 'variables = "r", "cp"'
         write(114, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
         cp_average = volume0/volume1
-        ! print *, 'cp_average', cp_average
+         print *, 'cp_average', cp_average
         do i = 1, NTN
            if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) .or. &
                 ( VN(i).eq.1 .and. BCflagN(i,2).eq.1 ) )  then

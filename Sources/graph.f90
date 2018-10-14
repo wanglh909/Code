@@ -228,7 +228,7 @@ contains
        !write headlines
        if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
           if(Nregion.eq.1) then
-             write(11, '(A)') 'variables = "r", "z", "u", "v", "T", "cp", "cp_flag", "p"'
+             write(11, '(A)') 'variables = "r", "z", "u", "v", "cpN", "cp", "cp_flag", "T"'
              ! write(11, '(A,es13.6,A)') 'DATASETAUXDATA Umax = "', umax, '"'
              ! write(11, '(A,es13.6,A)') 'DATASETAUXDATA Vmax = "', vmax, '"'
 
@@ -237,8 +237,9 @@ contains
                   ', Datapacking = Point, Zonetype = FEQuadrilateral, N =', Nnode, ', E =', Nele, &
                   ', DT = (double,double,double,double,double,double), &
                   AUXDATA angle = "',angle_c_degree, '", AUXDATA UMAX = "', umax, '", &
-                  AUXDATA VMAX = "', vmax, '", AUXDATA ZTOP = "', ztop, '"'
-202    format(A,i8,A,es14.7,A,i8,A,i8,A, f7.3, A,es13.6,A,es13.6,A,ES13.6,A)
+                  AUXDATA VMAX = "', vmax, '", AUXDATA ZTOP = "', ztop, '", &
+                  AUXDATA CP0 = "', cp_average, '"'
+202    format(A,i8,A,es14.7,A,i8,A,i8,A, f7.3, A,es13.6,A,es13.6,A,ES13.6,A,ES13.6,A)
              zone_d = zone_d + 1
 
           end if
@@ -281,7 +282,8 @@ contains
 
           if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
              if(Nregion.eq.1) then
-write(11,'(6es15.7,i4,es15.7)') rcoordinate(i), zcoordinate(i), usol(i), vsol(i), Tsol(i), cpsol(i), pack_flag(i), psol(i)
+                write(11,'(6es15.7,i4,es15.7)') rcoordinate(i), zcoordinate(i), &
+                 usol(i), vsol(i), cpsol(i)/cp_average, cpsol(i), pack_flag(i), Tsol(i)
              end if
              if(Nregion.eq.1 .or. Nregion.eq.3) then
                 write(12,'(7es15.7)') rcoordinate(i), zcoordinate(i), Tsol(i)

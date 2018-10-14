@@ -42,7 +42,7 @@ program main
   !Use single or dual for debugging, same with debug_NAN
 !-----------------------------------done settings------------------------------------
   
-  no_Maran = 0  !1: no Marangoni stress
+  no_Maran = 1  !1: no Marangoni stress
   !set terms option
   NStrans = 1
   Inert = 1
@@ -135,6 +135,10 @@ program main
 
      call newton_raphson  !calculating part, use multifront, jac_check_0, l2_error, split_sol, graph
 
+     !calculate contact angle & flux
+     if(diverge.eq.0)  call variable_cal   !(initial_vapor_solving.eq.1 .or. initial_vapor_solved.eq.1).and.
+
+    
      if(graph_mode.eq.1 .and. diverge.eq.0) then
         if(s_mode.eq.0 .and. init_stability.eq.1) then
            write(*,*) 'pause for every timestep if solve for dynamics and graph each step'
@@ -147,8 +151,6 @@ program main
 
      call flag_mesh   !flag for mesh establish(mesh_size_change & initial_vapor_solv)
 
-     !calculate contact angle & flux
-     if(diverge.eq.0)  call variable_cal   !(initial_vapor_solving.eq.1 .or. initial_vapor_solved.eq.1).and. 
 
      t_program = REAL(omp_get_wtime(),rk) - t1
      open(unit = 20, file = trim(folder)//'cal_time.dat', status = 'old', access = 'append')

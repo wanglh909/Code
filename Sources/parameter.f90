@@ -75,7 +75,7 @@ subroutine parameter_values
   T_sub = 25.0_rk !     80 !(C)  !25 if not heated
 
   !particle
-  diameterp = 1.0e-7_rk  !1.0e-7_rk  !  (m) particle diameter
+  diameterp = 1.0e-9_rk  !1.0e-7_rk  !  (m) particle diameter
   Dp = kboltz*(25.0_rk+273.15_rk)/(6.0_rk*pi*mu*diameterp)   !2.45e-12 (m^2/s)
   !cp0 = 2.5e-4  !(kg/m^3)  !??not used yet
   cp_pack = 5.0_rk

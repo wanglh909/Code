@@ -45,7 +45,8 @@ subroutine initialization
   Tsol = 0.0_rk
   psol = 0.0_rk
   csol = 0.0_rk
-  cpsol = 0.0_rk
+  cpsol = 1.0_rk
+  cp_average = 1.0_rk
 
   if(check_0_in_Jac.eq.1)  then
      allocate( Jac(NVar,NVar), Res(NVar) )
