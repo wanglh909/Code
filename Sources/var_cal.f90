@@ -199,12 +199,13 @@ subroutine variable_cal
      else
         open(unit = 113, file = trim(folder)//'cp_surface.dat', status = 'old', access = 'append')
      end if
-     
+
      if(timestep.eq.1) then 
         open(unit = 114, file = trim(folder)//'normalized_cp_surface.dat', status = 'replace')    
      else
         open(unit = 114, file = trim(folder)//'normalized_cp_surface.dat', status = 'old', access = 'append')
      end if
+
 
      if(timestep.le.5 .or. mod(timestep,graph_step).eq.0) then   !write data every several timestep
         write(13, '(A)') 'variables = "r", "T"'
@@ -216,21 +217,29 @@ subroutine variable_cal
 
         write(113, '(A)') 'variables = "r", "cp"'
         write(113, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
-        write(114, '(A)') 'variables = "r", "cp"'
-        write(114, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
-        cp_average = volume0/volume1
-         print *, 'cp_average', cp_average
         do i = 1, NTN
            if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) .or. &
                 ( VN(i).eq.1 .and. BCflagN(i,2).eq.1 ) )  then
               write(113,'(2es15.7)')  rcoordinate(i), cpsol(i)
-              write(113,'(2es15.7)')  rcoordinate(i), cpsol(i)/cp_average
            end if
         end do
+        
+        cp_average = volume0/volume1
+        print *, 'cp_average', cp_average
+        write(114, '(A)') 'variables = "r", "cp"'
+        write(114, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
+        do i = 1, NTN
+           if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) .or. &
+                ( VN(i).eq.1 .and. BCflagN(i,2).eq.1 ) )  then
+              write(114,'(2es15.7)')  rcoordinate(i), cpsol(i)/cp_average
+           end if
+        end do
+        
      end if
 
      close(13)
      close(113)
+     close(114)
 
   end if  !timestep.ne.0
 

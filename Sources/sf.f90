@@ -317,7 +317,7 @@ if(no_vapor.eq.1) then  !flux:  flux( angle_c,rintfac_right(k,id) )
 
    
    !particle accumulation 2
-   intRm_S(k) = intRsi_S(k) * cpintfac_right(k,id)
+   intRm_S(k) = intRsi_S(k) * cpintfac_right(k,id) 
 end if
 
 !KBC1

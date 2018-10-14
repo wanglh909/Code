@@ -14,10 +14,10 @@ subroutine prediction
 
 if(diverge.eq.0) then
 
-  !prepare for the next time step
+  !define trunerr & soldot (prepare for the next time step)
   if(timestep.ge.FTS) then
      
-     !calculate and write truncate error
+     !------------------calculate and write truncate error----------------------------
      trunerr = 0.0_rk     !Linf norm
      do i = 1, NTN
         if (ABS( sol(NOPP(i)+Nr) - solpred(NOPP(i)+Nr) )/rmax .gt.trunerr) then
@@ -116,8 +116,9 @@ if(diverge.eq.0) then
      write(10,'(es15.7, A, A, i8, 2es15.7)') trunerr, '   ', var, imax, rcoordinate(imax), zcoordinate(imax)
      close(10)
 
+     !--------------------------------------------------------------------------------
 
-
+     
      !define soldot
      ! because after the last loop of newton's method for one time step, soldot wasn't calculated
      ! in order to use 'soldotp = soldot' in the next time step, soldotp need to be calculated one more time. 
@@ -127,51 +128,61 @@ if(diverge.eq.0) then
         soldot = 2.0_rk*( sol - solp )/dt - soldotp
      end if
 
-  end if
+  end if   !timestep.gt.FTS
 
+end if   !diverge=0
 
 
   !-------------------------------------next timestep----------------------------------------------------
 
   timestep = timestep + 1
-  solp = sol
 
   if(timestep_stable.eq.1 .and. timestep_stable.le.FTS) then
      timestep_stable = timestep_stable + 1
   end if
 
-  !define dt
-  dtp = dt
-  !for first 5 steps, dt doesn't need to be redefined; after 5 steps, do the following
-  if (timestep.gt.FTS .and. (timestep_stable.eq.0 .or. timestep_stable.gt.FTS)) then
-     dt = dtp*( eps/trunerr )**(1.0_rk/3.0_rk)
-     if(dt.lt.dtmin) dt = dtmin
-     !if(dt.gt.dtmax) dt = dtmax
-  end if
+  !--------------------------------define dt & solpred-------------------------------
+  if(diverge.eq.0) then
+     dtp = dt
+     solp = sol
+     !dt. for first 5 steps, dt doesn't need to be redefined; after 5 steps:
+     if (timestep.gt.FTS .and. (timestep_stable.eq.0 .or. timestep_stable.gt.FTS)) then
+        dt = dtp*( eps/trunerr )**(1.0_rk/3.0_rk)
+        if(dt.lt.dtmin) dt = dtmin
+        !if(dt.gt.dtmax) dt = dtmax
+     end if
+     ! !wirte dt in file
+     ! if (timestep.eq.FTS .and. step.eq.0) then
+     !    open(unit = 10, file = trim(folder)//'dt.dat', status = 'replace')
+     !    write(10, '(A)') 'variables = "time", "dt", "timestep" '
+     ! else
+     !    open(unit = 10, file = trim(folder)//'dt.dat', status = 'old', access = 'append')
+     ! end if
+     !    write(10, '(2es15.7, i8)') time, dt, timestep
+     ! close(10)
+
+
+     !define solpred, viz. the initial guess for each time step
+     soldotpp = soldotp
+     soldotp = soldot
+     if (timestep.le.FTS .or. (timestep_stable.gt.0 .and. timestep_stable.le.FTS) ) then
+        solpred = solp
+        !solpred = solp
+     else
+        solpred = solp + 0.5_rk*dt*( ( 2.0_rk + dt/dtp )*soldotp - dt/dtp*soldotpp )
+        !solpred = solp + dt*soldotp
+     end if
+
+  end if!diverge=0
+  !-----------------------------------------------------------------------------------
+
   time = time + dt
-  write(*,*) 'time:', time, '    dt:', dt, '    timestep:', timestep
-  ! !wirte dt in file
-  ! if (timestep.eq.FTS .and. step.eq.0) then
-  !    open(unit = 10, file = trim(folder)//'dt.dat', status = 'replace')
-  !    write(10, '(A)') 'variables = "time", "dt", "timestep" '
-  ! else
-  !    open(unit = 10, file = trim(folder)//'dt.dat', status = 'old', access = 'append')
-  ! end if
-  !    write(10, '(2es15.7, i8)') time, dt, timestep
-  ! close(10)
-
-  soldotpp = soldotp
-  soldotp = soldot
-
-  !define solpred, viz. the initial guess for each time step
-  if (timestep.le.FTS .or. (timestep_stable.gt.0 .and. timestep_stable.le.FTS) ) then
-     solpred = solp
-     !solpred = solp
+  if(diverge.eq.0) then
+     write(*,*) 'time:', time, '    dt:', dt, '    timestep:', timestep
   else
-     solpred = solp + 0.5_rk*dt*( ( 2.0_rk + dt/dtp )*soldotp - dt/dtp*soldotpp )
-     !solpred = solp + dt*soldotp
+     write(*,*) 'time:', time, '    dt:', dt, '    timestep:', timestep, '(repeat)'
   end if
-
+  
   sol = solpred
   call split_sol
   !u v r z at boundary is already 0
@@ -183,14 +194,7 @@ if(diverge.eq.0) then
      CTJ = 2.0_rk
   end if
 
-else  !diverge=1
-
-  timestep = timestep + 1
-  time = time + dt
-  sol = solpred
-  call split_sol
-
-end if
+  
 
   return
 end subroutine prediction

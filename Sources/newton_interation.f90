@@ -6,7 +6,7 @@ subroutine newton_raphson
 
   implicit none
   real(kind=rk):: cal_time
-  real(kind=rk), parameter:: TOL = 1.0e-5_rk
+  real(kind=rk), parameter:: TOL = 5.0e-5_rk
   integer(kind=ik):: i
 
 
@@ -57,7 +57,7 @@ subroutine newton_raphson
      if ( ( step.gt.10 .and. (timestep.ne.0) ) .or. error2.gt.1.0e8_rk  )  then
         write(*,*) 'did not converge, diverge number', diverge, 's_mode', s_mode
         if(diverge.eq.1 .or. s_mode.eq.1) then
-           write(*,*) folder
+           write(*,*) 'data wrote in', folder
            ! call system('preplot '//trim(folder)//'dynamics.dat')
            ! call system('preplot '//trim(folder)//'mesh.dat')
            ! call system('preplot '//trim(folder)//'divergence.dat')
@@ -68,6 +68,7 @@ subroutine newton_raphson
            sol = solp
            call split_sol
            timestep = timestep - 1
+           timestep_stable = timestep_stable - 1  !?useful?
            time = time - dt
            diverge = 1
 ! print *, 'diverge exit'
@@ -78,6 +79,8 @@ subroutine newton_raphson
      !convergence reached
      if ( (error1.lt.TOL.and.error2.lt.TOL) .or. &
           ( s_mode.eq.1 .and. final_size.eq.0 .and. (error1.lt.2.0_rk .or. error2.lt.2.0_rk) ) ) then
+        print *, 'this timestep converged'
+        if(diverge.eq.1) diverge=0
         !update soldot
         if (timestep.le.FTS) then
            soldot = ( sol - solp )/dt

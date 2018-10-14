@@ -22,7 +22,7 @@ program main
 
   !set mesh parameters
   !2 6 4 2 2 simple mesh
-  NEL = 8    !15   !  input   
+  NEL = 8    ! 15   ! input   
   NEM = 200  !input     !decide in data_folder
   NEV = 50 !200!     1000!  !input
   NES = 5   !10!  30  !input
@@ -42,7 +42,7 @@ program main
   !Use single or dual for debugging, same with debug_NAN
 !-----------------------------------done settings------------------------------------
   
-  no_Maran = 1  !1: no Marangoni stress
+  no_Maran = 0  !1: no Marangoni stress
   !set terms option
   NStrans = 1
   Inert = 1
@@ -163,9 +163,11 @@ program main
      
      if(angle_c.le.0.0_rk) then
         write(*,*) 'contact angle is negative'
+        write(*,*) 'data wrote in', folder
         stop
      else if(angle_c_degree.le.3.0_rk) then
         write(*,*) 'contact angle is less than 3 degrees'
+        write(*,*) 'data wrote in', folder
         stop
      ! else if( pack_condition.ne.0.0_rk ) then
      !    write(*,*) 'no cp change anymore'
