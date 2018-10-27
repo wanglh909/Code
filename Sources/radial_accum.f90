@@ -4,7 +4,7 @@ subroutine radial_accumulation
   use data, only: NEL, NTE, folder, globalNM, rcoordinate, zcoordinate, cpsol, radial_cal_time, angle_c, angle_c_degree
 
   integer(kind=ik)::divide, k, eleN, j, jp
-  real(kind=rk):: rlocation, dr, z_surf, zlocation, dz(2*NEL), zaccum, x(5), y(5), crossP(5), judge(4), &
+  real(kind=rk):: rlocation, dr1, dr2, dr3, z_surf, zlocation, dz(2*NEL), zaccum, x(5), y(5), crossP(5), judge(4), &
        jj(2,3), ff(2), delta(2), sieta(2), rnode(9), znode(9), rcheck, zcheck, a, cp(2*NEL+1)
   real(kind=rk), parameter:: TOL = 1.0e-6_rk
 
@@ -23,7 +23,9 @@ subroutine radial_accumulation
   divide = 2*NEL
 
   rlocation = 0.0_rk
-  dr = 0.02_rk
+  dr1 = 0.02_rk
+  dr2 = 0.002_rk
+  dr3 = 0.0002_rk
   do while (rlocation.lt.1.0_rk)
      z_surf = sqrt( (1.0_rk/sin(angle_c))**2 - rlocation**2 ) - 1.0_rk/tan(angle_c)
      dzfix = z_surf/real(divide,rk)
@@ -140,14 +142,14 @@ subroutine radial_accumulation
 
            
            if( sqrt(delta(1)**2+delta(2)**2).le.TOL .and. sqrt(ff(1)**2+ff(2)**2).le.TOL ) then
-              if( sieta(1).ge.-0.1_rk .and. sieta(1).le.1.0_rk+0.1_rk .and. &
-                   sieta(2).ge.-0.1_rk .and. sieta(2).le.1.0_rk+0.1_rk ) then  !si,eta are between 0 and 1
+              ! if( sieta(1).ge.-0.1_rk .and. sieta(1).le.1.0_rk+0.1_rk .and. &
+              !      sieta(2).ge.-0.1_rk .and. sieta(2).le.1.0_rk+0.1_rk ) then  !si,eta are between 0 and 1
                  exit
-              else
-                 print *, 'si, eta calculated to wrong value by Newtons method', sieta
-                 pause
-                 sieta(:) = 0.1_rk
-              end if
+              ! else
+              !    print *, 'si, eta calculated to wrong value by Newtons method', sieta
+              !    pause
+              !    sieta(:) = 0.1_rk
+              ! end if
            end if
         end do
         
@@ -161,7 +163,7 @@ subroutine radial_accumulation
         a = abs(rlocation-rcheck)
         if( abs(rlocation-rcheck).gt.abs(zlocation-zcheck) ) a = abs(zlocation-zcheck)
         if(a.gt.TOL) then
-           print *, 'wrong si,eta calculated'
+           print *, 'wrong si,eta calculated. (r,z)=', rlocation, zlocation
            stop
         end if
 
@@ -184,8 +186,14 @@ subroutine radial_accumulation
      !write in file
      write(50,'(2es15.7)')  rlocation, cp_radial
 
-     
-     rlocation = rlocation + dr
+     if(rlocation.le.0.7_rk) then
+        rlocation = rlocation + dr1
+     else if(rlocation.le.0.99_rk) then
+        rlocation = rlocation + dr2
+     else
+        rlocation = rlocation + dr3        
+     end if
+        
   end do  !loop of rlocation
 
   close(50)

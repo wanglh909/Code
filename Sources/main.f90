@@ -42,7 +42,7 @@ program main
   !Use single or dual for debugging, same with debug_NAN
 !-----------------------------------done settings------------------------------------
   
-  no_Maran = 0  !1: no Marangoni stress
+  no_Maran = 1  !1: no Marangoni stress
   !set terms option
   NStrans = 1
   Inert = 1
@@ -64,7 +64,7 @@ program main
   !set flow parameters
   call parameter_values
   
-  angle_int = 16.0_rk  !from what angle start to calculate radial accumulation
+  angle_int = 33.0_rk  !from what angle start to calculate radial accumulation
 
   alge_corner = 1
 
