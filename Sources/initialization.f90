@@ -71,6 +71,7 @@ subroutine initialization
      init_stability = 1
   end if
   timestep_stable = 0
+  radial_cal_time = 0
   
   angle_cd = 0.0_rk
 

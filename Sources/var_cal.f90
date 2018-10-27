@@ -137,6 +137,33 @@ subroutine variable_cal
   !---------------------------------------------------------------------------------------
 
 
+  if(timestep.ge.10 .and. mod(timestep,graph_step).eq.0) then
+     if(angle_c_degree.le.angle_int) then
+        if(real(int(angle_c_degree),rk) .eq. angle_c_degree) then
+           angle_int = angle_c_degree - 1.0_rk
+        else
+           angle_int = real(int(angle_c_degree),rk)
+        end if
+        radial_cal_time = radial_cal_time + 1
+        call radial_accumulation
+     end if
+  end if
+           
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
 !   !--------------------------------------max value-----------------------------------
 !   if(timestep.eq.1) then
 !      open(unit = 19, file = trim(folder)//'max_v.dat', status = 'replace')
@@ -211,17 +238,16 @@ subroutine variable_cal
         write(13, '(A)') 'variables = "r", "T"'
         write(13, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
         do i = 1, NTN
-           if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) )  &
+           if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) .or. &
+                ( VN(i).eq.1 .and. BCflagN(i,2).eq.1 ) )  &
                 write(13,'(2es15.7)')  rcoordinate(i), Tsol(i)
         end do
 
         write(113, '(A)') 'variables = "r", "cp"'
         write(113, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
         do i = 1, NTN
-           if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) .or. &
-                ( VN(i).eq.1 .and. BCflagN(i,2).eq.1 ) )  then
+           if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) )  &
               write(113,'(2es15.7)')  rcoordinate(i), cpsol(i)
-           end if
         end do
         
         cp_average = volume0/volume1
@@ -229,10 +255,8 @@ subroutine variable_cal
         write(114, '(A)') 'variables = "r", "cp"'
         write(114, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
         do i = 1, NTN
-           if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) .or. &
-                ( VN(i).eq.1 .and. BCflagN(i,2).eq.1 ) )  then
+           if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) )  &
               write(114,'(2es15.7)')  rcoordinate(i), cpsol(i)/cp_average
-           end if
         end do
         
      end if
@@ -698,10 +722,7 @@ contains
 
 
 
-
-
-
-
+  
 
 
 

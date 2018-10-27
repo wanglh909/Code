@@ -145,14 +145,13 @@ module data
 
   integer(kind=ik):: no_Maran
 
-  integer(kind=ik):: init_stability, timestep_stable
+  integer(kind=ik):: init_stability, timestep_stable, radial_cal_time
   
   !maximum packing
   integer(kind=ik), allocatable:: pack_flag(:)
   real(kind=rk):: cp_pack, pack_condition, volume0, cp_average
 
 
-
-  
+  real(kind=rk):: angle_int
 
 end module data

@@ -63,6 +63,8 @@ program main
   cpdiff = 1
   !set flow parameters
   call parameter_values
+  
+  angle_int = 16.0_rk  !from what angle start to calculate radial accumulation
 
   alge_corner = 1
 
