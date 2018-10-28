@@ -4,8 +4,9 @@ subroutine radial_accumulation
   use data, only: NEL, NTE, folder, globalNM, rcoordinate, zcoordinate, cpsol, radial_cal_time, angle_c, angle_c_degree
 
   integer(kind=ik)::divide, k, eleN, j, jp
-  real(kind=rk):: rlocation, dr1, dr2, dr3, z_surf, zlocation, dz(2*NEL), zaccum, x(5), y(5), crossP(5), judge(4), &
-       jj(2,3), ff(2), delta(2), sieta(2), rnode(9), znode(9), rcheck, zcheck, a, cp(2*NEL+1)
+  real(kind=rk):: rlocation, dr1, dr2, dr3, dr4, rcut, z_surf, zlocation, dz(2*NEL), zaccum, &
+       x(5), y(5), crossP(5), judge(4), jj(2,3), ff(2), delta(2), &
+       sieta(2), rnode(9), znode(9), rcheck, zcheck, a, cp(2*NEL+1)
   real(kind=rk), parameter:: TOL = 1.0e-6_rk
 
   !print *, radial_cal_time
@@ -18,26 +19,28 @@ subroutine radial_accumulation
   write(50,'(A)') 'variables = "r", "cp" '
   write(50, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
 
-
+  cp = 0.0_rk
   
   divide = 2*NEL
+  rcut = 0.99_rk
 
   rlocation = 0.0_rk
   dr1 = 0.02_rk
   dr2 = 0.002_rk
   dr3 = 0.0002_rk
-  do while (rlocation.lt.1.0_rk)
+  dr4 = 0.00005_rk
+  do while (rlocation.lt.1.0_rk-0.00005_rk)
      z_surf = sqrt( (1.0_rk/sin(angle_c))**2 - rlocation**2 ) - 1.0_rk/tan(angle_c)
      dzfix = z_surf/real(divide,rk)
      dz = dzfix
-     dz(1) = 0.1_rk*dzfix
-     dz(2) = 0.2_rk*dzfix
-     dz(3) = 0.3_rk*dzfix
+     dz(1) = 0.3_rk*dzfix
+     dz(2) = 0.3_rk*dzfix
+     dz(3) = 0.4_rk*dzfix
      dzrest = ( z_surf - 2.0_rk*( dz(1)+dz(2)+dz(3) ) ) / real(divide-6,rk)
      dz(4:2*NEL-3) = dzrest
-     dz(2*NEL) = dz(1)*0.9_rk
-     dz(2*NEL-1) = dz(2)
      dz(2*NEL-2) = dz(3)
+     dz(2*NEL-1) = dz(2)
+     dz(2*NEL) = dz(1)*0.9_rk
 
      zaccum = 0.0_rk
      do k = 1, divide
@@ -48,7 +51,12 @@ subroutine radial_accumulation
      
      cp_radial = 0.0_rk
      zlocation = 0.0_rk
+     !do or not do +1, zlocation+dz condition is different, change it at the end of this do loop
+     !not+1: use cp_lower*dz to calculate accumulation
+     !+1: use (cp_lower+cp_upper)/2*dz, but met error near the CL
      do k = 1, divide+1
+        if( rlocation.ge.rcut .and. k.eq.divide+1 ) cycle
+        
         ! print *, '(r,z)', rlocation,zlocation
         !(r,z) given
 
@@ -178,7 +186,11 @@ subroutine radial_accumulation
 
      cp_radial = 0.0_rk
      do k = 1, divide
-        cp_radial = cp_radial + ( cp(k) + cp(k+1) )/2.0_rk *dz(k)
+        if(rlocation.lt.rcut) then
+           cp_radial = cp_radial + ( cp(k) + cp(k+1) )/2.0_rk *dz(k)
+        else
+           cp_radial = cp_radial + cp(k) *dz(k)
+        end if
      end do
         
 
@@ -190,8 +202,10 @@ subroutine radial_accumulation
         rlocation = rlocation + dr1
      else if(rlocation.le.0.99_rk) then
         rlocation = rlocation + dr2
+     else if(rlocation.le.0.995_rk) then
+        rlocation = rlocation + dr3
      else
-        rlocation = rlocation + dr3        
+        rlocation = rlocation + dr4        
      end if
         
   end do  !loop of rlocation

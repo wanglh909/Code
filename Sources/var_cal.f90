@@ -144,21 +144,14 @@ subroutine variable_cal
         else
            angle_int = real(int(angle_c_degree),rk)
         end if
+  ! if(timestep.ge.1) then
         radial_cal_time = radial_cal_time + 1
         call radial_accumulation
+  !       pause
+  ! end if
      end if
   end if
            
-
-
-
-
-
-
-
-
-
-
 
 
 
