@@ -29,7 +29,7 @@ subroutine radial_accumulation
   dr2 = 0.002_rk
   dr3 = 0.0002_rk
   dr4 = 0.00005_rk
-  do while (rlocation.lt.1.0_rk-0.00005_rk)
+  do while (rlocation.lt.1.0_rk-0.00006_rk)
      z_surf = sqrt( (1.0_rk/sin(angle_c))**2 - rlocation**2 ) - 1.0_rk/tan(angle_c)
      dzfix = z_surf/real(divide,rk)
      dz = dzfix
