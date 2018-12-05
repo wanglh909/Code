@@ -355,7 +355,7 @@ close(10)
      if( VN(i).eq.0 .or. VN(i).eq.2 ) then
         sol( NOPP(i) + Nu ) = usol(i)
         sol( NOPP(i) + Nv ) = vsol(i)
-        sol( NOPP(i) + NT ) = Tsol(i)
+        if(no_Maran.eq.0) sol( NOPP(i) + NT ) = Tsol(i)
         sol( NOPP(i) + Ncp ) = cpsol(i)
         if ( PN(i).eq.1 )  then
            sol( NOPP(i) + Np ) = psol(i)
@@ -364,7 +364,7 @@ close(10)
      if( VN(i).eq.1 .or. VN(i).eq.2 ) then
         sol( NOPP(i) + MDF(i)-1 ) = csol(i)
      end if
-     if( VN(i).eq.1 .and. BCflagN(i,2).eq.1 ) sol( NOPP(i) + NT) = Tsol(i)
+     if( VN(i).eq.1 .and. BCflagN(i,2).eq.1 .and. no_Maran.eq.0) sol( NOPP(i) + NT) = Tsol(i)
      if( VN(i).eq.5 )  sol( NOPP(i) + NTs) = Tsol(i)
   end do
 

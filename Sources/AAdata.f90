@@ -20,10 +20,12 @@ module data
   integer(kind=ik):: NND, NNV, NNS, ED, EV, ES
   !NND: number of nodes of droplet,   NNV: number of nodes of vapor
   !ED: number of elements of droplet, EV: number of elements of vapor
-  integer(kind=ik):: NNVar1 = 7, NNVar2 = 3, NNVar3 = 3    !NNVar: node number of variable (r,z,u,v,p --> 5)
-  !NNVar1: r,z,T,u,v,cp,p; NNVar2: r,z,c; Nnvar3: r,z,T
+  integer(kind=ik):: NNVar1 , NNVar2 = 3, NNVar3 = 3   !NNVar: node number of variable (r,z,u,v,p --> 5)
+  !NNVar1: r,z,T,u,v,cp,p; define in program main(=7 if solve for T, =6 if not)
+  !NNVar2: r,z,c; Nnvar3: r,z,T
 
-  integer(kind=ik), parameter:: Nr = 0, Nz = 1, Nu = 3, Nv = 4, NT = 2, Ncp = 5, Np = 6, NTs = 2 !Nc = MDF(i)-1
+  !integer(kind=ik), parameter:: Nr = 0, Nz = 1, Nu = 3, Nv = 4, NT = 2, Ncp = 5, Np = 6, NTs = 2 !Nc = MDF(i)-1
+  integer(kind=ik):: Nr = 0, Nz = 1, NT = 2, Nu, Nv, Ncp, Np, NTs = 2 !Nc = MDF(i)-1
 
   integer(kind=ik):: timestep, step
 

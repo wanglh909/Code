@@ -22,7 +22,7 @@ subroutine values_in_an_element(m,id)
         if( VE(m).eq.0 ) then
            ulocal(j,id) = sol( NOPP( globalNM(m,j) ) + Nu )
            vlocal(j,id) = sol( NOPP( globalNM(m,j) ) + Nv )  
-           Tlocal(j,id) = sol( NOPP( globalNM(m,j) ) + NT ) 
+           if(no_Maran.eq.0) Tlocal(j,id) = sol( NOPP( globalNM(m,j) ) + NT ) 
            cplocal(j,id) = sol( NOPP( globalNM(m,j) ) + Ncp )
            if( PN( globalNM(m,j) ) .eq. 1 )  plocal(j,id) = sol( NOPP( globalNM(m,j) ) + Np )   ! plocal(2, 4, 5, 6, 8) remain unchanged
 
@@ -30,19 +30,21 @@ subroutine values_in_an_element(m,id)
            zdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Nz )
            udotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Nu )
            vdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Nv )
-           Tdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + NT )
+           if(no_Maran.eq.0) Tdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + NT )
            cpdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Ncp )
         else if( VE(m).eq.1 ) then
            clocal(j,id) = sol( NOPP( globalNM(m,j) ) + MDF( globalNM(m,j) ) - 1 )
         else  !VE = 5
            rdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Nr )
            zdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Nz )
-           if( VN(globalNM(m,j)).eq.5 ) then
-              Tlocal(j,id) = sol( NOPP( globalNM(m,j) ) + NTs )
-              Tdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + NTs )
-           else  !j is base node
-              Tlocal(j,id) = sol( NOPP( globalNM(m,j) ) + NT )
-              Tdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + NT )
+           if(no_Maran.eq.0) then
+              if( VN(globalNM(m,j)).eq.5 ) then
+                 Tlocal(j,id) = sol( NOPP( globalNM(m,j) ) + NTs )
+                 Tdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + NTs )
+              else  !j is base node
+                 Tlocal(j,id) = sol( NOPP( globalNM(m,j) ) + NT )
+                 Tdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + NT )
+              end if
            end if
         end if
            
@@ -120,8 +122,10 @@ subroutine values_in_an_element(m,id)
                  vintfac(k,l,id) = vintfac(k,l,id) +  vlocal(n,id)*phi(k,l,n)
                  vrintfac(k,l,id) = vrintfac(k,l,id) +  vlocal(n,id)*phir(k,l,n,id)
                  vzintfac(k,l,id) = vzintfac(k,l,id) +  vlocal(n,id)*phiz(k,l,n,id)
-                 Trintfac(k,l,id) = Trintfac(k,l,id) +  Tlocal(n,id)*phir(k,l,n,id)
-                 Tzintfac(k,l,id) = Tzintfac(k,l,id) +  Tlocal(n,id)*phiz(k,l,n,id)
+                 if(no_Maran.eq.0) then
+                    Trintfac(k,l,id) = Trintfac(k,l,id) +  Tlocal(n,id)*phir(k,l,n,id)
+                    Tzintfac(k,l,id) = Tzintfac(k,l,id) +  Tlocal(n,id)*phiz(k,l,n,id)
+                 end if
                  cprintfac(k,l,id) = cprintfac(k,l,id) +  cplocal(n,id)*phir(k,l,n,id)
                  cpzintfac(k,l,id) = cpzintfac(k,l,id) +  cplocal(n,id)*phiz(k,l,n,id)
                  pintfac(k,l,id) =  pintfac(k,l,id) +  plocal(n,id)*psi(k,l,n)
@@ -130,7 +134,7 @@ subroutine values_in_an_element(m,id)
                  zdotintfac(k,l,id) = zdotintfac(k,l,id) + zdotlocal(n,id)*phi(k,l,n)
                  udotintfac(k,l,id) = udotintfac(k,l,id) + udotlocal(n,id)*phi(k,l,n)
                  vdotintfac(k,l,id) = vdotintfac(k,l,id) + vdotlocal(n,id)*phi(k,l,n)
-                 Tdotintfac(k,l,id) = Tdotintfac(k,l,id) + Tdotlocal(n,id)*phi(k,l,n)
+                 if(no_Maran.eq.0)  Tdotintfac(k,l,id) = Tdotintfac(k,l,id) + Tdotlocal(n,id)*phi(k,l,n)
                  cpdotintfac(k,l,id) = cpdotintfac(k,l,id) + cpdotlocal(n,id)*phi(k,l,n)
               end do
 
@@ -152,7 +156,7 @@ subroutine values_in_an_element(m,id)
            end do
         end do   !end loop for k&l, preparation for gaussian_quadrature
 
-     else  !VE = 5
+     else  !VE = 5   if no_Maran=1, no elements give VE=5
 
         Trintfac(:,:,id) = 0.0_rk
         Tzintfac(:,:,id) = 0.0_rk
@@ -293,7 +297,7 @@ subroutine values_in_an_element(m,id)
               rdotintfac_right(k,id) = rdotintfac_right(k,id) + rdotlocal(npp,id) * phi_1d(k,n)
               zdotintfac_right(k,id) = zdotintfac_right(k,id) + zdotlocal(npp,id) * phi_1d(k,n)
 
-              Teta_right(k,id) = Teta_right(k,id) + Tlocal(npp,id) * phix_1d(k,n)
+              if(no_Maran.eq.0) Teta_right(k,id) = Teta_right(k,id) + Tlocal(npp,id) * phix_1d(k,n)
               cpeta_right(k,id) = cpeta_right(k,id) + cplocal(npp,id) * phix_1d(k,n)
 
               cpintfac_right(k,id) = cpintfac_right(k,id) + cplocal(npp,id)*phi_1d(k,n)
@@ -303,7 +307,7 @@ subroutine values_in_an_element(m,id)
         
         if(s_mode.eq.0) then
            do n = 1, 9, 1 !the summation of nine terms, eg: csi = sum( clocal(1-9)*phisi_1d(1-9) )
-              dTdsi(k,id) = dTdsi(k,id) + Tlocal(n,id) * phisi1_1d(k,n)
+              if(no_Maran.eq.0) dTdsi(k,id) = dTdsi(k,id) + Tlocal(n,id) * phisi1_1d(k,n)
               dcpdsi(k,id) = dcpdsi(k,id) + cplocal(n,id) * phisi1_1d(k,n)
               rsi_right(k,id) = rsi_right(k,id) + rlocal(n,id) * phisi1_1d(k,n)
               zsi_right(k,id) = zsi_right(k,id) + zlocal(n,id) * phisi1_1d(k,n)

@@ -98,7 +98,7 @@ subroutine parameter_values
   kR = ks/kT  !relative thermal conductivity
   Pep = lc*vc/Dp    !267.35_rk
   if(no_Maran.eq.1) then
-     beta = 0.0_rk
+     !beta = 0.0_rk
      substrate = 0.0_rk
   end if
 

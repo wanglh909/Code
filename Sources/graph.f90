@@ -45,7 +45,8 @@ write(*,*) 'write mesh'
 
         if( no_vapor.eq.1 ) then
            open(unit = 11, file = trim(folder)//'dynamics.dat', status = 'replace')
-           open(unit = 12, file = trim(folder)//'temperature.dat', status = 'replace')
+           if(no_Maran.eq.0) &
+                open(unit = 12, file = trim(folder)//'temperature.dat', status = 'replace')
            if(no_vapor.eq.0) &
                 open(unit = 13, file = trim(folder)//'vapor_concentration.dat', status = 'replace' )
            call graph_dynamics(0)
@@ -81,12 +82,14 @@ write(*,*) 'write mesh'
         
         if(step_indicator.eq.0) then
            open(unit = 11, file = trim(folder)//'dynamics.dat', status = 'replace')
-           open(unit = 12, file = trim(folder)//'temperature.dat', status = 'replace')
+           if(no_Maran.eq.0) &
+                open(unit = 12, file = trim(folder)//'temperature.dat', status = 'replace')
            if(no_vapor.eq.0) &
                 open(unit = 13, file = trim(folder)//'vapor_concentration.dat', status = 'replace')
         else
            open(unit = 11, file = trim(folder)//'dynamics.dat', status = 'old', access = 'append')
-           open(unit = 12, file = trim(folder)//'temperature.dat', status = 'old', access = 'append')
+           if(no_Maran.eq.0) &
+              open(unit = 12, file = trim(folder)//'temperature.dat', status = 'old', access = 'append')
            if(no_vapor.eq.0) &
                 open(unit = 13, file = trim(folder)//'vapor_concentration.dat', status = 'old', access = 'append')
         end if
@@ -95,12 +98,14 @@ write(*,*) 'write mesh'
         
         if(no_vapor.eq.0 .and. step_indicator.eq.0) then
            open(unit = 11, file = trim(folder)//'dynamics.dat', status = 'replace')
-           open(unit = 12, file = trim(folder)//'temperature.dat', status = 'replace')
+           if(no_Maran.eq.0) &
+                open(unit = 12, file = trim(folder)//'temperature.dat', status = 'replace')
            if(no_vapor.eq.0) &
                 open(unit = 13, file = trim(folder)//'vapor_concentration.dat', status = 'replace')
         else
            open(unit = 11, file = trim(folder)//'dynamics.dat', status = 'old', access = 'append')
-           open(unit = 12, file = trim(folder)//'temperature.dat', status = 'old', access = 'append')
+           if(no_Maran.eq.0) &
+              open(unit = 12, file = trim(folder)//'temperature.dat', status = 'old', access = 'append')
            if(no_vapor.eq.0) &
                 open(unit = 13, file = trim(folder)//'vapor_concentration.dat', status = 'old', access = 'append')
         end if
@@ -200,10 +205,11 @@ contains
        ! step_indicator = step
        time_indicator = real(step,rk)
     end if
-    
+
+    !seem no effects, could have deleted?
     if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
        if(Nregion.eq.1) fileN = '11'
-       if(Nregion.eq.1 .or. Nregion.eq.3) fileN = '12'
+       if( (Nregion.eq.1 .or. Nregion.eq.3) .and. no_Maran.eq.0 ) fileN = '12'
        if(Nregion.eq.2) fileN = '13'
     else
        fileN = '11'
@@ -228,7 +234,11 @@ contains
        !write headlines
        if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
           if(Nregion.eq.1) then
-             write(11, '(A)') 'variables = "r", "z", "u", "v", "cpN", "cp", "cp_flag", "T"'
+             if(no_Maran.eq.0) then
+                write(11, '(A)') 'variables = "r", "z", "u", "v", "cpN", "cp", "cp_flag", "T"'
+             else
+                write(11, '(A)') 'variables = "r", "z", "u", "v", "cpN", "cp", "cp_flag"'
+             end if
              ! write(11, '(A,es13.6,A)') 'DATASETAUXDATA Umax = "', umax, '"'
              ! write(11, '(A,es13.6,A)') 'DATASETAUXDATA Vmax = "', vmax, '"'
 
@@ -243,7 +253,7 @@ contains
              zone_d = zone_d + 1
 
           end if
-          if(Nregion.eq.1 .or. Nregion.eq.3) then
+          if( (Nregion.eq.1 .or. Nregion.eq.3) .and. no_Maran.eq.0 ) then
              write(12, '(A)') 'variables = "r", "z", "T"'
              write(12,203) 'Zone T = "step:', step_indicator, ', RGN: ', Nregion, &
                   '", STRANDID = 1, SOLUTIONTIME =', time_indicator, &
@@ -282,10 +292,15 @@ contains
 
           if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
              if(Nregion.eq.1) then
-                write(11,'(6es15.7,i4,es15.7)') rcoordinate(i), zcoordinate(i), &
-                 usol(i), vsol(i), cpsol(i)/cp_average, cpsol(i), pack_flag(i), Tsol(i)
+                if(no_Maran.eq.0) then
+                   write(11,'(6es15.7,i4,es15.7)') rcoordinate(i), zcoordinate(i), &
+                        usol(i), vsol(i), cpsol(i)/cp_average, cpsol(i), pack_flag(i), Tsol(i)
+                else
+                   write(11,'(6es15.7,i4)') rcoordinate(i), zcoordinate(i), &
+                        usol(i), vsol(i), cpsol(i)/cp_average, cpsol(i), pack_flag(i)
+                end if
              end if
-             if(Nregion.eq.1 .or. Nregion.eq.3) then
+             if( (Nregion.eq.1 .or. Nregion.eq.3) .and. no_Maran.eq.0 ) then
                 write(12,'(7es15.7)') rcoordinate(i), zcoordinate(i), Tsol(i)
              end if
              if(Nregion.eq.2) then
@@ -309,7 +324,7 @@ write(11,'(6es15.7,i4,2es15.7)') rcoordinate(i), zcoordinate(i), usol(i), vsol(i
                 write(11,'(4i8)') NOPDV(globalNM(i,1),Nregion), NOPDV(globalNM(i,3),Nregion), &
                      NOPDV(globalNM(i,9),Nregion), NOPDV(globalNM(i,7),Nregion)
              end if
-             if(Nregion.eq.1 .or. Nregion.eq.3) then
+             if( (Nregion.eq.1 .or. Nregion.eq.3) .and. no_Maran.eq.0 ) then
                 write(12,'(4i8)') NOPDV(globalNM(i,1),Nregion), NOPDV(globalNM(i,3),Nregion), &
                      NOPDV(globalNM(i,9),Nregion), NOPDV(globalNM(i,7),Nregion)
              end if
@@ -331,20 +346,20 @@ write(11,'(6es15.7,i4,2es15.7)') rcoordinate(i), zcoordinate(i), usol(i), vsol(i
     !write contact angle
     write(11,'(A,f7.3,A,i7)') 'Text X=40, Y=90, F=Times, T= "contact angle =', angle_c_degree, '", ZN= ', zone_d
 !write(*,*) angle_c_degree, zone_d
-    if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
+    if( (.not.(diverge.eq.1 .and. graph_mode.eq.1)) .and. no_Maran.eq.0 ) then
        write(12,'(A,f7.3,A,i7)') 'Text X=40, Y=90, F=Times, T= "contact angle =', &
             angle_c_degree, '", ZN= ', zone_T
        write(12,'(A)') ' '
 !write(*,*) angle_c_degree, zone_T
        ! if(no_vapor.eq.0) write(13,'(A,f7.3,A,i7,A,i7)') &
        !      'Text X=40, Y=90, F=Times, T= "contact angle =', angle_c_degree, '", ZN= ', zone_T
-end if
+    end if
 !pause
 
     !close files
     close(11)
     if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
-       close(12)
+       if(no_Maran.eq.0) close(12)
        if(no_vapor.eq.0) close(13)
     end if
     

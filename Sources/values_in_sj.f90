@@ -87,10 +87,12 @@ phiz_z(k,l,n,id) = -1.0_rk/Jp(k,l,id)**2 *Jp_z(k,l,id)*( -phisi(k,l,n)*reta(k,l,
                  vrintfac_z(k,l,id) = vrintfac_z(k,l,id) + vlocal(n,id)*phir_z(k,l,n,id)
                  vzintfac_r(k,l,id) = vzintfac_r(k,l,id) + vlocal(n,id)*phiz_r(k,l,n,id)
                  vzintfac_z(k,l,id) = vzintfac_z(k,l,id) + vlocal(n,id)*phiz_z(k,l,n,id)
-                 Trintfac_r(k,l,id) = Trintfac_r(k,l,id) + Tlocal(n,id)*phir_r(k,l,n,id)
-                 Trintfac_z(k,l,id) = Trintfac_z(k,l,id) + Tlocal(n,id)*phir_z(k,l,n,id)
-                 Tzintfac_r(k,l,id) = Tzintfac_r(k,l,id) + Tlocal(n,id)*phiz_r(k,l,n,id)
-                 Tzintfac_z(k,l,id) = Tzintfac_z(k,l,id) + Tlocal(n,id)*phiz_z(k,l,n,id)
+                 if(no_Maran.eq.0) then
+                    Trintfac_r(k,l,id) = Trintfac_r(k,l,id) + Tlocal(n,id)*phir_r(k,l,n,id)
+                    Trintfac_z(k,l,id) = Trintfac_z(k,l,id) + Tlocal(n,id)*phir_z(k,l,n,id)
+                    Tzintfac_r(k,l,id) = Tzintfac_r(k,l,id) + Tlocal(n,id)*phiz_r(k,l,n,id)
+                    Tzintfac_z(k,l,id) = Tzintfac_z(k,l,id) + Tlocal(n,id)*phiz_z(k,l,n,id)
+                 end if
                  cprintfac_r(k,l,id) = cprintfac_r(k,l,id) + cplocal(n,id)*phir_r(k,l,n,id)
                  cprintfac_z(k,l,id) = cprintfac_z(k,l,id) + cplocal(n,id)*phir_z(k,l,n,id)
                  cpzintfac_r(k,l,id) = cpzintfac_r(k,l,id) + cplocal(n,id)*phiz_r(k,l,n,id)

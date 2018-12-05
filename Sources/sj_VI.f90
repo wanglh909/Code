@@ -310,7 +310,9 @@ intRv_z_V(k,l) = intRv_z_V(k,l) + Re*phi(k,l,i)* Grav *rintfac(k,l,id)* Jp_z(k,l
  
         !(cooling & accumulation) on free surface, no volume integral
         if( BCflagN( globalNM(m,i), 3 ).ne.1 .and. BCflagN( globalNM(m,i), 3 ).ne.3 ) then
-!------------------------------------------Rt------------------------------------- 
+!------------------------------------------Rt-------------------------------------
+if(no_Maran.eq.0) then
+              
 !Rt_r_V
 if(Ttime.eq.1) &
 intRt_r_V(k,l) = intRt_r_V(k,l) + Pe*phi(k,l,i)* ( -CTJ*phi(k,l,j)/dt*Trintfac(k,l,id) - &
@@ -380,6 +382,7 @@ if(Tdiff.eq.1) &
 intRt_T(k,l) = intRt_T(k,l) + ( phir(k,l,i,id)*phir(k,l,j,id) + phiz(k,l,i,id)*phiz(k,l,j,id) ) &
 *rintfac(k,l,id)*abs(Jp(k,l,id))
 
+end if !no_Maran.eq.0
 
 !------------------------------------------Rm------------------------------------- 
 !Rm_r_V
@@ -604,19 +607,23 @@ intRt_T(k,l) = intRt_T(k,l) + F0*( phir(k,l,i,id)*phir(k,l,j,id) + phiz(k,l,i,id
         end if
 
         if( BCflagN( globalNM(m,i), 3 ).eq.0 ) then  !(evaporation cooling & particle accumulation) on free surface, no volume integral
-           if( BCflagN( globalNM(m,i),2 ) .eq. 0 ) then
+
+           
+          if(no_Maran.eq.0) then
+             if( BCflagN( globalNM(m,i),2 ) .eq. 0 ) then
         sj(LNOPP(i)+NT,LNOPP(j)+Nr) = gaussian_quadrature(intRt_r_V)      ! sjRur(i,j) 
         sj(LNOPP(i)+NT,LNOPP(j)+Nz) = gaussian_quadrature(intRt_z_V)      ! sjRuz(i,j) 
         sj(LNOPP(i)+NT,LNOPP(j)+Nu) = gaussian_quadrature(intRt_u)        ! sjRuu(i,j) 
         sj(LNOPP(i)+NT,LNOPP(j)+Nv) = gaussian_quadrature(intRtv)         ! sjRuv(i,j) 
         sj(LNOPP(i)+NT,LNOPP(j)+NT) = gaussian_quadrature(intRt_T)        ! sjRup(i,j) 
-           else  !base nodes 
+             else  !base nodes 
         sj(LNOPP(i)+NT,LNOPP(j)+Nr) = gaussian_quadrature(intRt_r_V)/kR   ! sjRur(i,j) 
         sj(LNOPP(i)+NT,LNOPP(j)+Nz) = gaussian_quadrature(intRt_z_V)/kR   ! sjRuz(i,j) 
         sj(LNOPP(i)+NT,LNOPP(j)+Nu) = gaussian_quadrature(intRt_u)/kR     ! sjRuu(i,j) 
         sj(LNOPP(i)+NT,LNOPP(j)+Nv) = gaussian_quadrature(intRtv)/kR      ! sjRuv(i,j) 
         sj(LNOPP(i)+NT,LNOPP(j)+NT) = gaussian_quadrature(intRt_T)/kR     ! sjRup(i,j) 
-           end if
+             end if
+          end if
      
         sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = gaussian_quadrature(intRm_r_V)     ! sjRur(i,j)
         sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) = gaussian_quadrature(intRm_z_V)     ! sjRuz(i,j) 

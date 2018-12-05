@@ -242,8 +242,10 @@ if(no_vapor.eq.1) then  !flux: flux( angle_c,rintfac_right(k,id) )
 
 
    !evaporation cooling 2
-   intRt_r_S(k) = REH* intRsi_r_S(k)
-   intRt_z_S(k) = REH* intRsi_z_S(k)
+   if(no_Maran.eq.0) then
+      intRt_r_S(k) = REH* intRsi_r_S(k)
+      intRt_z_S(k) = REH* intRsi_z_S(k)
+   end if
 
    
    !KBC2 with uniflux: flux = 1.0_rk, only apply in KBC & accumulation: Rsi&Rm
@@ -290,7 +292,7 @@ intRu_r_S(k) = ( phix_1d(k,ipp)*phix_1d(k,jpp) / ( reta_right(k,id)**2 + zeta_ri
      *( phi_1d(k,jpp)*( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk + &
      rintfac_right(k,id) / ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk *reta_right(k,id)*phix_1d(k,jpp) )
 
- intRu_r_S(k) = intRu_r_S(k) - phi_1d(k,ipp) *beta *Teta_right(k,id)* ( &
+ if(no_Maran.eq.0) intRu_r_S(k) = intRu_r_S(k) - phi_1d(k,ipp) *beta *Teta_right(k,id)* ( &
       -( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-1.5_rk) *reta_right(k,id)**2 *phix_1d(k,jpp) *rintfac_right(k,id) + &
       ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) *&
       ( phix_1d(k,jpp) *rintfac_right(k,id) + reta_right(k,id) *phi_1d(k,jpp) ) )
@@ -301,11 +303,11 @@ intRu_z_S(k) = -reta_right(k,id)*phix_1d(k,ipp)*( reta_right(k,id)**2 + zeta_rig
      ( reta_right(k,id)*phix_1d(k,ipp) / ( reta_right(k,id)**2 + zeta_right(k,id)**2 ) + phi_1d(k,ipp)/rintfac_right(k,id) ) *&
      rintfac_right(k,id) / ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk *zeta_right(k,id)*phix_1d(k,jpp)
 
- intRu_z_S(k) = intRu_z_S(k) + phi_1d(k,ipp) *beta *Teta_right(k,id)* &
+ if(no_Maran.eq.0) intRu_z_S(k) = intRu_z_S(k) + phi_1d(k,ipp) *beta *Teta_right(k,id)* &
       ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-1.5_rk)* &
       zeta_right(k,id) *phix_1d(k,jpp) *reta_right(k,id) *rintfac_right(k,id) 
 
-intRu_T_S(k) = -phi_1d(k,ipp) *beta *phix_1d(k,jpp) * &
+if(no_Maran.eq.0) intRu_T_S(k) = -phi_1d(k,ipp) *beta *phix_1d(k,jpp) * &
       ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk)* reta_right(k,id) *rintfac_right(k,id) 
 
 
@@ -313,7 +315,7 @@ intRv_r_S(k) = zeta_right(k,id)*phix_1d(k,ipp)*&
      ( -( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-1.5_rk) *reta_right(k,id)*phix_1d(k,jpp)*rintfac_right(k,id) + &
      ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) *phi_1d(k,jpp) )
 
- intRv_r_S(k) = intRv_r_S(k) - phi_1d(k,ipp)*beta*Teta_right(k,id)*zeta_right(k,id)* ( &
+ if(no_Maran.eq.0) intRv_r_S(k) = intRv_r_S(k) - phi_1d(k,ipp)*beta*Teta_right(k,id)*zeta_right(k,id)* ( &
       -( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-1.5_rk) *reta_right(k,id) *phix_1d(k,jpp) *rintfac_right(k,id) + &
       ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) * phi_1d(k,jpp) )
 
@@ -321,12 +323,12 @@ intRv_r_S(k) = zeta_right(k,id)*phix_1d(k,ipp)*&
 intRv_z_S(k) = phix_1d(k,ipp)*phix_1d(k,jpp) / sqrt( reta_right(k,id)**2 + zeta_right(k,id)**2 ) *rintfac_right(k,id) - &
      zeta_right(k,id)**2 *phix_1d(k,ipp)*phix_1d(k,jpp) / ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**1.5_rk *rintfac_right(k,id)
 
- intRv_z_S(k) = intRv_z_S(k) - phi_1d(k,ipp) *beta *Teta_right(k,id)* ( &
+ if(no_Maran.eq.0) intRv_z_S(k) = intRv_z_S(k) - phi_1d(k,ipp) *beta *Teta_right(k,id)* ( &
       phix_1d(k,jpp) *( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) - &
       ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-1.5_rk)*zeta_right(k,id)**2 *phix_1d(k,jpp) ) &
       *rintfac_right(k,id) 
 
-intRv_T_S(k) = -phi_1d(k,ipp) *beta *phix_1d(k,jpp) * &
+if(no_Maran.eq.0) intRv_T_S(k) = -phi_1d(k,ipp) *beta *phix_1d(k,jpp) * &
       ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk)* zeta_right(k,id) *rintfac_right(k,id) 
 
          end do
@@ -338,15 +340,19 @@ intRv_T_S(k) = -phi_1d(k,ipp) *beta *phix_1d(k,jpp) * &
 
      sj(LNOPP(i)+Nu,LNOPP(j)+Nr) = sj(LNOPP(i)+Nu,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRu_r_S)!/Ca
      sj(LNOPP(i)+Nu,LNOPP(j)+Nz) = sj(LNOPP(i)+Nu,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRu_z_S)!/Ca
-     sj(LNOPP(i)+Nu,LNOPP(j)+NT) = sj(LNOPP(i)+Nu,LNOPP(j)+NT) + gaussian_quadrature_1d(intRu_T_S)!/Ca
+     if(no_Maran.eq.0) &
+       sj(LNOPP(i)+Nu,LNOPP(j)+NT) = sj(LNOPP(i)+Nu,LNOPP(j)+NT) + gaussian_quadrature_1d(intRu_T_S)!/Ca
 
      sj(LNOPP(i)+Nv,LNOPP(j)+Nr) = sj(LNOPP(i)+Nv,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRv_r_S)!/Ca
      sj(LNOPP(i)+Nv,LNOPP(j)+Nz) = sj(LNOPP(i)+Nv,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRv_z_S)!/Ca
-     sj(LNOPP(i)+Nv,LNOPP(j)+NT) = sj(LNOPP(i)+Nv,LNOPP(j)+NT) + gaussian_quadrature_1d(intRv_T_S)!/Ca
+     if(no_Maran.eq.0) &
+       sj(LNOPP(i)+Nv,LNOPP(j)+NT) = sj(LNOPP(i)+Nv,LNOPP(j)+NT) + gaussian_quadrature_1d(intRv_T_S)!/Ca
 
       end if  !for j = 1,4,7 on the free surface
       
       !evaporation cooling 1
+      if(no_Maran.eq.0) then
+         
       do k = 1, Ng, 1    !three gausspoints
 intRt_r_S(k) =  intRt_r_S(k) - phi_1d(k,ipp)*( (-dTdsi(k,id)*2.0_rk*reta_right(k,id)* phieta1_1d(k,j) +   &
      Teta_right(k,id)*( rsi_right(k,id)*phieta1_1d(k,j) + reta_right(k,id)*phisi1_1d(k,j) ) &
@@ -371,6 +377,8 @@ intRt_T_S(k) = intRt_T_S(k) - phi_1d(k,ipp)*( -phisi1_1d(k,j)*( reta_right(k,id)
       sj(LNOPP(i)+NT,LNOPP(j)+Nr) = sj(LNOPP(i)+NT,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRt_r_S)
       sj(LNOPP(i)+NT,LNOPP(j)+Nz) = sj(LNOPP(i)+NT,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRt_z_S)
       sj(LNOPP(i)+NT,LNOPP(j)+NT ) = sj(LNOPP(i)+NT,LNOPP(j)+NT ) + gaussian_quadrature_1d(intRt_T_S)
+      
+      end if   !no_Maran.eq.0
 
       !particle accumulation 1
       do k = 1, Ng, 1    !three gausspoints
@@ -435,9 +443,11 @@ intRsi_c_S(k) = phi_1d(k,ipp)*( -phisi0_1d(k,j)*( reta_right(k,id)**2 + zeta_rig
 
 
 !evaporation cooling 2
-intRt_r_S(k) = REH* intRsi_r_S(k)
-intRt_z_S(k) = REH* intRsi_z_S(k)
-intRt_c_S(k) = REH* intRsi_c_S(k)
+if(no_Maran.eq.0) then
+   intRt_r_S(k) = REH* intRsi_r_S(k)
+   intRt_z_S(k) = REH* intRsi_z_S(k)
+   intRt_c_S(k) = REH* intRsi_c_S(k)
+end if
 
 !particle accumulation 2  !??
 intRm_r_S(k) = cpintfac_right(k,id) * intRsi_r_S(k)
@@ -459,11 +469,13 @@ end if
      sj(LNOPP(i)+Nr,LNOPP(j)+Nz) = sj(LNOPP(i)+Nr,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRsi_z_S)
      sj(LNOPP(i)+Nr,LNOPP(j) + MDF( globalNM(m,j) ) -1 ) = &
           sj(LNOPP(i)+Nr,LNOPP(j) + MDF( globalNM(m,j) ) -1 ) + gaussian_quadrature_1d(intRsi_c_S)
-
+     
+     if(no_Maran.eq.0) then
      sj(LNOPP(i)+NT,LNOPP(j)+Nr) = sj(LNOPP(i)+NT,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRt_r_S)
      sj(LNOPP(i)+NT,LNOPP(j)+Nz) = sj(LNOPP(i)+NT,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRt_z_S)
      sj(LNOPP(i)+NT,LNOPP(j)+ MDF( globalNM(m,j) ) -1 ) = &
           sj(LNOPP(i)+NT,LNOPP(j)+ MDF( globalNM(m,j) ) -1 ) + gaussian_quadrature_1d(intRt_c_S)
+     end if
      
      sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRm_r_S)
      sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRm_z_S)

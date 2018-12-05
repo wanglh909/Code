@@ -95,7 +95,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
               end do
            end if
            !dT = 0 if no substrate phase
-           if( substrate.eq.0.0_rk ) then
+           if( substrate.eq.0.0_rk .and. no_Maran.eq.0) then
               j = LNOPP(i) + NT 
               locJac(j,:) = 0.0_rk
               locJac(j,j) = 1.0_rk
@@ -258,7 +258,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
         end if
 
         !dT=0
-        if(s_mode.eq.0) then
+        if(s_mode.eq.0 .and. no_Maran.eq.0) then
            j = LNOPP(i) + NTs
            locJac(j,:) = 0.0_rk
            locJac(j,j) = 1.0_rk      !dRt(i)/dT(i)
@@ -279,7 +279,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
      
      if(VE(m).eq.0) then
         do i = 1, 9    
-           do j = LNOPP(i) + NT, LNOPP(i) + Nv     !The location of R(u,v,T)(i) in locRes
+           do j = LNOPP(i) + Nz+1, LNOPP(i) + Nv     !The location of R(u,v,T)(i) in locRes
               locJac(j,:) = 0.0_rk
               locJac(j,j) = 1.0_rk               !dR(u,v,T)/d(u,v,T)i
               locRes(j) = 0.0_rk
@@ -296,7 +296,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
      !?necessary to fix from vapor elements?
      if(VE(m).eq.1 .and. BCflagE(m,3).eq.2) then
         do i = 1,7,3
-           do j = LNOPP(i) + NT, LNOPP(i) + Nv     !The location of R(u,v,T)(i) in locRes
+           do j = LNOPP(i) + Nz+1, LNOPP(i) + Nv     !The location of R(u,v,T)(i) in locRes
               locJac(j,:) = 0.0_rk
               locJac(j,j) = 1.0_rk               !dR(u,v,T)/d(u,v,T)i
               locRes(j) = 0.0_rk
@@ -410,21 +410,23 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
 
 
      ! !make variable T not change
-     ! if( VE(m).eq.0 ) then
-     !    do i = 1, 9    
-     !       j = LNOPP(i) + NT     !The location of Rt(i) in locRes
-     !       locJac(j,:) = 0.0_rk
-     !       locJac(j,j) = 1.0_rk               !dRti/dTi
-     !       locRes(j) = 0.0_rk
-     !    end do
-     ! end if
-     ! if(VE(m).eq.1 .and. BCflagE(m,3).eq.2) then
-     !    do i = 1,7,3
-     !       j = LNOPP(i) + NT     !The location of Rt(i) in locRes
-     !       locJac(j,:) = 0.0_rk
-     !       locJac(j,j) = 1.0_rk               !dRti/dTi
-     !       locRes(j) = 0.0_rk
-     !    end do
+     ! if(no_Maran.eq.0)  then
+     !    if( VE(m).eq.0 ) then
+     !       do i = 1, 9    
+     !          j = LNOPP(i) + NT     !The location of Rt(i) in locRes
+     !          locJac(j,:) = 0.0_rk
+     !          locJac(j,j) = 1.0_rk               !dRti/dTi
+     !          locRes(j) = 0.0_rk
+     !       end do
+     !    end if
+     !    if(VE(m).eq.1 .and. BCflagE(m,3).eq.2) then
+     !       do i = 1,7,3
+     !          j = LNOPP(i) + NT     !The location of Rt(i) in locRes
+     !          locJac(j,:) = 0.0_rk
+     !          locJac(j,j) = 1.0_rk               !dRti/dTi
+     !          locRes(j) = 0.0_rk
+     !       end do
+     !    end if
      ! end if
 
 

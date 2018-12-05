@@ -26,7 +26,7 @@ subroutine split_sol
         if(s_mode.eq.0 .and. VN(i).ne.1) then
            sol( NOPP(i) + Nu ) = 0.0_rk
            sol( NOPP(i) + Nv ) = 0.0_rk
-           if(substrate.eq.0.0_rk) sol( NOPP(i) + NT ) = 0.0_rk 
+           if(substrate.eq.0.0_rk .and. no_Maran.eq.0) sol( NOPP(i) + NT ) = 0.0_rk 
         end if
      end if
      
@@ -44,7 +44,7 @@ subroutine split_sol
      !substrate base
      if( BCflagN(i,5).ne.0 ) then
         sol( NOPP(i) + Nz ) = -substrate    !z
-        sol( NOPP(i) + NT ) = 0.0_rk 
+        if(no_Maran.eq.0) sol( NOPP(i) + NT ) = 0.0_rk 
      end if
 
 
@@ -71,7 +71,7 @@ subroutine split_sol
      zcoordinate(i) = sol( NOPP(i) + Nz ) 
      if(s_mode.eq.0) then
         if(VN(i).eq.0 .or. VN(i).eq.2 .or. BCflagN(i,2).eq.1) then
-           Tsol(i) = sol( NOPP(i) + NT ) 
+           if(no_Maran.eq.0) Tsol(i) = sol( NOPP(i) + NT ) 
            if( VN(i).eq.0 .or. VN(i).eq.2 ) then           
               usol(i) = sol( NOPP(i) + Nu ) 
               vsol(i) = sol( NOPP(i) + Nv ) 

@@ -75,7 +75,9 @@ subroutine L2_error(cal_time)
      if(s_mode.eq.0) then
         if(initial_vapor_solved.eq.1) then
            if( VN(i).eq.0 .or. VN(i).eq.2 .or. BCflagN(i,2).eq.1) then
-              error2 = error2 + ( dsol(NOPP(i)+NT)/Tmax )**2
+              if(no_Maran.eq.0) then
+                 error2 = error2 + ( dsol(NOPP(i)+NT)/Tmax )**2
+              end if
               if( VN(i).eq.0 .or. VN(i).eq.2 ) then
                  error2 = error2 + ( dsol(NOPP(i)+Nu)/umax )**2
                  error2 = error2 + ( dsol(NOPP(i)+Nv)/vmax )**2
@@ -130,13 +132,13 @@ subroutine L2_error(cal_time)
 !         if(VN(i).eq.0 .or. VN(i).eq.2) then
 !            du(i) = abs( dsol( NOPP(i) + Nu ) / umax )
 !            dv(i) = abs( dsol( NOPP(i) + Nv ) / vmax )
-!            dTemp(i) = abs( dsol( NOPP(i) + NT ) / Tmax )
+!            if(no_Maran.eq.0) dTemp(i) = abs( dsol( NOPP(i) + NT ) / Tmax )
 !            dcp(i) = abs( dsol( NOPP(i) + Ncp ) )   ! / cpmax
 !            if ( PN(i).eq.1 ) dpress(i) = abs( dsol( NOPP(i) + Np ) / pmax )
 !         end if
 !         if( (VN(i).eq.1 .or. VN(i).eq.2) ) then
 !            if(no_vapor.eq.0) dc(i) = abs( dsol( NOPP(i) + MDF(i)-1 ) / cmax )
-!            if( BCflagN(i,2).eq.1 )  dTemp(i) = abs( dsol( NOPP(i) + NT ) / Tmax )
+!            if( BCflagN(i,2).eq.1 .and. no_Maran.eq.0)  dTemp(i) = abs( dsol( NOPP(i) + NT ) / Tmax )
 !         end if
 !         if (VN(i).eq.5) then
 !            dTemp(i) = abs( dsol( NOPP(i) + NTs ) / Tmax )
@@ -244,13 +246,13 @@ subroutine L2_error(cal_time)
 !      if(VN(i).eq.0 .or. VN(i).eq.2) then
 !         Ru(i) = abs( load_dum( NOPP(i) + Nu ) )
 !         Rv(i) = abs( load_dum( NOPP(i) + Nv ) )
-!         Rt(i) = abs( load_dum( NOPP(i) + NT ) )
+!         if(no_Maran.eq.0) Rt(i) = abs( load_dum( NOPP(i) + NT ) )
 !         Rcp(i) = abs( load_dum( NOPP(i) + Ncp ) )
 !         if ( MDF(i) .gt. Np )     Rp(i) = abs( load_dum( NOPP(i) + Np ) )
 !      end if
 !      if( (VN(i).eq.1 .or. VN(i).eq.2) .and. s_mode.eq.0) then
 !         if(no_vapor.eq.0) Rc(i) = abs( load_dum( NOPP(i) + MDF(i)-1 ) )
-!         if( BCflagN(i,2).eq.1 )  Rt(i) = abs( load_dum( NOPP(i) + NT ) )
+!         if( BCflagN(i,2).eq.1 .and. no_Maran.eq.0)  Rt(i) = abs( load_dum( NOPP(i) + NT ) )
 !      end if
 !      if (VN(i).eq.5 .and. s_mode.eq.0) then
 !         Rt(i) = abs( load_dum( NOPP(i) + NTs ) )
