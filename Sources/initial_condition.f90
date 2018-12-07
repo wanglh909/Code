@@ -365,15 +365,16 @@ close(10)
         sol( NOPP(i) + MDF(i)-1 ) = csol(i)
      end if
      if( VN(i).eq.1 .and. BCflagN(i,2).eq.1 .and. no_Maran.eq.0) sol( NOPP(i) + NT) = Tsol(i)
-     if( VN(i).eq.5 )  sol( NOPP(i) + NTs) = Tsol(i)
+     if( VN(i).eq.5 .and. no_Maran.eq.0)  sol( NOPP(i) + NTs) = Tsol(i)
   end do
 
 
 ! open(unit = 10, file = trim(folder)//'initial.dat', status = 'replace')
 ! do i = 1, NTN
 !    if(VN(i).eq.0) then
-!       write(10, '(i8, 5es15.7)', advance = 'no' ) i, sol( NOPP(i) + Nr ), sol( NOPP(i) + Nz ), &
-!            sol( NOPP(i) + Nu ), sol( NOPP(i) + Nv ), sol( NOPP(i) + NT )
+!       write(10, '(i8, 4es15.7)', advance = 'no' ) i, sol( NOPP(i) + Nr ), sol( NOPP(i) + Nz ), &
+!            sol( NOPP(i) + Nu ), sol( NOPP(i) + Nv )
+!       if(no_Maran.eq.0)  write(10, '(es15.7)', advance = 'no') sol( NOPP(i) + NT )
 !       if(PN(i).eq.1) then 
 !          write(10, '(es15.7)' ) sol( NOPP(i) + Np )
 !       else
@@ -385,8 +386,9 @@ close(10)
 !         '               ', '               ', '               ', '               ', sol( NOPP(i) + MDF(i)-1 )
 
 !    if(VN(i).eq.2) then
-!       write(10, '(i8, 5es15.7)', advance = 'no' ) i, sol( NOPP(i) + Nr ), sol( NOPP(i) + Nz ), &
-!         sol( NOPP(i) + Nu ), sol( NOPP(i) + Nv ), sol( NOPP(i) + NT )
+!       write(10, '(i8, 4es15.7)', advance = 'no' ) i, sol( NOPP(i) + Nr ), sol( NOPP(i) + Nz ), &
+!            sol( NOPP(i) + Nu ), sol( NOPP(i) + Nv )
+!       if(no_Maran.eq.0)  write(10, '(es15.7)', advance = 'no') sol( NOPP(i) + NT )
 !       if(PN(i).eq.1) then
 !          write(10,'(es15.7)', advance = 'no' ) sol( NOPP(i) + Np )
 !       else

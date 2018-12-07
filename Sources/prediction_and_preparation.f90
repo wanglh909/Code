@@ -34,10 +34,12 @@ if(diverge.eq.0) then
         end if
         if(s_mode.eq.0) then
            if( VN(i).eq.0 .or. VN(i).eq.2 .or. BCflagN(i,2).eq.1) then
-              if (ABS( sol(NOPP(i)+NT) - solpred(NOPP(i)+NT) )/Tmax .gt.trunerr) then
-                 trunerr = ABS( sol(NOPP(i)+NT) - solpred(NOPP(i)+NT) ) /Tmax
-                 imax = i
-                 var = 'T'
+              if(no_Maran.eq.0) then
+                 if (ABS( sol(NOPP(i)+NT) - solpred(NOPP(i)+NT) )/Tmax .gt.trunerr) then
+                    trunerr = ABS( sol(NOPP(i)+NT) - solpred(NOPP(i)+NT) ) /Tmax
+                    imax = i
+                    var = 'T'
+                 end if
               end if
               if( VN(i).eq.0 .or. VN(i).eq.2 ) then
                  if (ABS( sol(NOPP(i)+Nu) - solpred(NOPP(i)+Nu) )/umax .gt.trunerr) then
@@ -66,14 +68,14 @@ if(diverge.eq.0) then
                  ! end if
               end if
            end if
-           if(VN(i).eq.5) then
+           if(VN(i).eq.5 .and. no_Maran.eq.0) then
               if (ABS( sol(NOPP(i)+NTs) - solpred(NOPP(i)+NTs) )/Tmax .gt.trunerr) then
                  trunerr = ABS( sol(NOPP(i)+NTs) - solpred(NOPP(i)+NTs) ) /Tmax
                  imax = i
                  var = 'T'
               end if
            end if
-           if(VN(i).eq.1 .or. VN(i).eq.2) then
+           if( no_vapor.eq.0 .and. ( VN(i).eq.1 .or. VN(i).eq.2 ) ) then
               if (ABS( sol(NOPP(i)+MDF(i)-1) - solpred(NOPP(i)+MDF(i)-1) )/cmax .gt.trunerr) then
                  trunerr = ABS( sol(NOPP(i)+MDF(i)-1) - solpred(NOPP(i)+MDF(i)-1) ) /cmax
                  imax = i
@@ -94,7 +96,7 @@ if(diverge.eq.0) then
      ! if(jmax.eq.Nz+1) var = 'z'
      ! if( VN(imax).ne.1 .and. jmax.eq.Nu+1 ) var = 'u'
      ! if( VN(imax).ne.1 .and. jmax.eq.Nv+1 ) var = 'v'
-     ! if( VN(imax).ne.1 .and. jmax.eq.NT+1 ) var = 'T'
+     ! if( VN(imax).ne.1 .and. jmax.eq.NT+1 .and. no_Maran.eq.0) var = 'T'
      ! if( VN(imax).ne.0 .and. jmax.eq.MDF(imax) ) var = 'c'
      ! ! do i = 1, NVar, 1
      ! !    if (ABS( sol(i) - solpred(i) ).gt.trunerr) trunerr = ABS( sol(i) - solpred(i) )

@@ -650,6 +650,7 @@ intRt_T(k,l) = intRt_T(k,l) + F0*( phir(k,l,i,id)*phir(k,l,j,id) + phiz(k,l,i,id
         sj(LNOPP(i)+MDF(globalNM(m,i))-1,LNOPP(j)+MDF(globalNM(m,j))-1) = gaussian_quadrature(intRc_c)!sjRcr(i,j)
 
      else !VE = 5
+        if(no_Maran.eq.0) then
         if( VN(globalNM(m,i)) .eq. 5 ) then
            sj(LNOPP(i)+NTs,LNOPP(j)+Nr) = gaussian_quadrature(intRt_r_V)  ! sjRur(i,j) 
            sj(LNOPP(i)+NTs,LNOPP(j)+Nz) = gaussian_quadrature(intRt_z_V)  ! sjRuz(i,j) 
@@ -666,7 +667,8 @@ intRt_T(k,l) = intRt_T(k,l) + F0*( phir(k,l,i,id)*phir(k,l,j,id) + phiz(k,l,i,id
            else   !j is base node
               sj(LNOPP(i)+NT,LNOPP(j)+NT) = gaussian_quadrature(intRt_T)/F0! sjRup(i,j)
            end if
-        end if
+        end if  !i condition
+        end if  !no_Maran.eq.0
      end if   !for  VE
 
   end if   !for s_mode=0

@@ -208,7 +208,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
 
         ! !if use no flux BC at outer substrate surface, then comment out
         ! !dT=0
-        ! if(s_mode.eq.0) then
+        ! if(s_mode.eq.0 .and. no_Maran.eq.0) then
         !    j = LNOPP(i) + NTs
         !    locJac(j,:) = 0.0_rk
         !    locJac(j,j) = 1.0_rk    !dRt/dT
@@ -311,7 +311,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
      end if
 
      !fix T in substrate
-     if(VE(m).eq.5) then
+     if(VE(m).eq.5 .and. no_Maran.eq.0) then
         do i = 1, 9
            j = LNOPP(i) + NT
            locJac(j,:) = 0.0_rk

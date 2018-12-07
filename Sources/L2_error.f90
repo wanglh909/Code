@@ -85,7 +85,7 @@ subroutine L2_error(cal_time)
                  if(PN(i).eq.1) error2 = error2 + ( dsol(NOPP(i)+Np)/pmax )**2
               end if
            end if
-           if(VN(i).eq.5) error2 = error2 + ( dsol(NOPP(i)+NTs)/Tmax )**2
+           if(VN(i).eq.5 .and. no_Maran.eq.0) error2 = error2 + ( dsol(NOPP(i)+NTs)/Tmax )**2
         end if
         if(no_vapor.eq.0 .and. ( VN(i).eq.1 .or. VN(i).eq.2 ) ) &
              error2 = error2 + ( dsol(NOPP(i)+MDF(i)-1)/cmax )**2
@@ -140,7 +140,7 @@ subroutine L2_error(cal_time)
 !            if(no_vapor.eq.0) dc(i) = abs( dsol( NOPP(i) + MDF(i)-1 ) / cmax )
 !            if( BCflagN(i,2).eq.1 .and. no_Maran.eq.0)  dTemp(i) = abs( dsol( NOPP(i) + NT ) / Tmax )
 !         end if
-!         if (VN(i).eq.5) then
+!         if (VN(i).eq.5 .and. no_Maran.eq.0) then
 !            dTemp(i) = abs( dsol( NOPP(i) + NTs ) / Tmax )
 !         end if
 !      end if
@@ -254,7 +254,7 @@ subroutine L2_error(cal_time)
 !         if(no_vapor.eq.0) Rc(i) = abs( load_dum( NOPP(i) + MDF(i)-1 ) )
 !         if( BCflagN(i,2).eq.1 .and. no_Maran.eq.0)  Rt(i) = abs( load_dum( NOPP(i) + NT ) )
 !      end if
-!      if (VN(i).eq.5 .and. s_mode.eq.0) then
+!      if (VN(i).eq.5 .and. s_mode.eq.0 .and. no_Maran.eq.0) then
 !         Rt(i) = abs( load_dum( NOPP(i) + NTs ) )
 !      end if
 !      ! if(Rsi(i).ne.Rsi(i)) write(*,*) 'si', i, Rsi(i)

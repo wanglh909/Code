@@ -79,7 +79,7 @@ subroutine split_sol
               if ( PN(i).eq.1 )     psol(i) = sol( NOPP(i) + Np ) 
            end if
         end if
-        if(VN(i).eq.5) Tsol(i) = sol( NOPP(i) + NTs )
+        if(VN(i).eq.5 .and. no_Maran.eq.0) Tsol(i) = sol( NOPP(i) + NTs )
         if(VN(i).eq.1 .or. VN(i).eq.2) csol(i) = sol(NOPP(i) + MDF(i) -1 )
      end if
   end do

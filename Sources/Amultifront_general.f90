@@ -3,7 +3,7 @@ module front_mod
   use kind, only: rk, ik, ths
   use data, only: rmax, zmax, umax, vmax, Tmax, cpmax, pmax, cmax, &
        VN, initial_vapor_solved, BCflagN, PN, no_vapor, &
-       Nr, Nz, NT, Nu, Nv, Ncp, Np, NTs
+       Nr, Nz, NT, Nu, Nv, Ncp, Np, NTs, no_Maran
   use omp_lib
 
   integer(kind=ik):: check_pivot=0
@@ -1190,7 +1190,7 @@ contains
        if(s_mode.eq.0) then
           if(initial_vapor_solved.eq.1) then
              if( VN(i).eq.0 .or. VN(i).eq.2 .or. BCflagN(i,2).eq.1) then
-                L2res = L2res + ( load_dum(NOPP(i)+NT)/Tmax )**2
+                if(no_Maran.eq.0) L2res = L2res + ( load_dum(NOPP(i)+NT)/Tmax )**2
                 if( VN(i).eq.0 .or. VN(i).eq.2 ) then
                    L2res = L2res + ( load_dum(NOPP(i)+Nu)/umax )**2
                    L2res = L2res + ( load_dum(NOPP(i)+Nv)/vmax )**2
@@ -1198,7 +1198,7 @@ contains
                    if(PN(i).eq.1) L2res = L2res + ( load_dum(NOPP(i)+Np)/pmax )**2
                 end if
              end if
-             if(VN(i).eq.5) L2res = L2res + ( load_dum(NOPP(i)+NTs)/Tmax )**2
+             if(VN(i).eq.5 .and. no_Maran.eq.0) L2res = L2res + ( load_dum(NOPP(i)+NTs)/Tmax )**2
           end if
           if(no_vapor.eq.0 .and. ( VN(i).eq.1 .or. VN(i).eq.2 ) ) &
                L2res = L2res + ( load_dum(NOPP(i)+MDF(i)-1)/cmax )**2
