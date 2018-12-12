@@ -8,7 +8,7 @@ subroutine SI_in_sj(m,i,j, sj, LNVar, LNOPP, id)                     !adding SI 
 
   integer(kind=ik), intent(in):: m,i,j, LNVar, LNOPP(9), id
   real(kind=rk), intent(out):: sj(LNVar, LNVar)
-  real(kind=rk):: flux
+  !real(kind=rk):: flux
 
   integer(kind=ik):: k, ipp, jpp
   real(kind=rk):: intRsi_r_S(Ng), intRsi_z_S(Ng), intReta_r_S(Ng), intReta_z_S(Ng)
@@ -229,14 +229,15 @@ if(s_mode.eq.0) then
 if(no_vapor.eq.1) then  !flux: flux( angle_c,rintfac_right(k,id) ) 
    
    !KBC2
-   intRsi_r_S(k) =  phi_1d(k,ipp)* flux( angle_c,rintfac_right(k,id) ) *&
+   intRsi_r_S(k) =  phi_1d(k,ipp)* flux(k,id) *&
         ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) *&
         reta_right(k,id) *phix_1d(k,jpp)* rintfac_right(k,id) + &
         
-        phi_1d(k,ipp)* flux( angle_c,rintfac_right(k,id) ) *&
+        phi_1d(k,ipp)* ( flux(k,id)+ flux_r(k,id)*rintfac_right(k,id) ) *&
         ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk *phi_1d(k,jpp)
 
-   intRsi_z_S(k) = phi_1d(k,ipp)* flux( angle_c,rintfac_right(k,id) ) *&
+
+   intRsi_z_S(k) = phi_1d(k,ipp)* flux(k,id) *&
         ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) *&
         zeta_right(k,id) *phix_1d(k,jpp)* rintfac_right(k,id)
 
@@ -250,8 +251,8 @@ if(no_vapor.eq.1) then  !flux: flux( angle_c,rintfac_right(k,id) )
    
    !KBC2 with uniflux: flux = 1.0_rk, only apply in KBC & accumulation: Rsi&Rm
    if(uniflux.eq.1) then
-      intRsi_r_S(k) = intRsi_r_S(k) / flux( angle_c,rintfac_right(k,id) )
-      intRsi_z_S(k) = intRsi_z_S(k) / flux( angle_c,rintfac_right(k,id) )
+      intRsi_r_S(k) = intRsi_r_S(k) / flux(k,id)
+      intRsi_z_S(k) = intRsi_z_S(k) / flux(k,id)
    end if
 
    
@@ -259,9 +260,9 @@ if(no_vapor.eq.1) then  !flux: flux( angle_c,rintfac_right(k,id) )
    intRm_r_S(k) = intRsi_r_S(k) * cpintfac_right(k,id)
    intRm_z_S(k) = intRsi_z_S(k) * cpintfac_right(k,id)
    
-   intRm_cp_S(k) = phi_1d(k,ipp)* flux( angle_c,rintfac_right(k,id) ) *phi_1d(k,jpp)*&
+   intRm_cp_S(k) = phi_1d(k,ipp)* flux(k,id) *phi_1d(k,jpp)*&
         rintfac_right(k,id)* ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(0.5_rk)
-   if(uniflux.eq.1) intRm_cp_S(k) = intRm_cp_S(k) / flux( angle_c,rintfac_right(k,id) )
+   if(uniflux.eq.1) intRm_cp_S(k) = intRm_cp_S(k) / flux(k,id)
    
 end if   !no_vapor=1
 

@@ -25,6 +25,7 @@ module Ldata
        rdotintfac_right(:,:), zdotintfac_right(:,:), Jp_r_right(:,:), Jp_z_right(:,:), Jp_right(:,:)
 
   real(kind=rk), allocatable:: dcdsi(:,:), dcdeta(:,:) ,dTdsi(:,:) ,dcpdsi(:,:) !,dTdeta(:,:)
+  real(kind=rk), allocatable:: flux(:,:), flux_r(:,:)
 
   !for subroutine define_sf
   real(kind=rk), allocatable:: Aterm(:,:,:), Bterm(:,:,:)

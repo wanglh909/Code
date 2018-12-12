@@ -15,7 +15,7 @@ subroutine define_sf(m,i, sf, LNVar, LNOPP,id)
   real(kind=rk):: intRsi_V(Ng,Ng), intReta_V(Ng,Ng), &
        intRu_V(Ng,Ng), intRv_V(Ng,Ng), intRt_V(Ng,Ng), intRm_V(Ng,Ng), intRp(Ng,Ng), intRc(Ng,Ng)
   real(kind=rk):: intRsi_S(Ng), intReta_S(Ng), intRu_S(Ng), intRv_S(Ng), intRt_S(Ng), intRm_S(Ng)
-  real(kind=rk):: conv, flux
+  real(kind=rk):: conv, flux_f
   
   intRsi_V(:,:) = 0.0_rk 
   intReta_V(:,:) = 0.0_rk 
@@ -310,15 +310,15 @@ if( (BCflagN( globalNM(m,i), 3 ).eq.1 .or. BCflagN( globalNM(m,i), 3 ).eq.3) .an
    do k = 1, Ng, 1    !three gausspoints
 
 !KBC2 & cooling2 & accmulation2 added here if impose the flux with no vapor phase solving
-if(no_vapor.eq.1) then  !flux:  flux( angle_c,rintfac_right(k,id) ) 
+if(no_vapor.eq.1) then  !flux:  flux(k,id) 
    !KBC2
-   intRsi_S(k) = phi_1d(k,ipp)* flux( angle_c,rintfac_right(k,id) ) * &
+   intRsi_S(k) = phi_1d(k,ipp)* flux(k,id) * &
         ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk *rintfac_right(k,id)
    !evaporation cooling 2
    if(no_Maran.eq.0) intRt_S(k) = REH * intRsi_S(k)
 
    !KBC2 with uniflux: flux = 1.0_rk, only apply in KBC & accumulation: Rsi&Rm
-   if(uniflux.eq.1) intRsi_S(k) = intRsi_S(k) / flux( angle_c,rintfac_right(k,id) )
+   if(uniflux.eq.1) intRsi_S(k) = intRsi_S(k) / flux(k,id)
 
    
    !particle accumulation 2
@@ -365,7 +365,7 @@ intRm_S(k) = intRm_S(k) + KBCgroup/Pep* ( phi_1d(k,ipp) * ( &
 
    !debug lines
    if(m.eq.81 .and. gaussian_quadrature_1d(intRm_S) .ne. gaussian_quadrature_1d(intRm_S)) then
-      write(*,*) 'Rsi', flux( angle_c,rintfac_right(1,id) ) ,angle_c,rintfac_right(1,id)
+      write(*,*) 'Rsi', flux_f( angle_c,rintfac_right(1,id) ) ,angle_c,rintfac_right(1,id)
       pause
    end if
    

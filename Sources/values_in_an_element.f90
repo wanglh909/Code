@@ -8,6 +8,7 @@ subroutine values_in_an_element(m,id)
   implicit none
   integer(kind=ik), intent(in):: m, id
   integer(kind=ik):: j, k, l, n, npp
+  real(kind=rk):: flux_f
 
   go to 120  !local initialization, make everything 0
   !give value to r1-r9 & z1-z9
@@ -304,6 +305,11 @@ subroutine values_in_an_element(m,id)
 
            end if  !for s_mode=0
         end do  !end for n
+        
+        if(no_vapor.eq.1 .and. s_mode.eq.0) then
+           flux(k,id) = flux_f( angle_c, rintfac_right(k,id), 1 )
+           flux_r(k,id) = flux_f( angle_c, rintfac_right(k,id), 2 )
+        end if
         
         if(s_mode.eq.0) then
            do n = 1, 9, 1 !the summation of nine terms, eg: csi = sum( clocal(1-9)*phisi_1d(1-9) )
