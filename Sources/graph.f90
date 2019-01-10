@@ -235,9 +235,9 @@ contains
        if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
           if(Nregion.eq.1) then
              if(no_Maran.eq.0) then
-                write(11, '(A)') 'variables = "r", "z", "u", "v", "cpN", "cp", "cp_flag", "T"'
+                write(11, '(A)') 'variables = "r", "z", "u", "v", "cp", "cpN", "cp_flag", "T"'
              else
-                write(11, '(A)') 'variables = "r", "z", "u", "v", "cpN", "cp", "cp_flag"'
+                write(11, '(A)') 'variables = "r", "z", "u", "v", "cp", "cpN", "cp_flag"'
              end if
              ! write(11, '(A,es13.6,A)') 'DATASETAUXDATA Umax = "', umax, '"'
              ! write(11, '(A,es13.6,A)') 'DATASETAUXDATA Vmax = "', vmax, '"'
@@ -294,10 +294,10 @@ contains
              if(Nregion.eq.1) then
                 if(no_Maran.eq.0) then
                    write(11,'(6es15.7,i4,es15.7)') rcoordinate(i), zcoordinate(i), &
-                        usol(i), vsol(i), cpsol(i)/cp_average, cpsol(i), pack_flag(i), Tsol(i)
+                        usol(i), vsol(i), cpsol(i), cpsol(i)/cp_average, pack_flag(i), Tsol(i)
                 else
                    write(11,'(6es15.7,i4)') rcoordinate(i), zcoordinate(i), &
-                        usol(i), vsol(i), cpsol(i)/cp_average, cpsol(i), pack_flag(i)
+                        usol(i), vsol(i), cpsol(i), cpsol(i)/cp_average, pack_flag(i)
                 end if
              end if
              if( (Nregion.eq.1 .or. Nregion.eq.3) .and. no_Maran.eq.0 ) then
