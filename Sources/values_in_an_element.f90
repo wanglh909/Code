@@ -7,13 +7,13 @@ subroutine values_in_an_element(m,id)
 
   implicit none
   integer(kind=ik), intent(in):: m, id
-  integer(kind=ik):: j, k, l, n, npp
+  integer(kind=ik):: j, k, l, n, npp, sideN, test
   real(kind=rk):: flux_f
 
   go to 120  !local initialization, make everything 0
   !give value to r1-r9 & z1-z9
   !define ulocal(9), vlocal(9), plocal(4)
-121  do j = 1, 9, 1
+121 do j = 1, 9, 1
 
      rlocal(j,id) = sol( NOPP( globalNM(m,j) ) + Nr )
      zlocal(j,id) = sol( NOPP( globalNM(m,j) ) + Nz )
@@ -51,7 +51,7 @@ subroutine values_in_an_element(m,id)
            
      end if !for s_mode=0
 
-  end do
+  end do  !j, 9 nodes
 
 
   rintfac(:,:,id) = 0.0_rk
@@ -206,6 +206,14 @@ subroutine values_in_an_element(m,id)
   vintfac_right(:,id) = 0.0_rk
   rdotintfac_right(:,id) = 0.0_rk
   zdotintfac_right(:,id) = 0.0_rk
+
+  rsi_packing(:,:,id) = 0.0_rk
+  zsi_packing(:,:,id) = 0.0_rk
+  uintfac_packing(:,:,id) = 0.0_rk
+  vintfac_packing(:,:,id) = 0.0_rk
+  cpintfac_packing(:,:,id) = 0.0_rk
+  rintfac_packing(:,:,id) = 0.0_rk
+  unit_direction_packing(:,:,id) = 0
   
   dTdsi(:,id) = 0.0_rk
   dcpdsi(:,id) = 0.0_rk
@@ -354,11 +362,70 @@ subroutine values_in_an_element(m,id)
 
      end do    !end for k
   end if
+
+
+
+  !packing front
+  if( s_mode.eq.0 .and. BCpackingE(m).eq.1 )  then
+     if( BCpackingN( globalNM(m,1) ).eq.1 .and. BCpackingN( globalNM(m,2) ).eq.1 .and. &
+          BCpackingN( globalNM(m,3) ).eq.1 ) packingside(m,1) = 1
+     if( BCpackingN( globalNM(m,1) ).eq.1 .and. BCpackingN( globalNM(m,4) ).eq.1 .and. &
+          BCpackingN( globalNM(m,7) ).eq.1 ) packingside(m,2) = 1
+     if( BCpackingN( globalNM(m,3) ).eq.1 .and. BCpackingN( globalNM(m,6) ).eq.1 .and. &
+          BCpackingN( globalNM(m,9) ).eq.1 ) packingside(m,3) = 1
+     if( BCpackingN( globalNM(m,7) ).eq.1 .and. BCpackingN( globalNM(m,8) ).eq.1 .and. &
+          BCpackingN( globalNM(m,9) ).eq.1 ) packingside(m,4) = 1
+     
+     do sideN = 1, 4
+        if(packingside(m,sideN).eq.1) then
+
+         do k = 1, Ng, 1    !three gausspoints
+            do n = 1, 3, 1 !the summation of three terms, eg: rsi = sum( rlocal(7,8,9)*phix_1d(1,2,3) )
+               if(sideN.eq.1) then
+                  npp = n  !only need r1, r2, r3 -->r(npp)
+               else if (sideN.eq.2) then
+                  npp = 3*n-2  !only need r1, r4, r7 -->r(npp)
+               else if(sideN.eq.3) then
+                  npp = 3*n  !only need r3, r6, r9 -->r(npp)
+               else  !sideN=4
+                  npp = n+6  !only need r7, r8, r9 -->r(npp)
+               end if
+               rsi_packing(k,sideN,id) = rsi_packing(k,sideN,id) + rlocal(npp,id) * phix_1d(k,n)
+               zsi_packing(k,sideN,id) = zsi_packing(k,sideN,id) + zlocal(npp,id) * phix_1d(k,n)
+               rintfac_packing(k,sideN,id) = rintfac_packing(k,sideN,id) + rlocal(npp,id) * phi_1d(k,n)
+               uintfac_packing(k,sideN,id) = uintfac_packing(k,sideN,id) + ulocal(npp,id) * phi_1d(k,n)
+               vintfac_packing(k,sideN,id) = vintfac_packing(k,sideN,id) + vlocal(npp,id) * phi_1d(k,n)
+               cpintfac_packing(k,sideN,id) = cpintfac_packing(k,sideN,id) + cplocal(npp,id)*phi_1d(k,n)
+            end do  !end for n
+            
+            !guruantee that unit vector is to the right, viz. zsi is positive
+            if(zsi_packing(k,sideN,id).lt.0.0_rk) then
+               unit_direction_packing(k,sideN,id) = 1
+               zsi_packing(k,sideN,id) = -zsi_packing(k,sideN,id)
+               rsi_packing(k,sideN,id) = -rsi_packing(k,sideN,id)
+            end if
+         end do    !end for k
+         ! test = unit_direction_packing(1,sideN,id) + unit_direction_packing(2,sideN,id) + &
+         !      unit_direction_packing(3,sideN,id)
+         ! if(test.ne.0 .and. test.ne.3 )then
+         !    print *, 'unit direction not consistent.', m, sideN, zsi_packing(1,sideN,id), &
+         !         zsi_packing(2,sideN,id), zsi_packing(3,sideN,id)
+         !    pause
+         ! end if
+
+         
+        end if  !this side is packingside
+     end do  !sideN, 4 sides
+     
+  end if  !packing front element
+
+        
+  
 go to 122
 
 
 ! if(m.eq.44 .and. s_mode.eq.0) then
-!    write(*,*) Trintfac(:,:,id), Tzintfac(:,:,id), urintfac(:,:,id), uzintfac(:,:,id)
+!    print *, Trintfac(:,:,id), Tzintfac(:,:,id), urintfac(:,:,id), uzintfac(:,:,id)
 !    pause
 ! end if
 

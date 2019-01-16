@@ -33,8 +33,8 @@ subroutine split_sol
      !the contact line
      if( BCflagN(i,3).eq.3 )  sol( NOPP(i) + Nr ) = R!1.0_rk
 
-     ! !maximum packing
-     ! if(pack_flag(i).eq.1) sol(NOPP(i) + Ncp) = cp_pack
+     !maximum packing
+     if(packingN(i).eq.1) sol(NOPP(i) + Ncp) = cp_pack
 
      
      !for the initial stage when stability hasn't been set up, cp not change

@@ -10,29 +10,29 @@ subroutine data_folder
 
   call get_command_argument(1,arg,l,status)
   if (status.ne.0) then
-     write(*,*) 'No command line arg'
+     print *, 'No command line arg'
      name = 'test'
      call system( 'rm ../test/*' )
      print *, 'rm files in ../test/'
   else
      read(arg,*) name   !the changing parameter
-     write(*,*) 'Using arg:',  name
+     print *, 'Using arg:',  name
   end if
   ! call get_command_argument(2,arg,l,status)
   ! if (status.ne.0) then
-  !    write(*,*) 'No command line arg'
+  !    print *, 'No command line arg'
   !    NEM_alge = 70!150
   ! else
   !    read(arg,*) NEM_alge   !the changing parameter
-  !    write(*,*) 'Using arg:',  NEM_alge
+  !    print *, 'Using arg:',  NEM_alge
   ! end if
   ! ! call get_command_argument(3,arg,l,status)
   ! ! if (status.ne.0) then
-  ! !    write(*,*) 'No command line arg'
+  ! !    print *, 'No command line arg'
   ! !    x_alge = 0.8
   ! ! else
   ! !    read(arg,*) x_alge   !the changing parameter
-  ! !    write(*,*) 'Using arg:',  x_alge
+  ! !    print *, 'Using arg:',  x_alge
   ! ! end if
 
   !Begins folder name
@@ -54,10 +54,10 @@ subroutine data_folder
   !see if this folder already exists
   INQUIRE(FILE=trim(folder),EXIST=e)    !Inquire: inquire information of a file
   if (.not.e) then
-     write(*,*) 'Created directory '//trim(folder)
+     print *, 'Created directory '//trim(folder)
      call system('mkdir '//trim(folder))
   else
-     write(*,*) 'Acessing directory '//trim(folder)!//'?'
+     print *, 'Acessing directory '//trim(folder)!//'?'
      !pause
   end if
 

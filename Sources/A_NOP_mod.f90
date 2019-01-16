@@ -59,9 +59,9 @@ contains
     allocate( NOPDV(NTN,3), layer(NTN), BCflagE(NTE,5), BCflagN(NTN,5) )
     allocate( Ngrid(NNR1278p,2) )!?
     !Ngrid: rowN & columnN of the node (only for Reg1&2, count together)
-    allocate( VN(NTN), pack_flag(NTN) )
+    allocate( VN(NTN), packingN(NTN), packingE(NTE) )
     !VN = 0: droplet, 1: vapor phase, 5: substrate only, ?delete:2: free surface
-    !pack_flag = 2: not droplet no cp, 0: not reach, 1: reach maximum packing
+    !packingN = 2: not droplet no cp, 0: not reach, 1: reach maximum packing
     allocate( algeN(NTN), algeS(NTN) )
     globalNM(:,:) = 0
     NOPDV(:,:) = 0
@@ -72,13 +72,14 @@ contains
     Ngrid(:,:) = 0
     VE(:) = 0
     VN(:) = 0
-    pack_flag(:) = 0
+    packingN(:) = 0
+    packingE(:) = 0
     layer(:) = 0
     algeN(:) = 0
     algeS(:) = 0
 
 ! if(NEV.lt.NES) then
-!    write(*,*) 'NEV < NES, need a new way to number elements'
+!    print *, 'NEV < NES, need a new way to number elements'
 !    stop
 ! end if
 
@@ -199,7 +200,7 @@ do eleN = 1, NTE
                globalNM(eleN, locN) = globalNM(eleN, locN) - ( NrowN+2*NES - NcolumnN )
             else
                globalNM(eleN, locN) = globalNM(eleN, locN) + ( NcolumnN-2*NES - NrowN )
-if(eleN.eq.13 .and. locN.eq.9) write(*,*) globalNM(eleN, locN)
+if(eleN.eq.13 .and. locN.eq.9) print *, globalNM(eleN, locN)
             end if
 
 
@@ -307,7 +308,7 @@ if(eleN.eq.13 .and. locN.eq.9) write(*,*) globalNM(eleN, locN)
 end do  !eleN
 
 do i = 1, NTN
-   if(VN(i).ne.0) pack_flag(i) = 2
+   if(VN(i).ne.0) packingN(i) = 2
 end do
 
 !BCflagE: axis, base, free, outer
@@ -534,7 +535,7 @@ end do
 
 ! open(unit = 10, file = trim(folder)//'VN.dat', status = 'replace' )
 ! do i = 1, NTN
-!    write(10, '(3i8)' ) i, VN(i), pack_flag(i)
+!    write(10, '(3i8)' ) i, VN(i), packingN(i)
 ! end do
 ! close(10)
 

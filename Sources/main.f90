@@ -42,7 +42,7 @@ program main
   !Use single or dual for debugging, same with debug_NAN
 !-----------------------------------done settings------------------------------------
   
-  no_Maran = 0  !1: no Marangoni stress
+  no_Maran = 1  !1: no Marangoni stress
   !set terms option
   NStrans = 1
   Inert = 1
@@ -50,7 +50,7 @@ program main
   Viscous = 1
   GravI = 1
   if(Inert.eq.0 .and. Viscous.eq.0) then
-     write(*,*) 'Inertia and Viscous cannot be 0 at the same time'
+     print *, 'Inertia and Viscous cannot be 0 at the same time'
      stop
   end if
   Ttime = 1
@@ -69,7 +69,7 @@ program main
   alge_corner = 1
 
 
-  graph_step = 10  !graph every 'graph_step' steps
+  graph_step = 1  !graph every 'graph_step' steps
   dt = 1.0e-5_rk!0.01_rk   !dt in first 5 steps
   FTS = 5 !fixed timesteps
 
@@ -90,6 +90,7 @@ program main
      NEV = 3!6
      NES = 2
      NEM_alge = NEM/3*2
+     graph_step = 1
      !--------solver setting-------------
      ths = 1
      THREADS_FRONT = ths                      !THREADS for front, must be <= ths
@@ -137,10 +138,10 @@ program main
   call determine_offsets()  !in multifront module, call whenever switching between mesh and full dynamics solving
   call graph  !graph starting mesh
 
-  write(*,*) 'enter loops'
+  print *, 'enter loops'
   do    !loop for time step
      
-     write(*,*)'------------------------next timestep-----------------------------'
+     print *,'------------------------next timestep-----------------------------'
 
      !start solving for solutions for each timestep
      step = 0
@@ -158,7 +159,7 @@ program main
     
      if(graph_mode.eq.1 .and. diverge.eq.0) then
         if(s_mode.eq.0 .and. init_stability.eq.1) then
-           write(*,*) 'pause for every timestep if solve for dynamics and graph each step'
+           print *, 'pause for every timestep if solve for dynamics and graph each step'
            pause
         end if
      else if( timestep.le.20 .or. mod(timestep,graph_step).eq.0 .or. diverge.eq.1 ) then  
@@ -179,15 +180,15 @@ program main
      !***********************************conditions to stop time loop*********************************
      
      if(angle_c.le.0.0_rk) then
-        write(*,*) 'contact angle is negative'
-        write(*,*) 'data wrote in', folder
+        print *, 'contact angle is negative'
+        print *, 'data wrote in', folder
         stop
      else if(angle_c_degree.le.3.0_rk) then
-        write(*,*) 'contact angle is less than 3 degrees'
-        write(*,*) 'data wrote in', folder
+        print *, 'contact angle is less than 3 degrees'
+        print *, 'data wrote in', folder
         stop
      ! else if( pack_condition.ne.0.0_rk ) then
-     !    write(*,*) 'no cp change anymore'
+     !    print *, 'no cp change anymore'
      !    stop
      end if
 

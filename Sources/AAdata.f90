@@ -150,8 +150,9 @@ module data
   integer(kind=ik):: init_stability, timestep_stable, radial_cal_time
   
   !maximum packing
-  integer(kind=ik), allocatable:: pack_flag(:)
-  real(kind=rk):: cp_pack, pack_condition, volume0, cp_average
+  integer(kind=ik), allocatable:: packingN(:), packingE(:), BCpackingN(:), BCpackingE(:), packingside(:,:)
+  integer(kind=ik):: contact_front_node
+  real(kind=rk):: cp_pack, pack_condition, volume0, cp_average, pack_start
 
 
   real(kind=rk):: angle_int

@@ -7,7 +7,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
   !use front_mod, only: determine_offsets
 
   implicit none
-  integer(kind=ik):: i, j, ipp, n
+  integer(kind=ik):: i, j, ipp, n, jj
 
   integer(kind=ik), intent(in):: m, LNVar, LNOPP(bas)
   real(kind=rk):: locJac(LNVar, LNVar), locRes(LNVar)
@@ -42,7 +42,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
   ! end do
 
   ! if(step.eq.1.and. m.eq.50) then
-  ! write(*,*) angle_c
+  ! print *, angle_c
   ! end if
 
   !Dirichlet BCs
@@ -112,18 +112,19 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
         locJac(j,j) = 1.0_rk
         locRes(j) = 0.0_rk
      end if
+
      
-     ! !maximum packing
-     ! if( pack_flag( globalNM(m,i) ).eq.1 ) then  
-     ! if( VE(m).eq.0 ) then
-     !    do i = 1, 9    
-     !       j = LNOPP(i) + Ncp     !The location of Rcp(i) in locRes
-     !       locJac(j,:) = 0.0_rk
-     !       locJac(j,j) = 1.0_rk               !dRcpi/dcpi
-     !       locRes(j) = 0.0_rk
-     !    end do
-     ! end if
-     ! end if
+     !packing region
+     if(packingN(globalNM(m,i)).eq.1) then  !must do according to the node instead of the element
+        do jj = Nr, Ncp
+           if(.not.(jj.eq.Nr .or. jj.eq.Nz .or. jj.eq.Ncp) ) cycle  !fix r,z,cp
+           j = LNOPP(i) + jj
+           locJac(j,:) = 0.0_rk
+           locJac(j,j) = 1.0_rk      !dRsi(i)/dr(i) dReta(i)/dz(i) dRm(i)/dcp(i)
+           locRes(j) = 0.0_rk
+        end do
+     end if
+
 
 !----------------------------------ALGEBRAIC MESH------------------------------------- 
      !drop corner algebraic mesh

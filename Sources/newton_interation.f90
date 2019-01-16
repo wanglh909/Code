@@ -22,14 +22,14 @@ subroutine newton_raphson
      end if
     
      call multifront(error1, cal_time) !using subroutine assemble
-     !write(*,*) "Solver time:", cal_time
+     !print *, "Solver time:", cal_time
      
 ! if(initial_vapor_solved.eq.1) pause
 
      if(debug_NAN) pause 
      
      !for debug, put 'sj's together as Jac, check Jac
-     if( check_0_in_Jac.eq.1 .and. s_mode.eq.0) then!.and. s_mode.eq.0 .and. initial_vapor_solved.eq.1)  then
+     if( check_0_in_Jac.eq.1 .and. s_mode.eq.0) then!.and. initial_vapor_solved.eq.1 .and. pack_start.eq.1 
         call jac_check_0
         Jac(:,:) = 0.0_rk
      end if
@@ -55,9 +55,9 @@ subroutine newton_raphson
      !bug exsistance, (stop program) or ( diverge=1 and redo this timestep to record )
      !if ( ( step.gt.20 .and. (timestep.ne.0 .and. timestep.ne.1) ) .or. error2.gt.1.0e8_rk  )  then 
      if ( ( step.gt.10 .and. (timestep.ne.0) ) .or. error2.gt.1.0e8_rk  )  then
-        write(*,*) 'did not converge, diverge number', diverge, 's_mode', s_mode
+        print *, 'did not converge, diverge number', diverge, 's_mode', s_mode
         if(diverge.eq.1 .or. s_mode.eq.1) then
-           write(*,*) 'data wrote in', folder
+           print *, 'data wrote in', folder
            ! call system('preplot '//trim(folder)//'dynamics.dat')
            ! call system('preplot '//trim(folder)//'mesh.dat')
            ! call system('preplot '//trim(folder)//'divergence.dat')
@@ -91,10 +91,6 @@ subroutine newton_raphson
         exit
      end if
      ! if(final_size.eq.0 .and. ( error1.lt.1.0e-2_rk.and.error2.lt.1.0e-2_rk )) exit
-  end do
-
-  do i = 1, NTN
-     if(cpsol(i).ge.cp_pack) pack_flag(i) = 1
   end do
 
   

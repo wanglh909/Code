@@ -11,7 +11,7 @@ subroutine define_sf(m,i, sf, LNVar, LNOPP,id)
   integer(kind=ik), intent(in):: m, i, LNVar, LNOPP(9), id
   real(kind=rk), intent(out):: sf(LNVar)
 
-  integer(kind=ik):: k, l, ipp   !no i (i is the i in main program)
+  integer(kind=ik):: k, l, ipp, sideN   !no i (i is the i in main program)
   real(kind=rk):: intRsi_V(Ng,Ng), intReta_V(Ng,Ng), &
        intRu_V(Ng,Ng), intRv_V(Ng,Ng), intRt_V(Ng,Ng), intRm_V(Ng,Ng), intRp(Ng,Ng), intRc(Ng,Ng)
   real(kind=rk):: intRsi_S(Ng), intReta_S(Ng), intRu_S(Ng), intRv_S(Ng), intRt_S(Ng), intRm_S(Ng)
@@ -40,6 +40,7 @@ subroutine define_sf(m,i, sf, LNVar, LNOPP,id)
   do k = 1, Ng, 1
      do l = 1, Ng, 1
 
+        if(s_mode.eq.1 .or. packingE(m).eq.0) then
         !Aterm(k,l,i)
         Aterm(k,l,id) = ( zeta(k,l,id)**2 + reta(k,l,id)**2 )*phisi(k,l,i) - &
              ( zeta(k,l,id)*zsi(k,l,id) + reta(k,l,id)*rsi(k,l,id) )*phieta(k,l,i)
@@ -53,6 +54,8 @@ subroutine define_sf(m,i, sf, LNVar, LNOPP,id)
 
         intReta_V(k,l) = ( 1.0_rk/s_orth(k,l,id) + epss )*Bterm(k,l,id)/Jp(k,l,id) * Jpsign(k,l,id) &
              - eps2*phieta(k,l,i)*geta_size(m)*log( reta(k,l,id)**2 + zeta(k,l,id)**2 )
+        
+        end if  !s_mode.eq.1 .or. packingE(m).eq.0
 
         if(s_mode.eq.0) then
 
@@ -109,8 +112,8 @@ if(VE(m).eq.0) then
    !      Oh*( ( uzintfac(k,l,id) + vrintfac(k,l,id) ) *phir(k,l,i,id) + 2.0_rk*vzintfac(k,l,id)*phiz(k,l,i,id) ) ) &
    !      *rintfac(k,l,id)*abs(Jp(k,l,id))
 
-   !(evaporation cooling & particle accumulation) on free surface, no volume integral
    if( BCflagN( globalNM(m,i), 3 ).ne.1 .and. BCflagN( globalNM(m,i), 3 ).ne.3 )  then
+   !(evaporation cooling & particle accumulation) on free surface, no volume integral
       
       if(no_Maran.eq.0) then
          if(Ttime.eq.1) &
@@ -126,21 +129,23 @@ if(VE(m).eq.0) then
               phir(k,l,i,id)*Trintfac(k,l,id) + phiz(k,l,i,id)*Tzintfac(k,l,id) ) &
               *rintfac(k,l,id)*abs(Jp(k,l,id))
       end if
-      
-      if(cptime.eq.1) &
-           intRm_V(k,l) = intRm_V(k,l) + Pep*phi(k,l,i)*( cpdotintfac(k,l,id) &
-           - rdotintfac(k,l,id) *cprintfac(k,l,id)  - zdotintfac(k,l,id) *cpzintfac(k,l,id) ) &
-           *rintfac(k,l,id)*abs(Jp(k,l,id))
-      if(cpconv.eq.1) &
-           intRm_V(k,l) = intRm_V(k,l) + Pep*phi(k,l,i)*(  &
-           uintfac(k,l,id) *cprintfac(k,l,id) + vintfac(k,l,id) *cpzintfac(k,l,id) ) &
-           *rintfac(k,l,id)*abs(Jp(k,l,id))
-      if(cpdiff.eq.1) &
-           intRm_V(k,l) = intRm_V(k,l) + ( &
-           phir(k,l,i,id)*cprintfac(k,l,id) + phiz(k,l,i,id)*cpzintfac(k,l,id) ) &
-           *rintfac(k,l,id)*abs(Jp(k,l,id))
 
-   end if
+      if(packingE(m).eq.0) then
+         if(cptime.eq.1) &
+              intRm_V(k,l) = intRm_V(k,l) + Pep*phi(k,l,i)*( cpdotintfac(k,l,id) &
+              - rdotintfac(k,l,id) *cprintfac(k,l,id)  - zdotintfac(k,l,id) *cpzintfac(k,l,id) ) &
+              *rintfac(k,l,id)*abs(Jp(k,l,id))
+         if(cpconv.eq.1) &
+              intRm_V(k,l) = intRm_V(k,l) + Pep*phi(k,l,i)*(  &
+              uintfac(k,l,id) *cprintfac(k,l,id) + vintfac(k,l,id) *cpzintfac(k,l,id) ) &
+              *rintfac(k,l,id)*abs(Jp(k,l,id))
+         if(cpdiff.eq.1) &
+              intRm_V(k,l) = intRm_V(k,l) + ( &
+              phir(k,l,i,id)*cprintfac(k,l,id) + phiz(k,l,i,id)*cpzintfac(k,l,id) ) &
+              *rintfac(k,l,id)*abs(Jp(k,l,id))
+      end if
+
+   end if  !not on free surface
 
    if( PN( globalNM(m,i) ).eq.1 ) then
       intRp(k,l) = psi(k,l,i)* ( urintfac(k,l,id) + uintfac(k,l,id)/rintfac(k,l,id) + vzintfac(k,l,id) ) &
@@ -189,7 +194,7 @@ end if    !for VE=0
                  sf(LNOPP(i)+NT) = gaussian_quadrature(intRt_V)/kR
               end if
            end if
-           sf(LNOPP(i)+Ncp) = gaussian_quadrature(intRm_V)
+           if(packingE(m).eq.0) sf(LNOPP(i)+Ncp) = gaussian_quadrature(intRm_V)
         end if
 
         if( PN( globalNM(m,i) ).eq.1 )  sf(LNOPP(i)+Np) = gaussian_quadrature(intRp)
@@ -362,14 +367,8 @@ intRm_S(k) = intRm_S(k) + KBCgroup/Pep* ( phi_1d(k,ipp) * ( &
    sf(LNOPP(i)+Nv) = sf(LNOPP(i)+Nv) + gaussian_quadrature_1d(intRv_S)!/Ca
    if(no_Maran.eq.0) sf(LNOPP(i)+NT) = sf(LNOPP(i)+NT) + gaussian_quadrature_1d(intRt_S)
    sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + gaussian_quadrature_1d(intRm_S)
-
-   !debug lines
-   if(m.eq.81 .and. gaussian_quadrature_1d(intRm_S) .ne. gaussian_quadrature_1d(intRm_S)) then
-      write(*,*) 'Rsi', flux_f( angle_c,rintfac_right(1,id) ) ,angle_c,rintfac_right(1,id)
-      pause
-   end if
    
-end if
+end if  !free surface from drop
 
 
 !free surface from vapor, KBC part2 & evaporation cooling part2
@@ -404,6 +403,57 @@ end if  !free surface nodes
 end if  !solve for vapor
 
 
+end if  !for s_mode=0
+
+
+
+!packing surface
+if(s_mode.eq.0) then
+   !packing surface node from the unpacking element
+   if( BCpackingN( globalNM(m,i) ).eq.1 .and. BCpackingE(m).eq.1 ) then
+      
+      do sideN = 1, 4
+         if(packingside(m,sideN).eq.1) then
+            !--------pair node i with sideN & ipp----------
+            if(sideN.eq.1 ) then
+               if(i.eq.1 .or. i.eq.2 .or. i.eq.3) then
+                  ipp = i
+               else
+                  cycle
+               end if
+            else if(sideN.eq.2) then
+               if(i.eq.1 .or. i.eq.4 .or. i.eq.7) then
+                  ipp = i/3+1
+               else
+                  cycle
+               end if
+            else if(sideN.eq.3) then
+               if(i.eq.3 .or. i.eq.6 .or. i.eq.9) then
+                  ipp = i/3
+               else
+                  cycle
+               end if
+            else if(sideN.eq.4) then
+               if(i.eq.7 .or. i.eq.8 .or. i.eq.9) then
+                  ipp = i-6
+               else
+                  cycle
+               end if
+            end if  !sideN classification
+            !----------------finish pairing------------------
+
+            do k = 1, Ng, 1    !three gausspoints
+               intRm_S(k) = - Pep* phi_1d(k,ipp) * ( &
+                    zsi_packing(k,sideN,id)*uintfac_packing(k,sideN,id) - &
+                    rsi_packing(k,sideN,id)*vintfac_packing(k,sideN,id) &
+                    ) *cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id)
+            end do
+            sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + gaussian_quadrature_1d(intRm_S)
+            
+         end if   !packingside = 1
+      end do  !sideN
+   
+   end if  !packing surface node
 end if  !for s_mode=0
 
 

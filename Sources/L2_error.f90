@@ -52,7 +52,7 @@ subroutine L2_error(cal_time)
   ! end if
   ! write(11,'(8es14.6)') rmax, zmax, umax, vmax, Tmax, cpmax, pmax, cmax
   ! close(11)
-  ! ! write(*,*) rmax, zmax, umax, vmax, Tmax, cpmax, pmax, cmax
+  ! ! print *, rmax, zmax, umax, vmax, Tmax, cpmax, pmax, cmax
 
 
   
@@ -98,7 +98,7 @@ subroutine L2_error(cal_time)
   
 
   !write Res & Sol error in file error.dat
-  write(*,*) 'Res:', error1, ' Sol:', error2, ' step:', step
+  print *, 'Res:', error1, ' Sol:', error2, ' step:', step
   if (timestep.eq.0 .and. step.eq.1 .and. ( size_function_change.eq.1 .or. read_coordinate_value.eq.1 ) ) then
      open(unit = 11, file = trim(folder)//'error.dat', status = 'replace')
      write(11, '(A)') 'variables = "ResError", "SolError", "step" '
@@ -144,14 +144,14 @@ subroutine L2_error(cal_time)
 !            dTemp(i) = abs( dsol( NOPP(i) + NTs ) / Tmax )
 !         end if
 !      end if
-!      ! if(dr(i).ne.dr(i)) write(*,*) 'dr', i, dr(i)
-!      ! if(dz(i).ne.dz(i)) write(*,*) 'dz', i, dz(i)
-!      ! if(du(i).ne.du(i)) write(*,*) 'du', i, du(i)
-!      ! if(dv(i).ne.dv(i)) write(*,*) 'dv', i, dv(i)
-!      ! if(dTemp(i).ne.dTemp(i)) write(*,*) 'dTemp', i, dTemp(i)
-!      ! if(dcp(i).ne.dcp(i)) write(*,*) 'dcp', i, dcp(i)
-!      ! if(dpress(i).ne.dpress(i)) write(*,*) 'dp', i, dpress(i)
-!      ! if(dc(i).ne.dc(i)) write(*,*) 'dc', i, dc(i)
+!      ! if(dr(i).ne.dr(i)) print *, 'dr', i, dr(i)
+!      ! if(dz(i).ne.dz(i)) print *, 'dz', i, dz(i)
+!      ! if(du(i).ne.du(i)) print *, 'du', i, du(i)
+!      ! if(dv(i).ne.dv(i)) print *, 'dv', i, dv(i)
+!      ! if(dTemp(i).ne.dTemp(i)) print *, 'dTemp', i, dTemp(i)
+!      ! if(dcp(i).ne.dcp(i)) print *, 'dcp', i, dcp(i)
+!      ! if(dpress(i).ne.dpress(i)) print *, 'dp', i, dpress(i)
+!      ! if(dc(i).ne.dc(i)) print *, 'dc', i, dc(i)
 !      ! error2p = error2p + dr(i)**2 + dz(i)**2 + du(i)**2 + dv(i)**2 + dTemp(i)**2 + dcp(i)**2 + dpress(i)**2 + dc(i)**2
 !   end do
 !   ! error2p = sqrt(error2p)
@@ -257,14 +257,14 @@ subroutine L2_error(cal_time)
 !      if (VN(i).eq.5 .and. s_mode.eq.0 .and. no_Maran.eq.0) then
 !         Rt(i) = abs( load_dum( NOPP(i) + NTs ) )
 !      end if
-!      ! if(Rsi(i).ne.Rsi(i)) write(*,*) 'si', i, Rsi(i)
-!      ! if(Reta(i).ne.Reta(i)) write(*,*) 'eta', i, Reta(i)
-!      ! if(Ru(i).ne.Ru(i)) write(*,*) 'u', i, Ru(i)
-!      ! if(Rv(i).ne.Rv(i)) write(*,*) 'v', i, Rv(i)
-!      ! if(Rt(i).ne.Rt(i)) write(*,*) 't', i, Rt(i)
-!      ! if(Rcp(i).ne.Rcp(i)) write(*,*) 'cp', i, Rcp(i)
-!      ! if(Rp(i).ne.Rp(i)) write(*,*) 'p', i, Rp(i)
-!      ! if(Rc(i).ne.Rc(i)) write(*,*) 'c', i, Rc(i)
+!      ! if(Rsi(i).ne.Rsi(i)) print *, 'si', i, Rsi(i)
+!      ! if(Reta(i).ne.Reta(i)) print *, 'eta', i, Reta(i)
+!      ! if(Ru(i).ne.Ru(i)) print *, 'u', i, Ru(i)
+!      ! if(Rv(i).ne.Rv(i)) print *, 'v', i, Rv(i)
+!      ! if(Rt(i).ne.Rt(i)) print *, 't', i, Rt(i)
+!      ! if(Rcp(i).ne.Rcp(i)) print *, 'cp', i, Rcp(i)
+!      ! if(Rp(i).ne.Rp(i)) print *, 'p', i, Rp(i)
+!      ! if(Rc(i).ne.Rc(i)) print *, 'c', i, Rc(i)
 !      ! error1p = error1p + Rsi(i)**2 + Reta(i)**2 + Ru(i)**2 + Rv(i)**2 + Rt(i)**2 + Rcp(i)**2 + Rp(i)**2 + Rc(i)**2
 !   end do
 !   ! error1p = sqrt(error1p)

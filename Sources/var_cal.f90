@@ -21,8 +21,9 @@ subroutine variable_cal
   real(kind=rk):: t
   real(kind=rk):: v_surf_p(3), h_surf, dPdr(3), zsolp
   
-  real(kind=rk):: particle_m, intMass(3,3), intVol(3,3), cpintfac, rintfac, Jp
-  integer(kind=ik):: l, n, flag
+  real(kind=rk):: particle_m, intMass(3,3), intVol(3,3), cpintfac, rintfac, Jp, particle_m_element, volume_element
+  integer(kind=ik):: l, n, flag, sum
+  real(kind=rk):: multip
 
   t = REAL(omp_get_wtime(),rk)
 
@@ -38,16 +39,16 @@ subroutine variable_cal
   else !no_vapor=1
      angle_c_node = i + 2*(NES+1) + 1
   end if
-  ! write(*,*) 'angle_c_node', angle_c_node
-  ! write(*,*) 'top_node', top_node
+  ! print *, 'angle_c_node', angle_c_node
+  ! print *, 'top_node', top_node
 
   if(final_size.eq.1) then
   angle_c = atan( zcoordinate(angle_c_node)/ ( rcoordinate(i) - rcoordinate(angle_c_node) ) )
   !atan( solp( NOPP(angle_c_node)+Nz ) / ( solp( NOPP(1)+Nr ) - solp( NOPP(angle_c_node)+Nr ) ) )
   angle_c_degree = angle_c /pi*180.0_rk   !degree
   end if
-  write(*,*) ' '
-  write(*,*) 'contact angle', angle_c_degree
+  print *, ' '
+  print *, 'contact angle', angle_c_degree
 
   if(timestep.eq.0) then
      open(unit = 11, file = trim(folder)//'angle_c.dat', status = 'replace')
@@ -106,11 +107,18 @@ subroutine variable_cal
               intVol(k,l) = rintfac * abs( Jp )
            end do
         end do
-        particle_m = particle_m + gaussian_quadrature(intMass)
-        volume1 = volume1 + gaussian_quadrature(intVol)
+
+        particle_m_element = gaussian_quadrature(intMass)
+        volume_element = gaussian_quadrature(intVol)        
+        particle_m = particle_m + particle_m_element
+        volume1 = volume1 + volume_element
         if(timestep.eq.1) volume0 = volume1
+        
+        !change packing flag by the way
+        if(particle_m_element/volume_element .ge. cp_pack) packingE(i) = 1
+        
      end do
-     ! write(*,*) 'particle mass', particle_m
+     ! print *, 'particle mass', particle_m
 
      !write particle mass
      if(timestep.eq.0) then
@@ -119,11 +127,11 @@ subroutine variable_cal
      else
         open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'old', access = 'append')
      end if
-     write(31, '(3es15.7)') angle_c, particle_m, time
+     write(31, '(3es15.7)') angle_c_degree, particle_m, time
      close(31)
 
      ! !write drop volume
-     ! write(*,*) 'drop volume', volume1, 'particle mass limit', volume1*(cpmax+1.0_rk)
+     ! print *, 'drop volume', volume1, 'particle mass limit', volume1*(cpmax+1.0_rk)
      ! if(timestep.eq.0) then
      !    open(unit = 32, file = trim(folder)//'drop_volume.dat', status = 'replace')
      !    write(32, '(A)') 'variables = "time", "V", "contact angle" '
@@ -153,8 +161,38 @@ subroutine variable_cal
   ! end if
      end if
   end if
-           
 
+
+
+  !packing flag change
+  do i = 1, NTE
+     if(packingE(i).eq.1) then
+        do j = 1, 9
+           packingN( globalNM(i,j) ) = 1
+        end do
+     end if
+  end do   !element i
+  do i = 1, NTN
+     sum = 0
+     multip = 1.0_rk
+     do k = 1, 4
+        if(rNOP(i,k,1).ne.0) then
+           sum = sum + packingE( rNOP(i,k,1) )
+           multip = multip * real( packingE(rNOP(i,k,1)) ,rk)
+        end if
+     end do  !4 elements that the node resides
+     if( sum.gt.0 .and. multip.eq.0.0_rk ) then
+        BCpackingN(i) = 1
+        if( BCflagN(i,3).eq.1 ) contact_front_node = i
+     end if
+  end do  !node i
+  do i = 1, NTE
+     sum = 0
+     do j = 1, 9
+        sum = sum + BCpackingN( globalNM(i,j) )
+     end do
+     if( sum.gt.1 .and. sum.lt.9 ) BCpackingE(i) = 1
+  end do  !element i 
 
 
   
@@ -345,7 +383,7 @@ subroutine variable_cal
 ! !            gradP = - peta/sqrt( retap(1)**2+zetap(1)**2 )  != grad(p)
 ! !            gradT(1) = - Teta(1)/sqrt( retap(1)**2+zetap(1)**2 )
 ! !            MaranD = - beta*Teta(1)/sqrt( retap(1)**2+zetap(1)**2 )  != grad(sigma)
-! ! ! write(*,*) presD, MaranD/beta, MaranD, Kdi
+! ! ! print *, presD, MaranD/beta, MaranD, Kdi
 ! !            h_surf = zcoordinate( globalNM(i,3) ) 
 ! !            dPdr(1) = peta/retap(1)
 ! !            v_surf_p(1) = ( -0.5_rk*dPdr(1)*h_surf + beta*gradT(1) ) *h_surf
@@ -456,7 +494,7 @@ subroutine variable_cal
            !    end do
 
            !    write(30, '(f9.3,2es15.7, i6)') angle_c_degree, r_change, time, i
-           !    !write(*,*) 'r_change for lubrication velocity =', r_change, 'element:', i
+           !    !print *, 'r_change for lubrication velocity =', r_change, 'element:', i
            !    ! exit   !?not strict
 
            ! end if   !u change element
@@ -465,7 +503,7 @@ subroutine variable_cal
 
            !surface flow direction change
            if( v_surf(1) * v_surf(2) .lt. 0.0_rk .and. (i.ne.top_element .and. i.ne.CL_element) ) then
-! write(*,*)  v_surf(1), v_surf(2)
+! print *,  v_surf(1), v_surf(2)
               eta1 = 0.0_rk
               eta2 = 1.0_rk
               do while ( abs(eta1-eta2).gt.0.5e-1_rk )
@@ -494,7 +532,7 @@ subroutine variable_cal
 
 
               write(14, '(f9.3,2es15.7,i6)') angle_c_degree, r_change, time, i
-              !write(*,*) 'r_change for velocity =', r_change, 'element:', i
+              !print *, 'r_change for velocity =', r_change, 'element:', i
               ! exit   !?not strict
 
            end if   !u change element
@@ -528,7 +566,7 @@ subroutine variable_cal
                  end do
 
                  write(18, '(f9.3,2es15.7,i4)') angle_c_degree, r_change, time, i
-                 !write(*,*) 'r_change for gradT =', r_change, 'element:', i
+                 !print *, 'r_change for gradT =', r_change, 'element:', i
                  ! exit   !?not strict
 
               end if   !gradT change element
@@ -547,7 +585,7 @@ subroutine variable_cal
      !    if( usol(i)*usol(j).lt.0.0_rk ) then
      !       r_change = ( rcoordinate(i) + rcoordinate(j) )/2.0_rk 
      !       write(14, '(3es15.7)') time, angle_c_degree, r_change
-     !       write(*,*) 'r_change =', r_change
+     !       print *, 'r_change =', r_change
      !       exit   !?not strict
      !    end if
      ! end do
@@ -562,7 +600,7 @@ subroutine variable_cal
            end do
            if( usol(i)*usol(j).lt.0.0_rk .and. &
                 (1.0_rk-rcoordinate(i))*(1.0_rk-rcoordinate(j)).gt.1.0e-6_rk ) then
-              write(*,*) 'stag exist', rcoordinate(i), rcoordinate(j)
+              print *, 'stag exist', rcoordinate(i), rcoordinate(j)
               flag = 1
               exit   !?not strict
            end if
@@ -635,7 +673,7 @@ subroutine variable_cal
 !                     exit
 !                  end if
 !               end do
-!               ! write(*,*) n1,n2,n3
+!               ! print *, n1,n2,n3
 !               ! pause
 !               reta = -3.0_rk*rcoordinate(n1) + 4.0_rk*rcoordinate(n2) - rcoordinate(n3)
 !               zeta = -3.0_rk*zcoordinate(n1) + 4.0_rk*zcoordinate(n2) - zcoordinate(n3)
@@ -701,10 +739,20 @@ subroutine variable_cal
   !flag to judge if maximum packing everywhere
   pack_condition = 1.0_rk
   do i = 1, NTN
-     if(pack_flag(i).eq.2) cycle
-     pack_condition = pack_condition * real(pack_flag(i),rk)
+     if(packingN(i).eq.2) cycle
+     pack_condition = pack_condition * real(packingN(i),rk)
      if(pack_condition.eq.0.0_rk) exit
   end do
+  
+  sum = 0
+  do i = 1, NTN
+     if(packingN(i).eq.2) cycle
+     sum = sum + packingN(i)
+  end do
+  if(sum.ne.0) then
+     pack_start = 1
+     print *, 'maximum packing emerges.'
+  end if
      
 
 
@@ -845,7 +893,7 @@ contains
              intLocEvap(k) = ( -csi_right1(k)*( zeta_right1(k)**2 + reta_right1(k)**2 ) + &
                   ceta_right1(k)*( zsi_right1(k)*zeta_right1(k) + rsi_right1(k)*reta_right1(k) ) ) &
                   *rintfac_right1(k)/Jp2(k)
-             !write(*,*)  csi_right1(k), zeta_right1(k), reta_right1(k),ceta_right1(k), zsi_right1(k), rsi_right1(k)
+             !print *,  csi_right1(k), zeta_right1(k), reta_right1(k),ceta_right1(k), zsi_right1(k), rsi_right1(k)
           end do
           EvapSpeed = EvapSpeed + gaussian_quadrature_1d(intLocEvap)/KBCgroup
        end if

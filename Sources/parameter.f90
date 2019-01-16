@@ -78,7 +78,7 @@ subroutine parameter_values
   diameterp = 1.0e-8_rk  !1.0e-7_rk  !  (m) particle diameter
   Dp = kboltz*(25.0_rk+273.15_rk)/(6.0_rk*pi*mu*diameterp)   !2.45e-12 (m^2/s)
   !cp0 = 2.5e-4  !(kg/m^3)  !??not used yet
-  cp_pack = 5.0_rk
+  cp_pack = 2.0_rk
   
 
   !characteristic
@@ -162,9 +162,9 @@ subroutine parameter_values
   close(10)
 
 
-  write(*,*) 'KBCgroup =', KBCgroup
-  !write(*,*) 'REH =', REH
-  !write(*,*) 'beta =', beta
+  print *, 'KBCgroup =', KBCgroup
+  !print *, 'REH =', REH
+  !print *, 'beta =', beta
 
   return
 end subroutine parameter_values

@@ -28,7 +28,7 @@ subroutine graph
         open(unit = 10, file = trim(folder)//'mesh.dat', status = 'old', access = 'append')
      end if
      call graph_mesh(step_indicator)
-write(*,*) 'write mesh'
+print *, 'write mesh'
     
      if( final_size.eq.1) then
 
@@ -50,7 +50,7 @@ write(*,*) 'write mesh'
            if(no_vapor.eq.0) &
                 open(unit = 13, file = trim(folder)//'vapor_concentration.dat', status = 'replace' )
            call graph_dynamics(0)
-           write(*,*) 'dynamics'
+           print *, 'dynamics'
         end if
      end if
 
@@ -112,7 +112,7 @@ write(*,*) 'write mesh'
         
      end if
 
-write(*,*) 'write dynamics'
+print *, 'write dynamics'
         call graph_dynamics(step_indicator)
 
      ! end if
@@ -265,7 +265,7 @@ contains
           end if
           if(Nregion.eq.2) then
              ! pause
-             ! write(*,*) 'headline'
+             ! print *, 'headline'
              write(13, '(A)') 'variables = "r", "z", "c"'
              write(13,201) 'Zone T = "step:', step_indicator, &!', RGN: ', Nregion, &
                   '", STRANDID = 1, SOLUTIONTIME =', time_indicator, &
@@ -294,10 +294,10 @@ contains
              if(Nregion.eq.1) then
                 if(no_Maran.eq.0) then
                    write(11,'(6es15.7,i4,es15.7)') rcoordinate(i), zcoordinate(i), &
-                        usol(i), vsol(i), cpsol(i), cpsol(i)/cp_average, pack_flag(i), Tsol(i)
+                        usol(i), vsol(i), cpsol(i), cpsol(i)/cp_average, packingN(i), Tsol(i)
                 else
                    write(11,'(6es15.7,i4)') rcoordinate(i), zcoordinate(i), &
-                        usol(i), vsol(i), cpsol(i), cpsol(i)/cp_average, pack_flag(i)
+                        usol(i), vsol(i), cpsol(i), cpsol(i)/cp_average, packingN(i)
                 end if
              end if
              if( (Nregion.eq.1 .or. Nregion.eq.3) .and. no_Maran.eq.0 ) then
@@ -308,7 +308,7 @@ contains
              end if
              
           else   !diverge=1 & graph_mode=1 --> repeat diverging timestep
-write(11,'(6es15.7,i4,2es15.7)') rcoordinate(i), zcoordinate(i), usol(i), vsol(i), Tsol(i), cpsol(i), pack_flag(i), psol(i), csol(i)
+write(11,'(6es15.7,i4,2es15.7)') rcoordinate(i), zcoordinate(i), usol(i), vsol(i), Tsol(i), cpsol(i), packingN(i), psol(i), csol(i)
           end if
           
        end do
@@ -345,12 +345,12 @@ write(11,'(6es15.7,i4,2es15.7)') rcoordinate(i), zcoordinate(i), usol(i), vsol(i
 
     !write contact angle
     write(11,'(A,f7.3,A,i7)') 'Text X=40, Y=90, F=Times, T= "contact angle =', angle_c_degree, '", ZN= ', zone_d
-!write(*,*) angle_c_degree, zone_d
+!print *, angle_c_degree, zone_d
     if( (.not.(diverge.eq.1 .and. graph_mode.eq.1)) .and. no_Maran.eq.0 ) then
        write(12,'(A,f7.3,A,i7)') 'Text X=40, Y=90, F=Times, T= "contact angle =', &
             angle_c_degree, '", ZN= ', zone_T
        write(12,'(A)') ' '
-!write(*,*) angle_c_degree, zone_T
+!print *, angle_c_degree, zone_T
        ! if(no_vapor.eq.0) write(13,'(A,f7.3,A,i7,A,i7)') &
        !      'Text X=40, Y=90, F=Times, T= "contact angle =', angle_c_degree, '", ZN= ', zone_T
     end if

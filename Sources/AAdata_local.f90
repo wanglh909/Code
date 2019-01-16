@@ -26,6 +26,9 @@ module Ldata
 
   real(kind=rk), allocatable:: dcdsi(:,:), dcdeta(:,:) ,dTdsi(:,:) ,dcpdsi(:,:) !,dTdeta(:,:)
   real(kind=rk), allocatable:: flux(:,:), flux_r(:,:)
+  real(kind=rk), allocatable:: rsi_packing(:,:,:), zsi_packing(:,:,:), rintfac_packing(:,:,:), &
+       zintfac_packing(:,:,:), uintfac_packing(:,:,:), vintfac_packing(:,:,:), cpintfac_packing(:,:,:)
+  integer(kind=ik), allocatable:: unit_direction_packing(:,:,:)
 
   !for subroutine define_sf
   real(kind=rk), allocatable:: Aterm(:,:,:), Bterm(:,:,:)

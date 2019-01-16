@@ -62,9 +62,10 @@ subroutine VI_in_sj(m,i,j, sj, LNVar, LNOPP,id)
 
         !intRsi_u,v,p = intReta_u,v,p = 0.0_rk
         
+        if(s_mode.eq.1 .or. packingE(m).eq.0) then
 !------------------------------------------Rsi-------------------------------------    
-        !KBC on free surface, no volume integral
-        if( BCflagN( globalNM(m,i), 3 ).ne.1 .and. BCflagN( globalNM(m,i), 3 ).ne.3 ) then
+           !KBC on free surface, no volume integral
+           if( BCflagN( globalNM(m,i), 3 ).ne.1 .and. BCflagN( globalNM(m,i), 3 ).ne.3 ) then
 
 intRsi_r_V(k,l) = ( s_orth_r(k,l,id) * Aterm(k,l,id) / Jp(k,l,id)  +  &
      ( s_orth(k,l,id) + epss ) * Aterm_r(k,l,id) / Jp(k,l,id)  &
@@ -78,7 +79,7 @@ intRsi_z_V(k,l) = ( s_orth_z(k,l,id) * Aterm(k,l,id) / Jp(k,l,id)  +  &
      -  eps1 * phisi(k,l,i) * fsi_size(m) / ( rsi(k,l,id)**2 + zsi(k,l,id)**2 ) &
      * 2.0_rk*zsi(k,l,id) * phisi(k,l,j) 
 
-        end if
+           end if
 
 !------------------------------------------Reta-------------------------------------   
 intReta_r_V(k,l) = (-1.0_rk/(s_orth(k,l,id)**2) * s_orth_r(k,l,id) * Bterm(k,l,id) / Jp(k,l,id)  &
@@ -93,7 +94,9 @@ intReta_z_V(k,l) =  ( -1.0_rk/s_orth(k,l,id)**2 * s_orth_z(k,l,id) * Bterm(k,l,i
      -  eps2 * phieta(k,l,i) * geta_size(m) / ( reta(k,l,id)**2 + zeta(k,l,id)**2 ) &
      * 2.0_rk*zeta(k,l,id) * phieta(k,l,j)
 
+        end if  !s_mode.eq.1 .or. packingE(m).eq.0
 
+        
         if(s_mode.eq.0) then 
         if(VE(m).eq.0) then
 !          Ruu, Ruv, Rup, Rvu, Rvv, Rvp
@@ -384,7 +387,9 @@ intRt_T(k,l) = intRt_T(k,l) + ( phir(k,l,i,id)*phir(k,l,j,id) + phiz(k,l,i,id)*p
 
 end if !no_Maran.eq.0
 
-!------------------------------------------Rm------------------------------------- 
+!------------------------------------------Rm-------------------------------------
+if(packingE(m).eq.0) then
+
 !Rm_r_V
 if(cptime.eq.1) &
 intRm_r_V(k,l) = intRm_r_V(k,l) + Pep*phi(k,l,i)* ( -CTJ*phi(k,l,j)/dt*cprintfac(k,l,id) - &
@@ -453,6 +458,8 @@ intRm_cp(k,l) = intRm_cp(k,l) + Pep*phi(k,l,i)* ( uintfac(k,l,id)*phir(k,l,j,id)
 if(cpdiff.eq.1) &
 intRm_cp(k,l) = intRm_cp(k,l) + ( phir(k,l,i,id)*phir(k,l,j,id) + phiz(k,l,i,id)*phiz(k,l,j,id) ) &
      *rintfac(k,l,id)*abs(Jp(k,l,id))
+
+end if !packingE = 0
 
         end if
 
@@ -625,11 +632,13 @@ intRt_T(k,l) = intRt_T(k,l) + F0*( phir(k,l,i,id)*phir(k,l,j,id) + phiz(k,l,i,id
              end if
           end if
      
+          if(packingE(m).eq.0) then
         sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = gaussian_quadrature(intRm_r_V)     ! sjRur(i,j)
         sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) = gaussian_quadrature(intRm_z_V)     ! sjRuz(i,j) 
         sj(LNOPP(i)+Ncp,LNOPP(j)+Nu) = gaussian_quadrature(intRm_u)       ! sjRuu(i,j) 
         sj(LNOPP(i)+Ncp,LNOPP(j)+Nv) = gaussian_quadrature(intRmv)        ! sjRuv(i,j) 
         sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp) = gaussian_quadrature(intRm_cp)     ! sjRup(i,j)
+          end if
         
         end if
 
@@ -674,7 +683,7 @@ intRt_T(k,l) = intRt_T(k,l) + F0*( phir(k,l,i,id)*phir(k,l,j,id) + phiz(k,l,i,id
   end if   !for s_mode=0
 
 ! if(initial_vapor_solved.eq.1 .and. m.eq.28 .and. i.eq.4 .and. j.eq.2) then
-!    write(*,*) sj(LNOPP(i)+NT,LNOPP(j)+Nr)
+!    print *, sj(LNOPP(i)+NT,LNOPP(j)+Nr)
 !    pause
 ! end if
 

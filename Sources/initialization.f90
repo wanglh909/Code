@@ -30,7 +30,8 @@ subroutine initialization
   allocate( sol(NVar), dsol(NVar) )
   allocate( solp(NVar), soldot(NVar), soldotp(NVar), soldotpp(NVar), solpred(NVar) )
   allocate( rcoordinate(NTN), zcoordinate(NTN), usol(NTN), vsol(NTN), Tsol(NTN), psol(NTN), csol(NTN), cpsol(NTN) )
-     allocate( fsi_size(NTE), geta_size(NTE) )
+  allocate( fsi_size(NTE), geta_size(NTE) )
+  allocate( BCpackingN(NTN), BCpackingE(NTE), packingside(NTE,4) )
   sol = 0.0_rk
   dsol = 0.0_rk
   solp = 0.0_rk
@@ -47,6 +48,10 @@ subroutine initialization
   csol = 0.0_rk
   cpsol = 1.0_rk
   cp_average = 1.0_rk
+  BCpackingN = 0
+  BCpackingE = 0
+  packingside = 0
+  contact_front_node = 0
 
   if(check_0_in_Jac.eq.1)  then
      allocate( Jac(NVar,NVar), Res(NVar) )
@@ -65,6 +70,7 @@ subroutine initialization
   initial_vapor_solving = 0
   diverge = 0
   pack_condition = 0.0_rk
+  pack_start = 0
   if(no_Maran.eq.0) then  !change from 0 to 1 if solving for Marangoni cases
      init_stability = 1
   else
@@ -116,7 +122,10 @@ subroutine initialization
        Trintfac_r(3,3,ths), Trintfac_z(3,3,ths), Tzintfac_r(3,3,ths), Tzintfac_z(3,3,ths), &
        cprintfac_r(3,3,ths), cprintfac_z(3,3,ths), cpzintfac_r(3,3,ths), cpzintfac_z(3,3,ths) )
   allocate( flux(3,ths), flux_r(3,ths) )
-
+  allocate( rsi_packing(3,4,ths), zsi_packing(3,4,ths), uintfac_packing(3,4,ths), &
+       vintfac_packing(3,4,ths), cpintfac_packing(3,4,ths), rintfac_packing(3,4,ths) )
+  allocate( unit_direction_packing(3,4,ths) )
+  !3 nodes, 4 element sides
 
 
 !--------------------------------------multifront------------------------------------

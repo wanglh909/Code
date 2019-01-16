@@ -25,7 +25,7 @@ subroutine assemble_local(m, locJacTr, locRHS, LNOPP, LNVar, id, dum)
   integer(kind=ik):: jac_check, LNVart  !true local number of variables
 
   jac_check = 0
-  if( m.eq.0 .and. initial_vapor_solved.eq.1) then  ! m.eq.28 .and. 
+  if(m.eq.0 .and. initial_vapor_solved.eq.1) then  ! 
      jac_check = 1  
   end if
   !the element to check, set m to 0 if not check
@@ -83,7 +83,7 @@ subroutine assemble_local(m, locJacTr, locRHS, LNOPP, LNVar, id, dum)
   ! if(  m.eq.ele_c ) pause
 
 !for debug, put 'sj's together as Jac
-if( check_0_in_Jac.eq.1 .and. s_mode.eq.0) then!.and. initial_vapor_solved.eq.1) then
+if( check_0_in_Jac.eq.1 .and. s_mode.eq.0) then!.and. initial_vapor_solved.eq.1  .and. pack_start.eq.1 
    do i = 1, LNVart
       do k = 1, bas
          if( i.lt.LNOPP(k) ) exit
@@ -131,11 +131,11 @@ subroutine find_var_info(var,ele,id)
            if (var.eq.k+NOPP(NOP(i,j))) then
               !write(10,'(A,i4,A,i4)') 'While proc #',id,'was assembling:', ele
               write(10,'(A,3i4)') 'Found at (ele, node, var):', i, j, k
-	      ! write(*,*) 'bc flag1 at node',bcflagn(j,1)
-	      ! write(*,*) 'bc flag2 at node',bcflagn(j,2)
-	      ! write(*,*) 'bc flag3 at node',bcflagn(j,3)
-	      ! write(*,*) 'bc flag4 at node',bcflagn(j,4)
-	      ! write(*,*) 'bc flag5 at node',bcflagn(j,5)
+	      ! print *, 'bc flag1 at node',bcflagn(j,1)
+	      ! print *, 'bc flag2 at node',bcflagn(j,2)
+	      ! print *, 'bc flag3 at node',bcflagn(j,3)
+	      ! print *, 'bc flag4 at node',bcflagn(j,4)
+	      ! print *, 'bc flag5 at node',bcflagn(j,5)
               write(10,'(A,2es13.6)') '(r,z):', sol(nr+NOPP(NOP(i,j))),  sol(nz+NOPP(NOP(i,j)))
               pause
            end if

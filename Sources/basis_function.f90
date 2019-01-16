@@ -28,7 +28,7 @@ subroutine basis_function
         end do
      end do
   end do
-  ! write(*,*) 'phi:', phi
+  ! print *, 'phi:', phi
 
   psi(:,:,:) = 0.0_rk     !except 1, 3, 7, 9, other elements are 0.0_rk
   psisi(:,:,:) = 0.0_rk
@@ -42,7 +42,7 @@ subroutine basis_function
         end do
      end do
   end do
-  !write(*,*) 'psi:', psi
+  !print *, 'psi:', psi
 
   do j = 1, 3, 1
      do k = 1, 3, 1
@@ -103,7 +103,7 @@ real(kind=rk) function phii(si, eta, i)
   case(9)
      phii = ( -si + 2.0_rk*si**2 )*( -eta + 2.0_rk*eta**2 )
   case default
-     write(*,*) 'error in i, in phii'
+     print *, 'error in i, in phii'
   end select
   return
 end function phii
@@ -134,7 +134,7 @@ real(kind=rk) function phiisi(si, eta, i)
   case(9)
      phiisi = ( -1.0_rk + 4.0_rk*si )*( -eta + 2.0_rk*eta**2 )
   case default
-     write(*,*) 'error in i, in phiisi'
+     print *, 'error in i, in phiisi'
   end select
   return
 end function phiisi
@@ -165,7 +165,7 @@ real(kind=rk) function phiieta(si, eta, i)
   case(9)
      phiieta = ( -si + 2.0_rk*si**2 )*( -1.0_rk + 4.0_rk*eta )
   case default
-     write(*,*) 'error in i, in phiieta'
+     print *, 'error in i, in phiieta'
   end select
   return
 end function phiieta
@@ -189,7 +189,7 @@ real(kind=rk) function psii(si, eta, i)
   case(4)
      psii = si*eta
   case default
-     write(*,*) 'error in i, in psii'
+     print *, 'error in i, in psii'
   end select
   return
 end function psii
@@ -210,7 +210,7 @@ real(kind=rk) function psiisi(eta, i)
   case(4)
      psiisi = eta
   case default
-     write(*,*) 'error in i, in psiisi'
+     print *, 'error in i, in psiisi'
   end select
   return
 end function psiisi
@@ -231,7 +231,7 @@ real(kind=rk) function psiieta(si, i)
   case(4)
      psiieta = si
   case default
-     write(*,*) 'error in i, in psiieta'
+     print *, 'error in i, in psiieta'
   end select
   return
 end function psiieta
@@ -250,7 +250,7 @@ real(kind=rk) function phii_1d(x,i)
   case(3)
      phii_1d = -x + 2.0_rk*x**2
   case default
-     write(*,*) 'error in i, in phii_1d'
+     print *, 'error in i, in phii_1d'
   end select
 
   return
@@ -272,7 +272,7 @@ real(kind=rk) function phiix_1d(x,i)
      phiix_1d = -1.0_rk + 4.0_rk*x
 
   case default
-     write(*,*) 'error in i, in phiix_1d'
+     print *, 'error in i, in phiix_1d'
   end select
   return
 end function phiix_1d

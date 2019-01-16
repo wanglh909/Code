@@ -103,7 +103,7 @@ print *, 'final size'
   !    angle_c = angle_cd
   !    !    final_size = 0
   !    ! else
-  !    !    write(*,*) 'change6'
+  !    !    print *, 'change6'
   !    !    x = 0.1_rk
   !    !    y = 0.5_rk
   !    !    x_change = 1.0_rk

@@ -190,7 +190,7 @@ contains
     allocate(piv(ths))
 
     if(.not.ASSOCIATED(associater)) then
-       write(*,*) 'Error in multifront: associater not set'
+       print *, 'Error in multifront: associater not set'
        stop
     end if
     call nullifier()
@@ -223,7 +223,7 @@ contains
 
     !Override (2 for dual domain, 1 for single domain)
     if(ths.le.0) then
-       write(*,*) 'Error in multifront: ths must be greater than 0'
+       print *, 'Error in multifront: ths must be greater than 0'
        stop
     end if
     
@@ -233,20 +233,20 @@ contains
     case(DUAL)
        iDM = 2
        if(2.gt.ths) then
-          write(*,*) 'Error in multifront: For DUAL mode ths must be >= 2'
+          print *, 'Error in multifront: For DUAL mode ths must be >= 2'
           stop
        end if
     case(DOMAINS)
        iDM = 3
        if(THREADS_FRONT.gt.ths) then
-          write(*,*) 'Error in multifront: Front has more threads specified than ths'
+          print *, 'Error in multifront: Front has more threads specified than ths'
           stop
        else if(THREADS_FRONT.le.0) then
-          write(*,*) 'Error in multifront: Number of threads has not been set'
+          print *, 'Error in multifront: Number of threads has not been set'
           stop
        end if
     case default
-       write(*,*) 'Error in multifront: Invalid solver type'
+       print *, 'Error in multifront: Invalid solver type'
     end select
 
     !Single domain standard order
@@ -328,7 +328,7 @@ contains
        do i = 1, e_move, 1
           if (k.lt.10) then
              !If giving region has less than 10 stop
-             write(*,*) 'Less than 10 elements'
+             print *, 'Less than 10 elements'
              exit
           end if
           ele_list(j+1,o) = ele_list(k,p)
@@ -367,7 +367,7 @@ contains
     call determine_offsets()
     !OVERRIDE FS_MAX HERE
     !fs_max =
-    write(*,*) 'FS_MAX:', fs_max
+    print *, 'FS_MAX:', fs_max
     allocate(LT(fs_max,NVar),IT(3+fs_max,NVar))
 
 
@@ -404,7 +404,7 @@ contains
     do blk = 1, blocks, 1
        i = i + block_list(blk,2)*block_list(blk,3)
     end do
-    write(*,*) 'NE in blocks:', i, 'NE total:', NE
+    print *, 'NE in blocks:', i, 'NE total:', NE
  
     allocate(sub_blocks(blocks,4),block_dms(blocks,2),REVERSED(blocks))
     iDM = 0
@@ -426,15 +426,15 @@ contains
           !if (mod(xi_ele,2).ne.0) then
           do
              xi_size = xi_size - 1
-             !write(*,*) xi_size, xi_ele/xi_size, mod(xi_ele,xi_size)
+             !print *, xi_size, xi_ele/xi_size, mod(xi_ele,xi_size)
              if (xi_ele/xi_size.ge.num_r) exit
           end do
           if (mod(xi_ele,num_r).ne.0) xi_size = xi_size + 1
           !end if
           eta_size = (xi_ele - 2* xi_size)/2 + mod((xi_ele - 2* xi_size),2)
           if (mod((xi_ele - 2* xi_size),2).eq.0) eta_size = eta_size + 1
-          !write(*,*) 'SELECTED PTNS FOR BLOCK', blk, ':', eta_size, xi_size
-          !write(*,*) 'From (radial, axial):', '(', xi_ele, ',', eta_ele, ')'
+          !print *, 'SELECTED PTNS FOR BLOCK', blk, ':', eta_size, xi_size
+          !print *, 'From (radial, axial):', '(', xi_ele, ',', eta_ele, ')'
 
           !Size of radial and axial partitions
           rp = xi_ele/xi_size
@@ -445,15 +445,15 @@ contains
           !if (mod(xi_ele,2).ne.0) then
           do
              eta_size = eta_size - 1
-             !write(*,*) xi_size, xi_ele/xi_size, mod(xi_ele,xi_size)
+             !print *, xi_size, xi_ele/xi_size, mod(xi_ele,xi_size)
              if (eta_ele/eta_size.ge.num_r) exit
           end do
           if (mod(eta_ele,num_r).ne.0) eta_size = eta_size + 1
           !end if
           xi_size = (eta_ele - 2* eta_size)/2 + mod((eta_ele - 2* eta_size),2)
           if (mod((eta_ele - 2* eta_size),2).eq.0) xi_size = xi_size + 1
-          !write(*,*) 'SELECTED PTNS FOR BLOCK', blk, ':', eta_size, xi_size
-          !write(*,*) 'From (radial, axial):', '(', xi_ele, ',', eta_ele, ')'
+          !print *, 'SELECTED PTNS FOR BLOCK', blk, ':', eta_size, xi_size
+          !print *, 'From (radial, axial):', '(', xi_ele, ',', eta_ele, ')'
 
           !Size of radial and axial partitions
           rp = xi_ele/xi_size
@@ -483,7 +483,7 @@ contains
        sub_blocks(blk,2) = eta_size
        sub_blocks(blk,3) = rp
        sub_blocks(blk,4) = zp
-       !write(*,*) 'Num. Blocks:', rp, zp
+       !print *, 'Num. Blocks:', rp, zp
     end do
     !pause
     allocate(loadc(NVar),load_dum(NVar),lt_i(iDM+1),dm_type(iDM),Etest(NE),&
@@ -498,9 +498,9 @@ contains
 
        if(sub_blocks(blk,1).eq.-1) then
           k = 0
-          write(*,*) iDM
+          print *, iDM
           do i = block_list(blk,1), block_list(blk+1,1)-1, 1
-             write(*,*) i
+             print *, i
              call add_ele(k,DM,i,blk)
           end do
           DM = DM + 1
@@ -530,11 +530,11 @@ contains
           step_jj = eta_num
        end if
 
-       !write(*,*) 'blk:', blk
+       !print *, 'blk:', blk
        do ii = 1, step_ii, 1
-          !write(*,*) 'ii:', ii
+          !print *, 'ii:', ii
           do jj = 1, step_jj, 1
-             !write(*,*) 'jj:', jj
+             !print *, 'jj:', jj
 !!!!!!!!!!!!!!!!!!!!DO BLOCK!!!!!!!!!!!!!!!!!
 !!!!TBD tweak for optimal order
             
@@ -631,7 +631,7 @@ contains
 
                 
                 next = z_next(hold_eta)
-                !write(*,*) 'eta_next', next
+                !print *, 'eta_next', next
                 if(next.eq.0) exit
                 ele = next
                 hold_eta = ele
@@ -659,14 +659,14 @@ contains
        do blk = 1, blocks-1, 1
           ii = block_dms(blk,1)+block_dms(blk,2)+1
           jj = 0
-          !write(*,*) 'Block ', blk, 'searching for ', ii
+          !print *, 'Block ', blk, 'searching for ', ii
           do i = block_dms(blk,1)+1, block_dms(blk,1)+block_dms(blk,2), 1
              j = 0
              do
                 j = j + 1
                 if(ele_list(j,i).eq.0) exit
                 ele = ele_list(j,i)
-                !write(*,*) 'check:', sBNOP(xi_next(ele)), sBNOP(xi_prev(ele)),sBNOP(eta_next(ele)), sBNOP(eta_prev(ele))
+                !print *, 'check:', sBNOP(xi_next(ele)), sBNOP(xi_prev(ele)),sBNOP(eta_next(ele)), sBNOP(eta_prev(ele))
                 if(sBNOP(xi_next(ele)).eq.ii.or.sBNOP(xi_prev(ele)).eq.ii&
                      .or.sBNOP(eta_next(ele)).eq.ii.or.sBNOP(eta_prev(ele)).eq.ii) then
                    jj = i
@@ -680,7 +680,7 @@ contains
           end do
           if(jj.eq.0) cycle
           if(jj-block_dms(blk,1).lt.block_dms(blk,2)/2) then
-             write(*,*) 'Reversing domain order in block #', blk, NE
+             print *, 'Reversing domain order in block #', blk, NE
              allocate(temp_elist(NE+1))
              j = block_dms(blk,1)+block_dms(blk,2)
              i = block_dms(blk,1)+1
@@ -739,9 +739,9 @@ contains
     ele_list(k,DM) = ele
     BNOP(ele) = blk
     sBNOP(ele) = DM
-    !write(*,*) 'ele, DM:', ele, DM
+    !print *, 'ele, DM:', ele, DM
     if (ele.eq.0) then
-       write(*,*) 'error in add_ele', ele, DM!, sol(ra+NOPP(NOP(ele,1)),n2),sol(za+NOPP(NOP(ele,1)),n2)
+       print *, 'error in add_ele', ele, DM!, sol(ra+NOPP(NOP(ele,1)),n2),sol(za+NOPP(NOP(ele,1)),n2)
        pause
     end if
   end subroutine add_ele
@@ -803,12 +803,12 @@ contains
     ele = block_start
     hold_eta = ele
     blocks = 0
-    !write(*,*) ele, BNOP(1,1,1)
+    !print *, ele, BNOP(1,1,1)
     do
 
        !Check if there is a xi neighbor
        next = xi_next(ele)
-       !write(*,*) ele, next, sol(ra+NOPP(NOP(ele,1)),n2),sol(za+NOPP(NOP(ele,1)),n2)
+       !print *, ele, next, sol(ra+NOPP(NOP(ele,1)),n2),sol(za+NOPP(NOP(ele,1)),n2)
        if (next.gt.0) then
           ele = next
           xi_count = xi_count + 1
@@ -826,7 +826,7 @@ contains
           !find next column
           next = eta_next(hold_eta)
           ele = hold_eta
-          !write(*,*) 'eta_next', next, 'from', hold_eta
+          !print *, 'eta_next', next, 'from', hold_eta
           if(next.gt.0) then
              !Weird region
              if(NOP(ele,8).ne.NOP(next,2)) then
@@ -846,7 +846,7 @@ contains
                 if (next.eq.0) exit
                 if (NOP(ele,4).ne.NOP(next,6)) exit !weird bound jump
                 ele = next
-                !write(*,*) ele
+                !print *, ele
                 !pause
              end do
 
@@ -861,7 +861,7 @@ contains
           end if
           if(block_start.eq.0) block_start = ele
           xi_count = 1
-          !write(*,*) 'New column at:', ele, hold_eta
+          !print *, 'New column at:', ele, hold_eta
           !pause
        end if
 
@@ -874,7 +874,7 @@ contains
     integer(kind=ik) :: blocks, block_start, xi_size, eta_size
     integer(kind=ik), allocatable :: block_list(:,:), temp(:,:)
     
-    write(*,*) 'Found Block #', blocks+1, xi_size, 'x', eta_size, 'ele_start:', block_start
+    print *, 'Found Block #', blocks+1, xi_size, 'x', eta_size, 'ele_start:', block_start
     if (allocated(block_list)) then
        allocate(temp(blocks+1,3))
        temp = block_list
@@ -961,7 +961,7 @@ contains
     integer(kind=ik) :: i, j, k, ele, l, l_i, o, p, fs
     logical :: inc
 
-    !write(*,*) 'Determining offsets'
+    !print *, 'Determining offsets'
 
     NODf = 0
     !Use NODf to find the amount of variables that will be
@@ -1008,9 +1008,9 @@ contains
        end do
        
        lt_i(l+1) = l_i
-       !write(*,*) 'l_i1:', l_i
+       !print *, 'l_i1:', l_i
     end do
-    !write(*,*) 'l_i 1:', l_i
+    !print *, 'l_i 1:', l_i
 
     if (iDM.gt.2) then
        lt_i2(1) = lt_i(iDM+1)
@@ -1031,10 +1031,10 @@ contains
                 NODf(i,ele) = -NODf(i,ele)
              end if
           end do
-          !write(*,*) 'l_i:', l_i
+          !print *, 'l_i:', l_i
        end do
        lt_i2(2) = l_i
-       !write(*,*) 'l_i2:', l_i
+       !print *, 'l_i2:', l_i
        j = 1
        l = 2
        do
@@ -1053,13 +1053,13 @@ contains
           end do
        end do
        lt_i2(3) = l_i
-       !write(*,*) 'l_i2:', l_i
+       !print *, 'l_i2:', l_i
     end if
     lt_i2(2) = NVar+1
     
-    !write(*,*) 'l_i:', l_i
+    !print *, 'l_i:', l_i
     fs_max = fs_max
-    !write(*,*) 'Calculated FS_MAX:', fs_max
+    !print *, 'Calculated FS_MAX:', fs_max
   end subroutine determine_offsets
   
   subroutine check_NODF(NODf,fs)
@@ -1102,14 +1102,14 @@ contains
           if (frr) then
              write(*,'(A,i8,A,i8)',ADVANCE='NO') 'failed', ele,'with',E(ele)
              if(ASSOCIATED(DNOP)) then
-                write(*,*) 'in Domain', DNOP(ele)
+                print *, 'in Domain', DNOP(ele)
              else
-                write(*,*) ' '
+                print *, ' '
              end if
           end if
        end if
     end do
-    write(*,*) 'ETEST DONE'
+    print *, 'ETEST DONE'
 
   end subroutine ETESTER
 
@@ -1150,7 +1150,7 @@ contains
     integer(kind=ik) :: e_n(4), iPg_m(fs_max), jPg_m(fs_max), fs_m, i, j, l_i, id, last_sides(2) = 0
 
     if (iDM.ne.1) then
-       write(*,*) 'Error iDM != 1'
+       print *, 'Error iDM != 1'
        return
     end if
     !mode = 1 is nested natural ordering
@@ -1220,7 +1220,7 @@ contains
     do i = 1, ths, 1
        j = piv(i) + j
     end do
-    !write(*,*) 'Small Pivots:', j
+    !print *, 'Small Pivots:', j
 
 
 
@@ -1243,7 +1243,7 @@ contains
          e_move, o, p, last_sides(2) = 0
 
     if (iDM.ne.2) then
-       write(*,*) 'Error iDM != 2'
+       print *, 'Error iDM != 2'
        return
     end if
     !mode = 1 is nested natural ordering
@@ -1287,7 +1287,7 @@ contains
     !$omp end parallel
 
 
-    !write(*,*) "fs's:", fs(1), fs(2)
+    !print *, "fs's:", fs(1), fs(2)
     
 
     !PHASE 3: Stitch halves
@@ -1295,11 +1295,11 @@ contains
     id = 1
     call add_front(front(:,:,iDM),front(:,:,1),loadf(:,iDM),loadf(:,1),loadf_dum(:,iDM),&
          loadf_dum(:,1),iPg(:,iDM),iPg(:,1),jPg(:,iDM),jPg(:,1),fs(iDM),fs(1),iDM,1,l_i,1,1)
-    !write(*,*) "fs's:", fs(1), fs(2)
+    !print *, "fs's:", fs(1), fs(2)
     !call elim_stitch(front(:,:,1),loadf(:,1),loadf_dum(:,1),&
     !     iPg(:,1),jPg(:,1),l_i,fs(1),id)
 
-    !write(*,*) 'fs:', fs(1), l_i
+    !print *, 'fs:', fs(1), l_i
 
     !Perform back substitution
     call back_sub(2,l_i,last_sides)
@@ -1346,16 +1346,16 @@ contains
     do i = 1, ths, 1
        j = piv(i) + j
     end do
-    !write(*,*) 'Small Pivots:', j
+    !print *, 'Small Pivots:', j
 
 
 
     t_diff = t_d(2) - t_d(1)
     !t_diff = 1.0_rk
     if (ABS(t_d(1) - t_d(2)).gt.0.01_rk*(t_d(1)+t_d(2)-2.0_rk*t1).and.load_balance_flag) then
-       !write(*,*) 'Load balancing'
-       !write(*,*) 'Times:', t_d(1)-t1, t_d(2)-t1
-       !write(*,*) (t_d(1) - t_d(2)), 0.01_rk*(t_d(1)+t_d(2)-2.0_rk*t1)
+       !print *, 'Load balancing'
+       !print *, 'Times:', t_d(1)-t1, t_d(2)-t1
+       !print *, (t_d(1) - t_d(2)), 0.01_rk*(t_d(1)+t_d(2)-2.0_rk*t1)
 
        if (t_diff.gt.0) then
           o = 1 !receives
@@ -1375,7 +1375,7 @@ contains
              if (ele_list(i,p).eq.0) k = i - 1
           end if
        end do
-       !write(*,*) j, k, j+k, NE
+       !print *, j, k, j+k, NE
 
 
 
@@ -1393,10 +1393,10 @@ contains
        end do
 
 
-       !write(*,*) 'First half:', (t_d(1)-t1)
-       !write(*,*) 'Second half:', (t_d(2)-t1)
-       !write(*,*) 'Diff and per ele:', t_diff, t_ele
-       !write(*,*) 'Move:', e_move, k+j, NE
+       !print *, 'First half:', (t_d(1)-t1)
+       !print *, 'Second half:', (t_d(2)-t1)
+       !print *, 'Diff and per ele:', t_diff, t_ele
+       !print *, 'Move:', e_move, k+j, NE
        k = fs_max
        call determine_offsets()
        if(fs_max.gt.k) then
@@ -1432,7 +1432,7 @@ contains
     integer(kind=ik), parameter :: WAIT = 0, ASSEMBLE = 1, MERGE = 2, J_CYCLE = 3, J_EXIT = 4
 
     if (iDM.lt.3) then
-       write(*,*) 'Error iDM lt 3'
+       print *, 'Error iDM lt 3'
        return
     end if
 
@@ -1440,16 +1440,16 @@ contains
 
     INQUIRE(FILE='THREADS_FRONT.dat',EXIST=e)
     if (e) then
-       !write(*,*) 'EXISTS'
+       !print *, 'EXISTS'
        Open(unit = 77,file = 'THREADS_FRONT.dat', status = 'old', action='read')
        read(77,'(i2)',IOSTAT=i) NEW_THREADS
        if(i.eq.0) then
           if(NEW_THREADS.le.12.and.NEW_THREADS.gt.0) then
              if(NEW_THREADS.ne.THREADS_FRONT) then
                 if(NEW_THREADS.gt.ths) then
-                   write(*,*) 'Cannot change number of threads to ', NEW_THREADS, ' as it is higher than ths'
+                   print *, 'Cannot change number of threads to ', NEW_THREADS, ' as it is higher than ths'
                 else              
-                   write(*,*) 'CHANGING THREADS TO:', NEW_THREADS 
+                   print *, 'CHANGING THREADS TO:', NEW_THREADS 
                    THREADS_FRONT = NEW_THREADS
                 end if
              end if
@@ -1466,7 +1466,7 @@ contains
     !$omp end critical (test)
     !$omp end parallel
     if (i.ne.THREADS_FRONT) then
-       write(*,*) 'CODE APPEARS TO BE COMPILED WITHOUT OpenMP, RUNNING IN SERIAL', i, THREADS_FRONT
+       print *, 'CODE APPEARS TO BE COMPILED WITHOUT OpenMP, RUNNING IN SERIAL', i, THREADS_FRONT
        THREADS_FRONT = 1
        
     end if
@@ -1630,8 +1630,8 @@ contains
     
     !Quick error check
     do i = 1, iDM, 1
-       if(.not.MERGED(i)) write(*,*) 'Merge    error:', i
-       if(.not.ASSEMBLED(i)) write(*,*) 'Assemble error:', I
+       if(.not.MERGED(i)) print *, 'Merge    error:', i
+       if(.not.ASSEMBLED(i)) print *, 'Assemble error:', I
     end do
 
    
@@ -1743,9 +1743,9 @@ contains
 
 
     else if (mode.eq.3) then!For mode 1 parallel implementation
-       ! write(*,*) last_sides(2)-1, 'to', last_sides(1)+1, 'by', -1
-       ! write(*,*) last_sides(1), 'to', lt_i2(1)+l_i_inc(1), 'by',SIGN(1,lt_i2(1)+l_i_inc(1) - last_sides(1))
-       ! write(*,*) last_sides(2), 'to', lt_i2(2)+l_i_inc(2), 'by',SIGN(1,lt_i2(2)+l_i_inc(2) - last_sides(2))   
+       ! print *, last_sides(2)-1, 'to', last_sides(1)+1, 'by', -1
+       ! print *, last_sides(1), 'to', lt_i2(1)+l_i_inc(1), 'by',SIGN(1,lt_i2(1)+l_i_inc(1) - last_sides(1))
+       ! print *, last_sides(2), 'to', lt_i2(2)+l_i_inc(2), 'by',SIGN(1,lt_i2(2)+l_i_inc(2) - last_sides(2))   
       
 
       
@@ -1758,7 +1758,7 @@ contains
           
        else
           lvl2 = 2
-          !write(*,*) last_sides(2)-1, last_sides(1)+1, IT(1,i)
+          !print *, last_sides(2)-1, last_sides(1)+1, IT(1,i)
           do i = last_sides(2)-1, last_sides(1)+1, -1
              do j = 1, IT(1,i), 1
                 loadc(IT(2,i)) = loadc(IT(2,i)) - LT(j,i)*load(IT(j+3,i))
@@ -1771,7 +1771,7 @@ contains
 
        id = omp_get_thread_num() + 1
 
-       !write(*,*) last_sides(id), lt_i2(id)+l_i_inc(id)
+       !print *, last_sides(id), lt_i2(id)+l_i_inc(id)
        do i = last_sides(id), lt_i2(id)+l_i_inc(id), SIGN(1,lt_i2(id)+l_i_inc(id) - last_sides(id))
           do j = 1, IT(1,i), 1
              loadc(IT(2,i)) = loadc(IT(2,i)) - LT(j,i)*load(IT(j+3,i))
@@ -1790,7 +1790,7 @@ contains
        !$omp do
        do k = iDM, 1, -1
           !if (127899.le.lt_i(k+1).and.127899.ge.lt_i(k)+1) then
-          !   write(*,*) lt_i(k+1), lt_i(k)+1, k
+          !   print *, lt_i(k+1), lt_i(k)+1, k
           !end if
           do i = lt_i(k+1), lt_i(k)+1, -1
              do j = 1, IT(1,i), 1
@@ -1811,11 +1811,11 @@ contains
     ! k = 0
     ! do i = 1, NVar, 1
     !    if(ITT(i).ne.1) then
-    !       write(*,*) 'Error for var:', i, 'with', ITT(i)
+    !       print *, 'Error for var:', i, 'with', ITT(i)
     !       k = k + 1
     !    end if
     ! end do
-    ! write(*,*) k, 'of', NVar, 'errors'
+    ! print *, k, 'of', NVar, 'errors'
 
   end subroutine back_sub
 
@@ -1961,7 +1961,7 @@ contains
        !USER_SPECIFIED
        !Assemble local using proper thread (id)
        if(.not.ASSOCIATED(assembler)) then
-          write(*,*) 'Error in multifront: assembler not set'
+          print *, 'Error in multifront: assembler not set'
           stop
        end if
        
@@ -1974,7 +1974,7 @@ contains
           o = NOPPl(i)
           do k = 0, MDF(NOP(ele,i))-1, 1
              NK(k+o) = k+j
-             !write(*,*) NK(k+o)
+             !print *, NK(k+o)
           end do
        end do
 
@@ -2039,11 +2039,11 @@ contains
        !    end if
 
        ! end do
-       !IF (S_MODE.EQ.0) write(*,*) ELE, FS
+       !IF (S_MODE.EQ.0) print *, ELE, FS
 
        !Warning front width exceeded, will probably seg fault
        if (fs.gt.fs_max) then
-          write(*,*) 'Error front exceeds max size, fs:', fs, fs_max
+          print *, 'Error front exceeds max size, fs:', fs, fs_max
           t1 = 0.0_rk
           loadf(1) = 1.0_rk/t1
           pause
@@ -2133,8 +2133,8 @@ contains
 
     end do
 
-    !if (piv.ne.0) write(*,*) piv, 'small pivots'
-    !write(*,*) 'rem. fs:', fs
+    !if (piv.ne.0) print *, piv, 'small pivots'
+    !print *, 'rem. fs:', fs
 
   End Subroutine Front_solve
 
@@ -2147,10 +2147,10 @@ contains
     integer(kind=ik) ::  i, k, j, id, l_i_inc,&
          RSUM(fs_max), CSUM(fs_max), rvs, cvs, CPIV, RPIV, l_i, elim, j_max, k_max, o, ele
     real(kind=rk) ::  PIVOT, c_piv, GG(fs_max)
-    !write(*,*) 'Called'
+    !print *, 'Called'
     !eliminate fully summed full pivotal choice
     elim = rvs
-    if (l_i+l_i_inc.lt.1.or.l_i+l_i_inc.gt.NVar) write(*,*) 'Error l_i', l_i, NVar, l_i_inc
+    if (l_i+l_i_inc.lt.1.or.l_i+l_i_inc.gt.NVar) print *, 'Error l_i', l_i, NVar, l_i_inc
     do i = 1, elim, 1
 
        !Find sufficiently large pivot
@@ -2194,8 +2194,8 @@ contains
        PIVOT = front(CPIV,RPIV)
        !Check if pivot too small
        if (ABS(PIVOT).le.1.0e-18_rk) then
-          if(check_pivot.eq.1) write(*,*) 'Small Pivot:', PIVOT, id, ele, rvs
-           if(IT(1,l_i+l_i_inc).ne.0) write(*,*) 'o is not 0', IT(1, l_i+l_i_inc), id, ele
+          if(check_pivot.eq.1) print *, 'Small Pivot:', PIVOT, id, ele, rvs
+           if(IT(1,l_i+l_i_inc).ne.0) print *, 'o is not 0', IT(1, l_i+l_i_inc), id, ele
           !call find_var_info(iPG(RPIV),ele,id)
           piv(id) = piv(id)+1
        end if
@@ -2249,7 +2249,7 @@ contains
                              !increment eliminated var count
            !(fs-1)!Save number in row
        if(IT(1,l_i).ne.0) then
-          write(*,*) 'o is not 0', IT(1, l_i), id, ele
+          print *, 'o is not 0', IT(1, l_i), id, ele
           !pause
        end if
        IT(1,l_i) = o  
@@ -2296,7 +2296,7 @@ contains
           do k = 1, fs, 1
              do j = 1, fs, 1
                 if (front(k,j).ne.front(k,j)) then
-                   write(*,*) 'NaN in front:', id, l_i, iPG(RPIV)
+                   print *, 'NaN in front:', id, l_i, iPG(RPIV)
                    if(ASSOCIATED(var_finder)) call var_finder(iPG(RPIV),ele,id)                  
                 end if
              end do
@@ -2327,62 +2327,62 @@ contains
     implicit none
 
     if(.not.ASSOCIATED(NVar)) then
-       write(*,*) 'Error in multifront: NVar not set'
+       print *, 'Error in multifront: NVar not set'
        stop
     end if
 
     if(.not.ASSOCIATED(NN)) then
-       write(*,*) 'Error in multifront: NN not set'
+       print *, 'Error in multifront: NN not set'
        stop
     end if
 
     if(.not.ASSOCIATED(NE)) then
-       write(*,*) 'Error in multifront: NE not set'
+       print *, 'Error in multifront: NE not set'
        stop
     end if
 
     if(.not.ASSOCIATED(s_mode)) then
-       write(*,*) 'Error in multifront: s_mode not set'
+       print *, 'Error in multifront: s_mode not set'
        stop
     end if
 
     if(.not.ASSOCIATED(bas)) then
-       write(*,*) 'Error in multifront: bas not set'
+       print *, 'Error in multifront: bas not set'
        stop
     end if
 
     if(.not.ASSOCIATED(MDF)) then
-       write(*,*) 'Error in multifront: MDF not set'
+       print *, 'Error in multifront: MDF not set'
        stop
     end if
 
     if(.not.ASSOCIATED(NOPP)) then
-       write(*,*) 'Error in multifront: NOPP not set'
+       print *, 'Error in multifront: NOPP not set'
        stop
     end if
 
     if(.not.ASSOCIATED(DNOP)) then
-       write(*,*) 'Error in multifront: DNOP not set'
+       print *, 'Error in multifront: DNOP not set'
        stop
     end if
 
     if(.not.ASSOCIATED(NOP)) then
-       write(*,*) 'Error in multifront: NOP not set'
+       print *, 'Error in multifront: NOP not set'
        stop
     end if
 
     if(.not.ASSOCIATED(rNOP)) then
-       write(*,*) 'Error in multifront: rNOP not set'
+       print *, 'Error in multifront: rNOP not set'
        stop
     end if
 
     if(.not.ASSOCIATED(load)) then
-       write(*,*) 'Error in multifront: load not set'
+       print *, 'Error in multifront: load not set'
        stop
     end if
 
     if(.not.ASSOCIATED(excluder)) then
-       write(*,*) 'By default including all elements in multifront'
+       print *, 'By default including all elements in multifront'
        excluder => exclude_default
     end if
 

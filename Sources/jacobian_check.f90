@@ -12,10 +12,10 @@ subroutine jacobian_check(m, i, sj, sf, LNOPP, LNVar, id)
   integer(kind=ik):: k,p,q
   real(kind=rk):: sj_check, sf_check(LNVar), diffsj, rel, delta, TOL
   sf_check = 0.0_rk
-  !write(*,*) 'secand method check for element m =',m, 'point i =', i
+  !print *, 'secand method check for element m =',m, 'point i =', i
 
   delta = 10e-7_rk
-  TOL = 10e-7_rk
+  TOL = 10e-3_rk
  
   if(i.eq.1) then
      open(unit = 20, file = trim(folder)//'secand_method.dat', status = 'replace')
@@ -52,22 +52,22 @@ subroutine jacobian_check(m, i, sj, sf, LNOPP, LNVar, id)
            sj_check = ( sf_check( LNOPP(i)+q ) - sf( LNOPP(i)+q ) )/delta
            diffsj = abs( sj_check - sj( LNOPP(i)+q, LNOPP(k)+p ) ) 
            rel = abs( diffsj / sj( LNOPP(i)+q, LNOPP(k)+p ) )
-
+           
            if( rel.gt.TOL ) then   ! .and. sj( LNOPP(i)+q , LNOPP(k)+p ).gt.1.0e-8_rk
               if( diffsj.gt.TOL) then
-                 ! if(rel.gt.0.1_rk) then  !write(*,*) '!!!'
-                    write(*,*) 'ele =', m, ', i =', i,q+1, ', j =', k,p+1
-                    ! write(*,*) 'diff =', diffsj, ', rel =', rel
-                    write(*,*) 'sf =', sf( LNOPP(i)+q ), ', sf_check =', sf_check( LNOPP(i)+q )
-                    write(*,*) 'sj =', sj( LNOPP(i)+q , LNOPP(k)+p ), ', sj_check =', sj_check
+                 ! if(rel.gt.0.1_rk) then  !print *, '!!!'
+                    print *, 'ele =', m, ', i =', i,q+1, ', j =', k,p+1
+                    ! print *, 'diff =', diffsj, ', rel =', rel
+                    print *, 'sf =', sf( LNOPP(i)+q ), ', sf_check =', sf_check( LNOPP(i)+q )
+                    print *, 'sj =', sj( LNOPP(i)+q , LNOPP(k)+p ), ', sj_check =', sj_check
                  ! end if
                 !  pause
               ! else if( sj( LNOPP(i)+q , LNOPP(k)+p ).gt.1.0e-7_rk ) then
-              !    write(*,*) 'relative error large, but diffsj small'
-              !    write(*,*) 'ele =', m, ', i =', i,q+1, ', j =', k,p+1
+              !    print *, 'relative error large, but diffsj small'
+              !    print *, 'ele =', m, ', i =', i,q+1, ', j =', k,p+1
               end if
            ! else
-           !    write(*,*) 'ele =', m, ', i =', i,q+1, ', j =', k,p+1
+           !    print *, 'ele =', m, ', i =', i,q+1, ', j =', k,p+1
            end if
 
            write(20,'(A,i4,A,2i4,A,2i4)') 'ele =', m, ', i =', i,q+1, ', j =', k,p+1

@@ -180,9 +180,9 @@ end if   !diverge=0
 
   time = time + dt
   if(diverge.eq.0) then
-     write(*,*) 'time:', time, '    dt:', dt, '    timestep:', timestep
+     print *, 'time:', time, '    dt:', dt, '    timestep:', timestep
   else
-     write(*,*) 'time:', time, '    dt:', dt, '    timestep:', timestep, '(repeat)'
+     print *, 'time:', time, '    dt:', dt, '    timestep:', timestep, '(repeat)'
   end if
   
   sol = solpred

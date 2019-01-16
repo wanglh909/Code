@@ -28,8 +28,8 @@ subroutine jac_check_0
         write(10,'(A,es14.7)') 'Res', Res(NOPP(i)+k-1)
 
         if(sum.eq.0.0_rk .or. sum.ne.sum) then
-           write(*,*) 'Jac, i =', NOPP(i)+k-1, ', Jac row =', sum, ', node=', i, ', variable:', k
-           write(*,*) 'Res', Res(NOPP(i)+k-1)
+           print *, 'Jac, i =', NOPP(i)+k-1, ', Jac row =', sum, ', node=', i, ', variable:', k
+           print *, 'Res', Res(NOPP(i)+k-1)
         end if
 
 
@@ -46,13 +46,13 @@ subroutine jac_check_0
      do j = 1, NTN
         do k = 1, MDF(j)
            write(10, '(es14.7)',ADVANCE='NO') Jac(NOPP(j)+k-1,i)
-           ! if(Jac(NOPP(j)+k-1,i).ne.0.0_rk) write(*,*) j,k, Jac(NOPP(j)+k-1,i)
+           ! if(Jac(NOPP(j)+k-1,i).ne.0.0_rk) print *, j,k, Jac(NOPP(j)+k-1,i)
         end do
      end do
      write(10, '(es14.7)',ADVANCE='yes')
   end do
   close(10)
-  write(*,*) 'checked Jac rows'
+  print *, 'checked Jac rows'
   !pause
 
 

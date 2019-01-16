@@ -34,7 +34,7 @@ subroutine initial_condition
   NEV1expand(1) = 0
   NEV1expand(2:vlayer) = NEV1
   NEV1expand(vlayer+1) = NEV
-!write(*,*) R11expand
+!print *, R11expand
 
   rowN_alge = 2*NEM_alge + 1    !node row number of nodes with algeN=1
 
@@ -157,7 +157,7 @@ subroutine initial_condition
               do n = 1, vlayer-1
                  if(layer(i).gt.2*NEV1(n)+1)   m = m + 1
 
-                 !write(*,*) layer(i), NEV1
+                 !print *, layer(i), NEV1
               end do
 
               r1 = R11expand(m+1)*sin(theta)
@@ -195,7 +195,7 @@ subroutine initial_condition
                  do n = 1, vlayer-1
                     if(layer(i).gt.2*NEV1(n)+1)   m = m + 1
 
-                    !write(*,*) layer(i), NEV1
+                    !print *, layer(i), NEV1
                  end do
 
                  r1 = R11expand(m+1)*sin(theta)
@@ -217,7 +217,7 @@ subroutine initial_condition
         !    do n = 1, vlayer-1
         !       if(layer(i).gt.2*NEV1(n)+1)   m = m + 1
 
-        !       !write(*,*) layer(i), NEV1
+        !       !print *, layer(i), NEV1
         !    end do
 
         !    theta2 = atan( sqrt( R11expand(m)**2 - x**2 ) / x )

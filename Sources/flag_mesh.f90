@@ -11,20 +11,20 @@ subroutine flag_mesh
      !mesh size change
      if(final_size.eq.0) then                
         call size_function!(size_function_change)  
-        write(*,*) 'size_function_change=', size_function_change, ', contact angle =', angle_c/pi*180.0_rk
+        print *, 'size_function_change=', size_function_change, ', contact angle =', angle_c/pi*180.0_rk
         size_function_change = size_function_change + 1
      end if
      !adjust vapor concentration
      if(no_vapor.eq.0) then
         if(s_mode.eq.0 .and. initial_vapor_solved.eq.0) then
-           write(*,*) 'solving for initial vapor concentration'
+           print *, 'solving for initial vapor concentration'
            initial_vapor_solving = 1!
         end if
      else ! no_vapor=1
         if(s_mode.eq.0) initial_vapor_solved = 1
      end if
 
-     if(diverge.eq.1) write(*,*) 'repeat diverged timestep'
+     if(diverge.eq.1) print *, 'repeat diverged timestep'
 
 
   else
