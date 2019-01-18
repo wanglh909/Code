@@ -62,7 +62,7 @@ subroutine VI_in_sj(m,i,j, sj, LNVar, LNOPP,id)
 
         !intRsi_u,v,p = intReta_u,v,p = 0.0_rk
         
-        if(s_mode.eq.1 .or. packingE(m).eq.0) then
+        !if(packingE(m).eq.0) then
 !------------------------------------------Rsi-------------------------------------    
            !KBC on free surface, no volume integral
            if( BCflagN( globalNM(m,i), 3 ).ne.1 .and. BCflagN( globalNM(m,i), 3 ).ne.3 ) then
@@ -94,7 +94,7 @@ intReta_z_V(k,l) =  ( -1.0_rk/s_orth(k,l,id)**2 * s_orth_z(k,l,id) * Bterm(k,l,i
      -  eps2 * phieta(k,l,i) * geta_size(m) / ( reta(k,l,id)**2 + zeta(k,l,id)**2 ) &
      * 2.0_rk*zeta(k,l,id) * phieta(k,l,j)
 
-        end if  !s_mode.eq.1 .or. packingE(m).eq.0
+        !end if  !packingE(m).eq.0
 
         
         if(s_mode.eq.0) then 

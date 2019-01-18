@@ -615,7 +615,7 @@ subroutine variable_cal
      
      ! close(30)
      close(14)
-     close(18)
+     if(no_Maran.eq.0) close(18)
   
   end if !timestep>0
 

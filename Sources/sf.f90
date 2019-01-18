@@ -40,7 +40,7 @@ subroutine define_sf(m,i, sf, LNVar, LNOPP,id)
   do k = 1, Ng, 1
      do l = 1, Ng, 1
 
-        if(s_mode.eq.1 .or. packingE(m).eq.0) then
+        !if(packingE(m).eq.0) then
         !Aterm(k,l,i)
         Aterm(k,l,id) = ( zeta(k,l,id)**2 + reta(k,l,id)**2 )*phisi(k,l,i) - &
              ( zeta(k,l,id)*zsi(k,l,id) + reta(k,l,id)*rsi(k,l,id) )*phieta(k,l,i)
@@ -55,7 +55,7 @@ subroutine define_sf(m,i, sf, LNVar, LNOPP,id)
         intReta_V(k,l) = ( 1.0_rk/s_orth(k,l,id) + epss )*Bterm(k,l,id)/Jp(k,l,id) * Jpsign(k,l,id) &
              - eps2*phieta(k,l,i)*geta_size(m)*log( reta(k,l,id)**2 + zeta(k,l,id)**2 )
         
-        end if  !s_mode.eq.1 .or. packingE(m).eq.0
+        !end if  !packingE(m).eq.0
 
         if(s_mode.eq.0) then
 

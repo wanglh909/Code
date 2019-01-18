@@ -69,7 +69,7 @@ program main
   alge_corner = 1
 
 
-  graph_step = 1  !graph every 'graph_step' steps
+  graph_step = 50  !graph every 'graph_step' steps
   dt = 1.0e-5_rk!0.01_rk   !dt in first 5 steps
   FTS = 5 !fixed timesteps
 
@@ -187,9 +187,10 @@ program main
         print *, 'contact angle is less than 3 degrees'
         print *, 'data wrote in', folder
         stop
-     ! else if( pack_condition.ne.0.0_rk ) then
-     !    print *, 'no cp change anymore'
-     !    stop
+     else if( pack_condition.ne.0.0_rk ) then
+        print *, 'maximum packing everywhere'
+        print *, 'data wrote in', folder
+        stop
      end if
 
      !****************************************************************************************
