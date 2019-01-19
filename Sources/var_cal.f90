@@ -172,6 +172,7 @@ subroutine variable_cal
         end do
      end if
   end do   !element i
+  BCpackingN = 0
   do i = 1, NTN
      sum = 0
      multip = 1.0_rk
@@ -186,6 +187,7 @@ subroutine variable_cal
         if( BCflagN(i,3).eq.1 ) contact_front_node = i
      end if
   end do  !node i
+  BCpackingE = 0
   do i = 1, NTE
      sum = 0
      do j = 1, 9

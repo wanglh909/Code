@@ -580,6 +580,10 @@ intRm_cp_S(k) = -Pep* phi_1d(k,ipp)* ( zsi_packing(k,sideN,id) *uintfac_packing(
      sj(LNOPP(i)+Ncp,LNOPP(j)+Nu) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nu) + gaussian_quadrature_1d(intRm_u_S)
      sj(LNOPP(i)+Ncp,LNOPP(j)+Nv) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nv) + gaussian_quadrature_1d(intRm_v_S)
      sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp) = sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) + gaussian_quadrature_1d(intRm_cp_S)
+     if(m.eq.40 .and. i.eq.8 .and. j.eq.1) then
+        print *, 'wrong sj_SI_packing'
+        pause
+     end if
 
          end if   !packingside = 1
       end do  !sideN

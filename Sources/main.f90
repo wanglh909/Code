@@ -69,7 +69,7 @@ program main
   alge_corner = 1
 
 
-  graph_step = 50  !graph every 'graph_step' steps
+  graph_step = 500  !graph every 'graph_step' steps
   dt = 1.0e-5_rk!0.01_rk   !dt in first 5 steps
   FTS = 5 !fixed timesteps
 

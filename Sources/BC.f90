@@ -115,7 +115,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
 
      
      !packing region
-     if(packingN(globalNM(m,i)).eq.1) then  !must do according to the node instead of the element
+     if(packingN(globalNM(m,i)).eq.1 .and. BCpackingN(globalNM(m,i)).eq.0) then  !must do according to the node instead of the element
         ! do jj = Nr, Ncp
         !    if(.not.(jj.eq.Nr .or. jj.eq.Nz .or. jj.eq.Ncp) ) cycle  !fix r,z,cp
            ! j = LNOPP(i) + jj
