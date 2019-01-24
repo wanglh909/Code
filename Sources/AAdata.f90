@@ -40,7 +40,8 @@ module data
 
 
   real(kind=rk):: time
-  real(kind=rk), allocatable:: rcoordinate(:), zcoordinate(:), usol(:), vsol(:), Tsol(:), psol(:), csol(:), cpsol(:)
+  real(kind=rk), allocatable:: rcoordinate(:), zcoordinate(:), usol(:), vsol(:), Tsol(:), psol(:), csol(:), cpsol(:), &
+       packing_cp(:), packing_r(:), packing_z(:)
   !solp & dtp means previous solution & dt, solpred means the predicted solution
   real(kind=rk), allocatable:: sol(:), solp(:), soldot(:), soldotp(:), soldotpp(:), solpred(:)
 

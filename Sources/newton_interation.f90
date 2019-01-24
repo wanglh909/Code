@@ -29,7 +29,7 @@ subroutine newton_raphson
      if(debug_NAN) pause 
      
      !for debug, put 'sj's together as Jac, check Jac
-     if( check_0_in_Jac.eq.1 .and. s_mode.eq.0) then!.and. initial_vapor_solved.eq.1 .and. pack_start.eq.1 
+     if( check_0_in_Jac.eq.1 .and. s_mode.eq.0) then!.and. initial_vapor_solved.eq.1  .and. pack_start.eq.1 
         call jac_check_0
         Jac(:,:) = 0.0_rk
      end if
@@ -37,7 +37,20 @@ subroutine newton_raphson
      
 
      call L2_error(cal_time)
-     
+     !check Jacobian whole if error NaN shows
+     if(error1.ne.error1 .or. error2.ne.error2) then
+        print *, 'error NaN'
+        check_0_in_Jac = 1
+        if(diverge.eq.0) then
+           diverge = 1
+           allocate( Jac(NVar,NVar), Res(NVar) )
+           Jac = 0.0_rk
+           Res = 0.0_rk
+           exit
+        else !diverge.eq.1
+           stop
+        end if
+     end if
 
      !update sol
      if( s_mode.eq.1 ) then

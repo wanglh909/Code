@@ -69,7 +69,7 @@ program main
   alge_corner = 1
 
 
-  graph_step = 500  !graph every 'graph_step' steps
+  graph_step = 50  !graph every 'graph_step' steps
   dt = 1.0e-5_rk!0.01_rk   !dt in first 5 steps
   FTS = 5 !fixed timesteps
 
@@ -138,7 +138,7 @@ program main
   call determine_offsets()  !in multifront module, call whenever switching between mesh and full dynamics solving
   call graph  !graph starting mesh
 
-  print *, 'enter loops'
+  ! print *, 'enter loops'
   do    !loop for time step
      
      print *,'------------------------next timestep-----------------------------'
@@ -194,7 +194,6 @@ program main
      end if
 
      !****************************************************************************************
-
   end do
 
 end program main

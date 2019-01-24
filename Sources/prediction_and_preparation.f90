@@ -9,8 +9,10 @@ subroutine prediction
 
   integer(kind=ik):: i, j, imax, jmax, m
   character(LEN=2) :: var
-  real(kind=rk):: dtmin=1.0e-6_rk, dtmax=1.0e-1_rk
+  real(kind=rk):: dtmin=1.0e-10_rk, dtmax=1.0e-1_rk
   ! real(kind=rk):: rmax, zmax, umax, vmax, Tmax, pmax, cmax
+  integer(kind=ik):: sum
+  real(kind=rk):: multip
 
 if(diverge.eq.0) then
 
@@ -132,6 +134,49 @@ if(diverge.eq.0) then
 
   end if   !timestep.gt.FTS
 
+
+
+
+
+  ! !---------------------------packing flag change------------------------
+  ! do i = 1, NTE
+  !    if(packingE(i).eq.1) then
+  !       do j = 1, 9
+  !          packingN( globalNM(i,j) ) = 1
+  !       end do
+  !    end if
+  ! end do   !element i
+  ! BCpackingN = 0
+  ! do i = 1, NTN
+  !    sum = 0
+  !    multip = 1.0_rk
+  !    do k = 1, 4
+  !       if(rNOP(i,k,1).ne.0) then
+  !          sum = sum + packingE( rNOP(i,k,1) )
+  !          multip = multip * real( packingE(rNOP(i,k,1)) ,rk)
+  !       end if
+  !    end do  !4 elements that the node resides
+  !    if( sum.gt.0 .and. multip.eq.0.0_rk ) then
+  !       BCpackingN(i) = 1
+  !       if( BCflagN(i,3).eq.1 ) contact_front_node = i
+  !    end if
+  ! end do  !node i
+  ! BCpackingE = 0
+  ! do i = 1, NTE
+  !    sum = 0
+  !    do j = 1, 9
+  !       sum = sum + BCpackingN( globalNM(i,j) )
+  !    end do
+  !    if( sum.gt.1 .and. sum.lt.9 ) BCpackingE(i) = 1
+  ! end do  !element i 
+  ! !--------------------------------------------------------------------------
+
+
+
+
+
+
+  
 end if   !diverge=0
 
 
@@ -174,6 +219,10 @@ end if   !diverge=0
         solpred = solp + 0.5_rk*dt*( ( 2.0_rk + dt/dtp )*soldotp - dt/dtp*soldotpp )
         !solpred = solp + dt*soldotp
      end if
+     ! !change solpred of packing cp to be cp_pack, or this can be finished in split_sol
+     ! do i = 1, NTN
+     !    if(packingN(i).eq.1 .and. BCpackingN(i).eq.0) solpred(NOPP(i) + Ncp) = cp_pack
+     ! end do
 
   end if!diverge=0
   !-----------------------------------------------------------------------------------

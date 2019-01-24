@@ -78,7 +78,7 @@ subroutine parameter_values
   diameterp = 1.0e-8_rk  !1.0e-7_rk  !  (m) particle diameter
   Dp = kboltz*(25.0_rk+273.15_rk)/(6.0_rk*pi*mu*diameterp)   !2.45e-12 (m^2/s)
   !cp0 = 2.5e-4  !(kg/m^3)  !??not used yet
-  cp_pack = 30.0_rk
+  cp_pack = 2.0_rk
   
 
   !characteristic
@@ -125,6 +125,7 @@ subroutine parameter_values
   write(10,'(A, es14.7)') 'outer =', outer
   write(10,'(A, es14.7)') 'T_sub =', T_sub
   write(10,'(A, es14.7)') 'diameterp =', diameterp
+  write(10,'(A, es14.7)') 'cp_pack =', cp_pack
   write(10,'(A)') ' '
 
   write(10,'(A, es14.7)') 'KBCgroup =', KBCgroup

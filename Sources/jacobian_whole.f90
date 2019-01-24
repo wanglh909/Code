@@ -45,7 +45,7 @@ subroutine jac_check_0
      write(10, '(i8)',ADVANCE='NO') i
      do j = 1, NTN
         do k = 1, MDF(j)
-           write(10, '(es14.7)',ADVANCE='NO') Jac(NOPP(j)+k-1,i)
+           write(10, '(es14.5)',ADVANCE='NO') Jac(i,NOPP(j)+k-1)
            ! if(Jac(NOPP(j)+k-1,i).ne.0.0_rk) print *, j,k, Jac(NOPP(j)+k-1,i)
         end do
      end do

@@ -7,7 +7,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
   !use front_mod, only: determine_offsets
 
   implicit none
-  integer(kind=ik):: i, j, ipp, n, jj
+  integer(kind=ik):: i, j, ipp, n, jj, judge
 
   integer(kind=ik), intent(in):: m, LNVar, LNOPP(bas)
   real(kind=rk):: locJac(LNVar, LNVar), locRes(LNVar)
@@ -115,17 +115,18 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
 
      
      !packing region
-     if(packingN(globalNM(m,i)).eq.1 .and. BCpackingN(globalNM(m,i)).eq.0) then  !must do according to the node instead of the element
-        ! do jj = Nr, Ncp
-        !    if(.not.(jj.eq.Nr .or. jj.eq.Nz .or. jj.eq.Ncp) ) cycle  !fix r,z,cp
-           ! j = LNOPP(i) + jj
-           j = LNOPP(i) + Ncp
+     if(packingN(globalNM(m,i)).eq.1) then  !must do according to the node instead of the element
+        do jj = Nr, Ncp
+           if(.not.(jj.eq.Nr .or. jj.eq.Nz .or. jj.eq.Ncp) ) cycle  !fix r,z,cp
+           if(jj.eq.Ncp .and. BCpackingN(globalNM(m,i)).eq.1) cycle
+           j = LNOPP(i) + jj
+
+        ! j = LNOPP(i) + Ncp
            locJac(j,:) = 0.0_rk
            locJac(j,j) = 1.0_rk      !dRsi(i)/dr(i) dReta(i)/dz(i) dRm(i)/dcp(i)
            locRes(j) = 0.0_rk
-        ! end do
+        end do
      end if
-
 
 !----------------------------------ALGEBRAIC MESH------------------------------------- 
      !drop corner algebraic mesh
@@ -335,17 +336,18 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
 !--------------------------------------------------------------------------------------
 
   
-  !for the initial stage when stability hasn't been set up, make variable cp not change
-  if( s_mode.eq.0 .and. init_stability.eq.0 ) then     
-     if( VE(m).eq.0 ) then
-        do i = 1, 9    
-           j = LNOPP(i) + Ncp     !The location of Rcp(i) in locRes
-           locJac(j,:) = 0.0_rk
-           locJac(j,j) = 1.0_rk               !dRcpi/dcpi
-           locRes(j) = 0.0_rk
-        end do
-     end if
-  end if
+  ! !for the initial stage when stability hasn't been set up, make variable cp not change
+  ! if( s_mode.eq.0 ) then     !.and. init_stability.eq.0 .and. timestep.gt.5
+  !    if( VE(m).eq.0 ) then
+  !       do i = 1, 9
+  !          ! if(globalNM(m,i).gt.10000) cycle
+  !          j = LNOPP(i) + Ncp     !The location of Rcp(i) in locRes
+  !          locJac(j,:) = 0.0_rk
+  !          locJac(j,j) = 1.0_rk               !dRcpi/dcpi
+  !          locRes(j) = 0.0_rk
+  !       end do
+  !    end if
+  ! end if
 
 
 

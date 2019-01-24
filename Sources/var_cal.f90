@@ -162,9 +162,9 @@ subroutine variable_cal
      end if
   end if
 
+  
 
-
-  !packing flag change
+  !---------------------------packing flag&value change------------------------
   do i = 1, NTE
      if(packingE(i).eq.1) then
         do j = 1, 9
@@ -194,8 +194,19 @@ subroutine variable_cal
         sum = sum + BCpackingN( globalNM(i,j) )
      end do
      if( sum.gt.1 .and. sum.lt.9 ) BCpackingE(i) = 1
-  end do  !element i 
-
+  end do  !element i
+  
+  !store packing cp values into packing_cp
+  do i = 1, NTN
+     if(packingN(i).eq.1) then
+        if( packing_r(i).eq.0.0_rk ) then
+           packing_r(i) = rcoordinate(i)
+           packing_z(i) = zcoordinate(i)
+        end if
+        if( BCpackingN(i).eq.0 .and. packing_cp(i).eq.0.0_rk ) packing_cp(i) = cpsol(i)
+     end if
+  end do
+  !--------------------------------------------------------------------------
 
   
 

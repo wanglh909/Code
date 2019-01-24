@@ -29,7 +29,8 @@ subroutine initialization
   
   allocate( sol(NVar), dsol(NVar) )
   allocate( solp(NVar), soldot(NVar), soldotp(NVar), soldotpp(NVar), solpred(NVar) )
-  allocate( rcoordinate(NTN), zcoordinate(NTN), usol(NTN), vsol(NTN), Tsol(NTN), psol(NTN), csol(NTN), cpsol(NTN) )
+  allocate( rcoordinate(NTN), zcoordinate(NTN), usol(NTN), vsol(NTN), Tsol(NTN), psol(NTN), csol(NTN), cpsol(NTN), &
+       packing_cp(NTN), packing_r(NTN), packing_z(NTN) )
   allocate( fsi_size(NTE), geta_size(NTE) )
   allocate( BCpackingN(NTN), BCpackingE(NTE), packingside(NTE,4) )
   sol = 0.0_rk
@@ -47,6 +48,9 @@ subroutine initialization
   psol = 0.0_rk
   csol = 0.0_rk
   cpsol = 1.0_rk
+  packing_cp = 0.0_rk
+  packing_r = 0.0_rk
+  packing_z = 0.0_rk
   cp_average = 1.0_rk
   BCpackingN = 0
   BCpackingE = 0
