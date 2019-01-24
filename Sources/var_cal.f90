@@ -199,10 +199,10 @@ subroutine variable_cal
   !store packing cp values into packing_cp
   do i = 1, NTN
      if(packingN(i).eq.1) then
-        if( packing_r(i).eq.0.0_rk ) then
-           packing_r(i) = rcoordinate(i)
-           packing_z(i) = zcoordinate(i)
-        end if
+        ! if( packing_r(i).eq.0.0_rk ) then
+        !    packing_r(i) = rcoordinate(i)
+        !    packing_z(i) = zcoordinate(i)
+        ! end if
         if( BCpackingN(i).eq.0 .and. packing_cp(i).eq.0.0_rk ) packing_cp(i) = cpsol(i)
      end if
   end do

@@ -9,7 +9,7 @@ subroutine prediction
 
   integer(kind=ik):: i, j, imax, jmax, m
   character(LEN=2) :: var
-  real(kind=rk):: dtmin=1.0e-10_rk, dtmax=1.0e-1_rk
+  real(kind=rk):: dtmin=1.0e-6_rk, dtmax=1.0e-1_rk
   ! real(kind=rk):: rmax, zmax, umax, vmax, Tmax, pmax, cmax
   integer(kind=ik):: sum
   real(kind=rk):: multip
@@ -22,13 +22,13 @@ if(diverge.eq.0) then
      !------------------calculate and write truncate error----------------------------
      trunerr = 0.0_rk     !Linf norm
      do i = 1, NTN
-        if (ABS( sol(NOPP(i)+Nr) - solpred(NOPP(i)+Nr) )/rmax .gt.trunerr) then
+        if (ABS( sol(NOPP(i)+Nr) - solpred(NOPP(i)+Nr) )/rmax .gt.trunerr .and. packing_r(i).ne.0.0_rk) then
            trunerr = ABS( sol(NOPP(i)+Nr) - solpred(NOPP(i)+Nr) ) /rmax
            imax = i
            var = 'r'
         end if
         if(NTs.eq.2 .or. VN(i).ne.5)  then
-           if (ABS( sol(NOPP(i)+Nz) - solpred(NOPP(i)+Nz) )/zmax .gt.trunerr) then
+           if (ABS( sol(NOPP(i)+Nz) - solpred(NOPP(i)+Nz) )/zmax .gt.trunerr .and. packing_z(i).ne.0.0_rk) then
               trunerr = ABS( sol(NOPP(i)+Nz) - solpred(NOPP(i)+Nz) ) /zmax
               imax = i
               var = 'z'
@@ -55,7 +55,8 @@ if(diverge.eq.0) then
                     var = 'v'
                  end if
                  !skip calculating cp change?
-                 if (ABS( sol(NOPP(i)+Ncp) - solpred(NOPP(i)+Ncp) )/cpmax .gt.trunerr) then
+                 if (ABS( sol(NOPP(i)+Ncp) - solpred(NOPP(i)+Ncp) )/cpmax .gt.trunerr &
+                      .and. packing_cp(i).ne.0.0_rk) then
                     trunerr = ABS( sol(NOPP(i)+Ncp) - solpred(NOPP(i)+Ncp) ) /cpmax
                     imax = i
                     var = 'cp'

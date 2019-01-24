@@ -35,8 +35,8 @@ subroutine split_sol
 
      !maximum packing
      if(packingN(i).eq.1) then
-        sol(NOPP(i) + Nr) = packing_r(i)
-        sol(NOPP(i) + Nz) = packing_z(i)
+        ! sol(NOPP(i) + Nr) = packing_r(i)
+        ! sol(NOPP(i) + Nz) = packing_z(i)
         if( BCpackingN(i).eq.0) sol(NOPP(i) + Ncp) = packing_cp(i)
      end if
 

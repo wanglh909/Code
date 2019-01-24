@@ -116,16 +116,16 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
      
      !packing region
      if(packingN(globalNM(m,i)).eq.1) then  !must do according to the node instead of the element
-        do jj = Nr, Ncp
-           if(.not.(jj.eq.Nr .or. jj.eq.Nz .or. jj.eq.Ncp) ) cycle  !fix r,z,cp
-           if(jj.eq.Ncp .and. BCpackingN(globalNM(m,i)).eq.1) cycle
-           j = LNOPP(i) + jj
+        ! do jj = Nr, Ncp
+        !    if(.not.(jj.eq.Nr .or. jj.eq.Nz .or. jj.eq.Ncp) ) cycle  !fix r,z,cp
+        !    if(jj.eq.Ncp .and. BCpackingN(globalNM(m,i)).eq.1) cycle
+        !    j = LNOPP(i) + jj
 
-        ! j = LNOPP(i) + Ncp
+        j = LNOPP(i) + Ncp
            locJac(j,:) = 0.0_rk
            locJac(j,j) = 1.0_rk      !dRsi(i)/dr(i) dReta(i)/dz(i) dRm(i)/dcp(i)
            locRes(j) = 0.0_rk
-        end do
+        ! end do
      end if
 
 !----------------------------------ALGEBRAIC MESH------------------------------------- 
