@@ -498,113 +498,52 @@ end if   !for s_mode=0
 
 
 
-! !packing surface
-! if(s_mode.eq.0) then
-!    !packing surface node from the unpacking element
-!    if( BCpackingN( globalNM(m,i) ).eq.1 .and. BCpackingE(m).eq.1 ) then
-      
-!       do sideN = 1, 4
-!          if(packingside(m,sideN).eq.1) then
-!             !--------pair node i with sideN & ipp----------
-!             if(sideN.eq.1 ) then
-!                if(i.eq.1 .or. i.eq.2 .or. i.eq.3) then
-!                   ipp = i
-!                   if( .not.(j.eq.1 .or. j.eq.2 .or. j.eq.3) ) cycle
-!                   jpp = j
-!                else
-!                   cycle
-!                end if
-!             else if(sideN.eq.2) then
-!                if(i.eq.1 .or. i.eq.4 .or. i.eq.7) then
-!                   ipp = i/3+1
-!                   if( .not.(j.eq.1 .or. j.eq.4 .or. j.eq.7) ) cycle
-!                   jpp = j/3+1
-!                else
-!                   cycle
-!                end if
-!             else if(sideN.eq.3) then
-!                if(i.eq.3 .or. i.eq.6 .or. i.eq.9) then
-!                   ipp = i/3
-!                   if( .not.(j.eq.3 .or. j.eq.6 .or. j.eq.9) ) cycle
-!                   jpp = j/3
-!                else
-!                   cycle
-!                end if
-!             else if(sideN.eq.4) then
-!                if(i.eq.7 .or. i.eq.8 .or. i.eq.9) then
-!                   ipp = i-6
-!                   if( .not.(j.eq.7 .or. j.eq.8 .or. j.eq.9) ) cycle
-!                   jpp = j-6
-!                else
-!                   cycle
-!                end if
-!             end if  !sideN classification
-!             !----------------finish pairing------------------
-            
-!             do k = 1, Ng, 1    !three gausspoints
-! !particle accumulation
-! if(unit_direction_packing(k,sideN,id).eq.0) then
-! intRm_r_S(k) = -Pep* phi_1d(k,ipp)* ( -phix_1d(k,jpp)*vintfac_packing(k,sideN,id) ) * &
-!      cpintfac_packing(k,sideN,id) * rintfac_packing(k,sideN,id) + &
-     
-!      (-Pep)* phi_1d(k,ipp)* ( zsi_packing(k,sideN,id)*uintfac_packing(k,sideN,id) - &
-!      rsi_packing(k,sideN,id)*vintfac_packing(k,sideN,id) ) *phi_1d(k,jpp) * cpintfac_packing(k,sideN,id)
-
-! intRm_z_S(k) = -Pep* phi_1d(k,ipp)* phix_1d(k,jpp)* uintfac_packing(k,sideN,id) * &
-!      cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id)
-
-! else   !unit_direction_packing(k,sideN,id) = 1
-! intRm_r_S(k) = -Pep* phi_1d(k,ipp)* ( phix_1d(k,jpp)*vintfac_packing(k,sideN,id) ) * &
-!      cpintfac_packing(k,sideN,id) * rintfac_packing(k,sideN,id) + &
-     
-!      (-Pep)* phi_1d(k,ipp)* ( zsi_packing(k,sideN,id)*uintfac_packing(k,sideN,id) - &
-!      rsi_packing(k,sideN,id)*vintfac_packing(k,sideN,id) ) *phi_1d(k,jpp) * cpintfac_packing(k,sideN,id)
-
-! intRm_z_S(k) = -Pep* phi_1d(k,ipp)* (-phix_1d(k,jpp)) * uintfac_packing(k,sideN,id) * &
-!      cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id)
-
-! end if !unit_direction_packing(k,sideN,id)
-   
-
-! intRm_u_S(k) = -Pep* phi_1d(k,jpp) *phi_1d(k,ipp) *zsi_packing(k,sideN,id) * &
-!      cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id) 
-
-! intRm_v_S(k) = Pep * phi_1d(k,jpp) *phi_1d(k,ipp) *rsi_packing(k,sideN,id) * &
-!      cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id) 
-
-! intRm_cp_S(k) = -Pep* phi_1d(k,ipp)* ( zsi_packing(k,sideN,id) *uintfac_packing(k,sideN,id) - &
-!      rsi_packing(k,sideN,id) *vintfac_packing(k,sideN,id) ) *phi_1d(k,jpp) * rintfac_packing(k,sideN,id)
-!             end do
-!      sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRm_r_S)
-!      sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRm_z_S)
-!      sj(LNOPP(i)+Ncp,LNOPP(j)+Nu) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nu) + gaussian_quadrature_1d(intRm_u_S)
-!      sj(LNOPP(i)+Ncp,LNOPP(j)+Nv) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nv) + gaussian_quadrature_1d(intRm_v_S)
-!      sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp) = sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) + gaussian_quadrature_1d(intRm_cp_S)
-!      if(m.eq.40 .and. i.eq.8 .and. j.eq.1) then
-!         print *, 'wrong sj_SI_packing'
-!         pause
-!      end if
-
-!          end if   !packingside = 1
-!       end do  !sideN
-      
-!    end if  !packing surface node & element
-! end if  !s_mode
-
-
-
-!semipermeable wall
+!packing surface
 if(s_mode.eq.0) then
-   sideN=1
    !packing surface node from the unpacking element
-   if( BCwallN( globalNM(m,i) ).eq.1 .and. BCwallE(m).eq.1 ) then
+   if( BCpackingN( globalNM(m,i) ).eq.1 .and. BCpackingE(m).eq.1 ) then
       
-      ipp = i
-      if( j.eq.1 .or. j.eq.2 .or. j.eq.3 ) then
-         jpp = j
-
-      do k = 1, Ng, 1    !three gausspoints
+      do sideN = 1, 4
+         if(packingside(m,sideN).eq.1) then
+            !--------pair node i with sideN & ipp----------
+            if(sideN.eq.1 ) then
+               if(i.eq.1 .or. i.eq.2 .or. i.eq.3) then
+                  ipp = i
+                  if( .not.(j.eq.1 .or. j.eq.2 .or. j.eq.3) ) cycle
+                  jpp = j
+               else
+                  cycle
+               end if
+            else if(sideN.eq.2) then
+               if(i.eq.1 .or. i.eq.4 .or. i.eq.7) then
+                  ipp = i/3+1
+                  if( .not.(j.eq.1 .or. j.eq.4 .or. j.eq.7) ) cycle
+                  jpp = j/3+1
+               else
+                  cycle
+               end if
+            else if(sideN.eq.3) then
+               if(i.eq.3 .or. i.eq.6 .or. i.eq.9) then
+                  ipp = i/3
+                  if( .not.(j.eq.3 .or. j.eq.6 .or. j.eq.9) ) cycle
+                  jpp = j/3
+               else
+                  cycle
+               end if
+            else if(sideN.eq.4) then
+               if(i.eq.7 .or. i.eq.8 .or. i.eq.9) then
+                  ipp = i-6
+                  if( .not.(j.eq.7 .or. j.eq.8 .or. j.eq.9) ) cycle
+                  jpp = j-6
+               else
+                  cycle
+               end if
+            end if  !sideN classification
+            !----------------finish pairing------------------
+            
+            do k = 1, Ng, 1    !three gausspoints
 !particle accumulation
+if(unit_direction_packing(k,sideN,id).eq.0) then
 intRm_r_S(k) = -Pep* phi_1d(k,ipp)* ( -phix_1d(k,jpp)*vintfac_packing(k,sideN,id) ) * &
      cpintfac_packing(k,sideN,id) * rintfac_packing(k,sideN,id) + &
      
@@ -613,6 +552,18 @@ intRm_r_S(k) = -Pep* phi_1d(k,ipp)* ( -phix_1d(k,jpp)*vintfac_packing(k,sideN,id
 
 intRm_z_S(k) = -Pep* phi_1d(k,ipp)* phix_1d(k,jpp)* uintfac_packing(k,sideN,id) * &
      cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id)
+
+else   !unit_direction_packing(k,sideN,id) = 1
+intRm_r_S(k) = -Pep* phi_1d(k,ipp)* ( phix_1d(k,jpp)*vintfac_packing(k,sideN,id) ) * &
+     cpintfac_packing(k,sideN,id) * rintfac_packing(k,sideN,id) + &
+     
+     (-Pep)* phi_1d(k,ipp)* ( zsi_packing(k,sideN,id)*uintfac_packing(k,sideN,id) - &
+     rsi_packing(k,sideN,id)*vintfac_packing(k,sideN,id) ) *phi_1d(k,jpp) * cpintfac_packing(k,sideN,id)
+
+intRm_z_S(k) = -Pep* phi_1d(k,ipp)* (-phix_1d(k,jpp)) * uintfac_packing(k,sideN,id) * &
+     cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id)
+
+end if !unit_direction_packing(k,sideN,id)
    
 
 intRm_u_S(k) = -Pep* phi_1d(k,jpp) *phi_1d(k,ipp) *zsi_packing(k,sideN,id) * &
@@ -623,16 +574,65 @@ intRm_v_S(k) = Pep * phi_1d(k,jpp) *phi_1d(k,ipp) *rsi_packing(k,sideN,id) * &
 
 intRm_cp_S(k) = -Pep* phi_1d(k,ipp)* ( zsi_packing(k,sideN,id) *uintfac_packing(k,sideN,id) - &
      rsi_packing(k,sideN,id) *vintfac_packing(k,sideN,id) ) *phi_1d(k,jpp) * rintfac_packing(k,sideN,id)
-     end do
+            end do
      sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRm_r_S)
      sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRm_z_S)
      sj(LNOPP(i)+Ncp,LNOPP(j)+Nu) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nu) + gaussian_quadrature_1d(intRm_u_S)
      sj(LNOPP(i)+Ncp,LNOPP(j)+Nv) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nv) + gaussian_quadrature_1d(intRm_v_S)
      sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp) = sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) + gaussian_quadrature_1d(intRm_cp_S)
+     if(m.eq.40 .and. i.eq.8 .and. j.eq.1) then
+        print *, 'wrong sj_SI_packing'
+        pause
+     end if
 
-     end if  !j=1,2,3
-   end if  !semipermeable wall surface node & element
+         end if   !packingside = 1
+      end do  !sideN
+      
+   end if  !packing surface node & element
 end if  !s_mode
+
+
+
+! !semipermeable wall
+! if(s_mode.eq.0) then
+!    sideN=1
+!    !packing surface node from the unpacking element
+!    if( BCwallN( globalNM(m,i) ).eq.1 .and. BCwallE(m).eq.1 ) then
+      
+!       ipp = i
+!       if( j.eq.1 .or. j.eq.2 .or. j.eq.3 ) then
+!          jpp = j
+
+!       do k = 1, Ng, 1    !three gausspoints
+! !particle accumulation
+! intRm_r_S(k) = -Pep* phi_1d(k,ipp)* ( -phix_1d(k,jpp)*vintfac_packing(k,sideN,id) ) * &
+!      cpintfac_packing(k,sideN,id) * rintfac_packing(k,sideN,id) + &
+     
+!      (-Pep)* phi_1d(k,ipp)* ( zsi_packing(k,sideN,id)*uintfac_packing(k,sideN,id) - &
+!      rsi_packing(k,sideN,id)*vintfac_packing(k,sideN,id) ) *phi_1d(k,jpp) * cpintfac_packing(k,sideN,id)
+
+! intRm_z_S(k) = -Pep* phi_1d(k,ipp)* phix_1d(k,jpp)* uintfac_packing(k,sideN,id) * &
+!      cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id)
+   
+
+! intRm_u_S(k) = -Pep* phi_1d(k,jpp) *phi_1d(k,ipp) *zsi_packing(k,sideN,id) * &
+!      cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id) 
+
+! intRm_v_S(k) = Pep * phi_1d(k,jpp) *phi_1d(k,ipp) *rsi_packing(k,sideN,id) * &
+!      cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id) 
+
+! intRm_cp_S(k) = -Pep* phi_1d(k,ipp)* ( zsi_packing(k,sideN,id) *uintfac_packing(k,sideN,id) - &
+!      rsi_packing(k,sideN,id) *vintfac_packing(k,sideN,id) ) *phi_1d(k,jpp) * rintfac_packing(k,sideN,id)
+!      end do
+!      sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRm_r_S)
+!      sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRm_z_S)
+!      sj(LNOPP(i)+Ncp,LNOPP(j)+Nu) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nu) + gaussian_quadrature_1d(intRm_u_S)
+!      sj(LNOPP(i)+Ncp,LNOPP(j)+Nv) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nv) + gaussian_quadrature_1d(intRm_v_S)
+!      sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp) = sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) + gaussian_quadrature_1d(intRm_cp_S)
+
+!      end if  !j=1,2,3
+!    end if  !semipermeable wall surface node & element
+! end if  !s_mode
 
 
 

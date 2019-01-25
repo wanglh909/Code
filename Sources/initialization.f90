@@ -134,23 +134,17 @@ subroutine initialization
   !3 nodes, 4 element sides
 
   
-  !semipermeable wall flags
-  allocate( wall_left(NTE), BCwallN(NTN), BCwallE(NTE) )
-  do m = 1, NTE
-     if(m.gt.NEL**2+2*NEL*(13-1)) wall_left(m)=1
-     if(m.gt.NEL**2+2*NEL*(13-1) .and. m.le.NEL**2+2*NEL*13 ) then
-        BCwallE(m) = 1
-        do i = 1, 3
-           BCwallN(globalNM(m,i)) = 1
-        end do
-     end if
-  end do
-
-
-
-
-
-
+  ! !semipermeable wall flags
+  ! allocate( wall_left(NTE), BCwallN(NTN), BCwallE(NTE) )
+  ! do m = 1, NTE
+  !    if(m.gt.NEL**2+2*NEL*(13-1)) wall_left(m)=1
+  !    if(m.gt.NEL**2+2*NEL*(13-1) .and. m.le.NEL**2+2*NEL*13 ) then
+  !       BCwallE(m) = 1
+  !       do i = 1, 3
+  !          BCwallN(globalNM(m,i)) = 1
+  !       end do
+  !    end if
+  ! end do
 
 
 

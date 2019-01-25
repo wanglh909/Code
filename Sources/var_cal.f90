@@ -117,17 +117,17 @@ subroutine variable_cal
         if(timestep.eq.1) volume0 = volume1
 
         
-        ! !change packing flag by the way
-        ! if(particle_m_element/volume_element .ge. cp_pack) then
-        !    if(packingE(i).eq.0) paricle_m_packing = particle_m_packing + particle_m_element
-        !    packingE(i) = 1
-        ! else     !packingE=0, calculate not packing particle mass
-        !    particle_m_left = particle_m_left + particle_m_element
-        ! end if
+        !change packing flag by the way
+        if(particle_m_element/volume_element .ge. cp_pack) then
+           if(packingE(i).eq.0) particle_m_packing = particle_m_packing + particle_m_element
+           packingE(i) = 1
+        else     !packingE=0, calculate not packing particle mass
+           particle_m_left = particle_m_left + particle_m_element
+        end if
 
         
-        !semipermeable wall left particle mass
-        if(wall_left(i).eq.1) particle_m_left = particle_m_left + particle_m_element
+        ! !semipermeable wall left particle mass
+        ! if(wall_left(i).eq.1) particle_m_left = particle_m_left + particle_m_element
              
         
      end do
@@ -144,15 +144,15 @@ subroutine variable_cal
      close(31)
 
 
-     !write particle mass on the left of semipermeable wall
-     if(timestep.eq.0) then
-        open(unit = 31, file = trim(folder)//'wallleft_particle_mass.dat', status = 'replace')
-        write(311, '(A)') 'variables = "contact angle", "m", "time" '
-     else
-        open(unit = 311, file = trim(folder)//'wallleft_particle_mass.dat', status = 'old', access = 'append')
-     end if
-     write(311, '(3es15.7)') angle_c_degree, particle_m_left, time
-     close(311)
+     ! !write particle mass on the left of semipermeable wall
+     ! if(timestep.eq.0) then
+     !    open(unit = 31, file = trim(folder)//'wallleft_particle_mass.dat', status = 'replace')
+     !    write(311, '(A)') 'variables = "contact angle", "m", "time" '
+     ! else
+     !    open(unit = 311, file = trim(folder)//'wallleft_particle_mass.dat', status = 'old', access = 'append')
+     ! end if
+     ! write(311, '(3es15.7)') angle_c_degree, particle_m_left, time
+     ! close(311)
 
 
      
