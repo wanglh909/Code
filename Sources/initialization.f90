@@ -7,6 +7,7 @@ subroutine initialization
 
 
   implicit none
+  integer(kind=ik):: m, i
 
 !---------------------------------------FRONT SETUP------------------------------------
   !This setup must be done once
@@ -56,6 +57,7 @@ subroutine initialization
   BCpackingE = 0
   packingside = 0
   contact_front_node = 0
+  particle_m_packing = 0.0_rk
 
   if(check_0_in_Jac.eq.1)  then
      allocate( Jac(NVar,NVar), Res(NVar) )
@@ -131,7 +133,28 @@ subroutine initialization
   allocate( unit_direction_packing(3,4,ths) )
   !3 nodes, 4 element sides
 
+  
+  !semipermeable wall flags
+  allocate( wall_left(NTE), BCwallN(NTN), BCwallE(NTE) )
+  do m = 1, NTE
+     if(m.gt.NEL**2+2*NEL*(13-1)) wall_left(m)=1
+     if(m.gt.NEL**2+2*NEL*(13-1) .and. m.le.NEL**2+2*NEL*13 ) then
+        BCwallE(m) = 1
+        do i = 1, 3
+           BCwallN(globalNM(m,i)) = 1
+        end do
+     end if
+  end do
 
+
+
+
+
+
+
+
+
+  
 !--------------------------------------multifront------------------------------------
   call omp_set_nested(.FALSE.) !Multifront is no longer nested
 

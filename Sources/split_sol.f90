@@ -33,11 +33,17 @@ subroutine split_sol
      !the contact line
      if( BCflagN(i,3).eq.3 )  sol( NOPP(i) + Nr ) = R!1.0_rk
 
-     !maximum packing
-     if(packingN(i).eq.1) then
-        ! sol(NOPP(i) + Nr) = packing_r(i)
-        ! sol(NOPP(i) + Nz) = packing_z(i)
-        if( BCpackingN(i).eq.0) sol(NOPP(i) + Ncp) = packing_cp(i)
+     
+     ! !maximum packing
+     ! if(packingN(i).eq.1) then
+     !    ! sol(NOPP(i) + Nr) = packing_r(i)
+     !    ! sol(NOPP(i) + Nz) = packing_z(i)
+     !    if( BCpackingN(i).eq.0) sol(NOPP(i) + Ncp) = packing_cp(i)
+     ! end if
+     
+     !semipermeable wall
+     if(i.lt.globalNM(NEL**2+2*NEL*(13-1)+1,1) .and. s_mode.eq.0) then
+        sol(NOPP(i) + Ncp) = packing_cp(i)
      end if
 
      

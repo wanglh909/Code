@@ -156,6 +156,8 @@ module data
   real(kind=rk):: cp_pack, pack_condition, volume0, cp_average, pack_start
 
 
-  real(kind=rk):: angle_int
+  real(kind=rk):: angle_int, particle_m_packing
+
+  integer(kind=ik), allocatable:: wall_left(:), BCwallE(:), BCwallN(:)
 
 end module data

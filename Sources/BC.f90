@@ -114,19 +114,30 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
      end if
 
      
-     !packing region
-     if(packingN(globalNM(m,i)).eq.1) then  !must do according to the node instead of the element
-        ! do jj = Nr, Ncp
-        !    if(.not.(jj.eq.Nr .or. jj.eq.Nz .or. jj.eq.Ncp) ) cycle  !fix r,z,cp
-        !    if(jj.eq.Ncp .and. BCpackingN(globalNM(m,i)).eq.1) cycle
-        !    j = LNOPP(i) + jj
+     ! !packing region
+     ! if(packingN(globalNM(m,i)).eq.1) then  !must do according to the node instead of the element
+     !    ! do jj = Nr, Ncp
+     !    !    if(.not.(jj.eq.Nr .or. jj.eq.Nz .or. jj.eq.Ncp) ) cycle  !fix r,z,cp
+     !    !    if(jj.eq.Ncp .and. BCpackingN(globalNM(m,i)).eq.1) cycle
+     !    !    j = LNOPP(i) + jj
 
+     !    j = LNOPP(i) + Ncp
+     !       locJac(j,:) = 0.0_rk
+     !       locJac(j,j) = 1.0_rk      !dRsi(i)/dr(i) dReta(i)/dz(i) dRm(i)/dcp(i)
+     !       locRes(j) = 0.0_rk
+     !    ! end do
+     ! end if
+
+
+
+     !semipermeable wall
+     if(wall_left(m).eq.0 .and. BCwallN(globalNM(m,i)).ne.1 .and. s_mode.eq.0) then 
         j = LNOPP(i) + Ncp
-           locJac(j,:) = 0.0_rk
-           locJac(j,j) = 1.0_rk      !dRsi(i)/dr(i) dReta(i)/dz(i) dRm(i)/dcp(i)
-           locRes(j) = 0.0_rk
-        ! end do
+        locJac(j,:) = 0.0_rk
+        locJac(j,j) = 1.0_rk      !dRm(i)/dcp(i)
+        locRes(j) = 0.0_rk
      end if
+     
 
 !----------------------------------ALGEBRAIC MESH------------------------------------- 
      !drop corner algebraic mesh

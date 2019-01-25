@@ -24,7 +24,8 @@ subroutine variable_cal
   real(kind=rk):: particle_m, intMass(3,3), intVol(3,3), cpintfac, rintfac, Jp, particle_m_element, volume_element
   integer(kind=ik):: l, n, flag, sum
   real(kind=rk):: multip
-
+  real(kind=rk):: particle_m_left
+  
   t = REAL(omp_get_wtime(),rk)
 
   !----------------------------------contact angle------------------------------------
@@ -77,6 +78,7 @@ subroutine variable_cal
   !--------------------------total particle mass & drop volume-------------------------
   if(final_size.eq.1) then
      particle_m = 0.0_rk
+     particle_m_left = 0.0_rk
      volume1 = 0.0_rk
      do i = 1, NTE
         if(VE(i).ne.0) cycle
@@ -113,9 +115,20 @@ subroutine variable_cal
         particle_m = particle_m + particle_m_element
         volume1 = volume1 + volume_element
         if(timestep.eq.1) volume0 = volume1
+
         
-        !change packing flag by the way
-        if(particle_m_element/volume_element .ge. cp_pack) packingE(i) = 1
+        ! !change packing flag by the way
+        ! if(particle_m_element/volume_element .ge. cp_pack) then
+        !    if(packingE(i).eq.0) paricle_m_packing = particle_m_packing + particle_m_element
+        !    packingE(i) = 1
+        ! else     !packingE=0, calculate not packing particle mass
+        !    particle_m_left = particle_m_left + particle_m_element
+        ! end if
+
+        
+        !semipermeable wall left particle mass
+        if(wall_left(i).eq.1) particle_m_left = particle_m_left + particle_m_element
+             
         
      end do
      ! print *, 'particle mass', particle_m
@@ -123,12 +136,26 @@ subroutine variable_cal
      !write particle mass
      if(timestep.eq.0) then
         open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'replace')
-        write(31, '(A)') 'variables = "contact angle", "m", "time" '
+        write(31, '(A)') 'variables = "contact angle", "m1", "m2", "time" '
      else
         open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'old', access = 'append')
      end if
-     write(31, '(3es15.7)') angle_c_degree, particle_m, time
+     write(31, '(4es15.7)') angle_c_degree, particle_m, particle_m_packing + particle_m_left, time
      close(31)
+
+
+     !write particle mass on the left of semipermeable wall
+     if(timestep.eq.0) then
+        open(unit = 31, file = trim(folder)//'wallleft_particle_mass.dat', status = 'replace')
+        write(311, '(A)') 'variables = "contact angle", "m", "time" '
+     else
+        open(unit = 311, file = trim(folder)//'wallleft_particle_mass.dat', status = 'old', access = 'append')
+     end if
+     write(311, '(3es15.7)') angle_c_degree, particle_m_left, time
+     close(311)
+
+
+     
 
      ! !write drop volume
      ! print *, 'drop volume', volume1, 'particle mass limit', volume1*(cpmax+1.0_rk)
@@ -164,49 +191,49 @@ subroutine variable_cal
 
   
 
-  !---------------------------packing flag&value change------------------------
-  do i = 1, NTE
-     if(packingE(i).eq.1) then
-        do j = 1, 9
-           packingN( globalNM(i,j) ) = 1
-        end do
-     end if
-  end do   !element i
-  BCpackingN = 0
-  do i = 1, NTN
-     sum = 0
-     multip = 1.0_rk
-     do k = 1, 4
-        if(rNOP(i,k,1).ne.0) then
-           sum = sum + packingE( rNOP(i,k,1) )
-           multip = multip * real( packingE(rNOP(i,k,1)) ,rk)
-        end if
-     end do  !4 elements that the node resides
-     if( sum.gt.0 .and. multip.eq.0.0_rk ) then
-        BCpackingN(i) = 1
-        if( BCflagN(i,3).eq.1 ) contact_front_node = i
-     end if
-  end do  !node i
-  BCpackingE = 0
-  do i = 1, NTE
-     sum = 0
-     do j = 1, 9
-        sum = sum + BCpackingN( globalNM(i,j) )
-     end do
-     if( sum.gt.1 .and. sum.lt.9 ) BCpackingE(i) = 1
-  end do  !element i
+  ! !---------------------------packing flag&value change------------------------
+  ! do i = 1, NTE
+  !    if(packingE(i).eq.1) then
+  !       do j = 1, 9
+  !          packingN( globalNM(i,j) ) = 1
+  !       end do
+  !    end if
+  ! end do   !element i
+  ! BCpackingN = 0
+  ! do i = 1, NTN
+  !    sum = 0
+  !    multip = 1.0_rk
+  !    do k = 1, 4
+  !       if(rNOP(i,k,1).ne.0) then
+  !          sum = sum + packingE( rNOP(i,k,1) )
+  !          multip = multip * real( packingE(rNOP(i,k,1)) ,rk)
+  !       end if
+  !    end do  !4 elements that the node resides
+  !    if( sum.gt.0 .and. multip.eq.0.0_rk ) then
+  !       BCpackingN(i) = 1
+  !       if( BCflagN(i,3).eq.1 ) contact_front_node = i
+  !    end if
+  ! end do  !node i
+  ! BCpackingE = 0
+  ! do i = 1, NTE
+  !    sum = 0
+  !    do j = 1, 9
+  !       sum = sum + BCpackingN( globalNM(i,j) )
+  !    end do
+  !    if( sum.gt.1 .and. sum.lt.9 ) BCpackingE(i) = 1
+  ! end do  !element i
   
-  !store packing cp values into packing_cp
-  do i = 1, NTN
-     if(packingN(i).eq.1) then
-        ! if( packing_r(i).eq.0.0_rk ) then
-        !    packing_r(i) = rcoordinate(i)
-        !    packing_z(i) = zcoordinate(i)
-        ! end if
-        if( BCpackingN(i).eq.0 .and. packing_cp(i).eq.0.0_rk ) packing_cp(i) = cpsol(i)
-     end if
-  end do
-  !--------------------------------------------------------------------------
+  ! !store packing cp values into packing_cp
+  ! do i = 1, NTN
+  !    if(packingN(i).eq.1) then
+  !       ! if( packing_r(i).eq.0.0_rk ) then
+  !       !    packing_r(i) = rcoordinate(i)
+  !       !    packing_z(i) = zcoordinate(i)
+  !       ! end if
+  !       if( BCpackingN(i).eq.0 .and. packing_cp(i).eq.0.0_rk ) packing_cp(i) = cpsol(i)
+  !    end if
+  ! end do
+  ! !--------------------------------------------------------------------------
 
   
 

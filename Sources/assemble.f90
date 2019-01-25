@@ -26,7 +26,7 @@ subroutine assemble_local(m, locJacTr, locRHS, LNOPP, LNVar, id, dum)
 
   jac_check = 0
   if( m.eq.0 &
-       .and. pack_start.eq.1 .and. initial_vapor_solved.eq.1) then  ! 
+       .and. initial_vapor_solved.eq.1) then  ! .and. pack_start.eq.1 
      jac_check = 1  
   end if
   !the element to check, set m to 0 if not check
