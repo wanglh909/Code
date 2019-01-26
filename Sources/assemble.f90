@@ -25,7 +25,7 @@ subroutine assemble_local(m, locJacTr, locRHS, LNOPP, LNVar, id, dum)
   integer(kind=ik):: jac_check, LNVart  !true local number of variables
 
   jac_check = 0
-  if( m.eq.0 &
+  if( m.eq.0 &  !NEL**2+2*NEL*13-5 &
        .and. initial_vapor_solved.eq.1) then  ! .and. pack_start.eq.1 
      jac_check = 1  
   end if

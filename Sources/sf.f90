@@ -130,8 +130,8 @@ if(VE(m).eq.0) then
               *rintfac(k,l,id)*abs(Jp(k,l,id))
       end if
 
-      if(packingE(m).eq.0) then
-      ! if(wall_left(m).eq.1) then
+      ! if(packingE(m).eq.0) then
+      if(wall_left(m).eq.1) then
          if(cptime.eq.1) &
               intRm_V(k,l) = intRm_V(k,l) + Pep*phi(k,l,i)*( cpdotintfac(k,l,id) &
               - rdotintfac(k,l,id) *cprintfac(k,l,id)  - zdotintfac(k,l,id) *cpzintfac(k,l,id) ) &
@@ -309,6 +309,25 @@ end if  !for mesh_decouple
 
 
 
+!semipermeable wall
+if(s_mode.eq.0) then
+   sideN=1
+   !packing surface node from the unpacking element
+   if( BCwallN( globalNM(m,i) ).eq.1 .and. BCwallE(m).eq.1 ) then
+      ipp = i
+      do k = 1, Ng, 1    !three gausspoints
+intRm_S(k) = - Pep* phi_1d(k,ipp) * ( &
+     zsi_packing(k,sideN,id)* ( uintfac_packing(k,sideN,id) - rdotintfac_packing(k,sideN,id) ) - &
+     rsi_packing(k,sideN,id)* ( vintfac_packing(k,sideN,id) - zdotintfac_packing(k,sideN,id) ) &
+     ) *cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id)
+      end do
+      sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + gaussian_quadrature_1d(intRm_S)
+   end if  
+end if  !for s_mode=0
+
+
+
+
 !free surface
 if(s_mode.eq.0) then
 
@@ -410,72 +429,56 @@ end if  !for s_mode=0
 
 
 
-!packing surface
-if(s_mode.eq.0) then
-   !packing surface node from the unpacking element
-   if( BCpackingN( globalNM(m,i) ).eq.1 .and. BCpackingE(m).eq.1 ) then
-      
-      do sideN = 1, 4
-         if(packingside(m,sideN).eq.1) then
-            !--------pair node i with sideN & ipp----------
-            if(sideN.eq.1 ) then
-               if(i.eq.1 .or. i.eq.2 .or. i.eq.3) then
-                  ipp = i
-               else
-                  cycle
-               end if
-            else if(sideN.eq.2) then
-               if(i.eq.1 .or. i.eq.4 .or. i.eq.7) then
-                  ipp = i/3+1
-               else
-                  cycle
-               end if
-            else if(sideN.eq.3) then
-               if(i.eq.3 .or. i.eq.6 .or. i.eq.9) then
-                  ipp = i/3
-               else
-                  cycle
-               end if
-            else if(sideN.eq.4) then
-               if(i.eq.7 .or. i.eq.8 .or. i.eq.9) then
-                  ipp = i-6
-               else
-                  cycle
-               end if
-            end if  !sideN classification
-            !----------------finish pairing------------------
-
-            do k = 1, Ng, 1    !three gausspoints
-               intRm_S(k) = - Pep* phi_1d(k,ipp) * ( &
-                    zsi_packing(k,sideN,id)*uintfac_packing(k,sideN,id) - &
-                    rsi_packing(k,sideN,id)*vintfac_packing(k,sideN,id) &
-                    ) *cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id)
-            end do
-            sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + gaussian_quadrature_1d(intRm_S)
-            
-         end if   !packingside = 1
-      end do  !sideN
-   
-   end if  !packing surface node
-end if  !for s_mode=0
-
-
-
-! !semipermeable wall
+! !packing surface
 ! if(s_mode.eq.0) then
-!    sideN=1
 !    !packing surface node from the unpacking element
-!    if( BCwallN( globalNM(m,i) ).eq.1 .and. BCwallE(m).eq.1 ) then
-!       ipp = i
-!       do k = 1, Ng, 1    !three gausspoints
-!          intRm_S(k) = - Pep* phi_1d(k,ipp) * ( &
-!               zsi_packing(k,sideN,id)*uintfac_packing(k,sideN,id) - &
-!               rsi_packing(k,sideN,id)*vintfac_packing(k,sideN,id) &
-!               ) *cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id)
-!       end do
-!       sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + gaussian_quadrature_1d(intRm_S)
-!    end if  
+!    if( BCpackingN( globalNM(m,i) ).eq.1 .and. BCpackingE(m).eq.1 ) then
+      
+!       do sideN = 1, 4
+!          if(packingside(m,sideN).eq.1) then
+!             !--------pair node i with sideN & ipp----------
+!             if(sideN.eq.1 ) then
+!                if(i.eq.1 .or. i.eq.2 .or. i.eq.3) then
+!                   ipp = i
+!                else
+!                   cycle
+!                end if
+!             else if(sideN.eq.2) then
+!                if(i.eq.1 .or. i.eq.4 .or. i.eq.7) then
+!                   ipp = i/3+1
+!                else
+!                   cycle
+!                end if
+!             else if(sideN.eq.3) then
+!                if(i.eq.3 .or. i.eq.6 .or. i.eq.9) then
+!                   ipp = i/3
+!                else
+!                   cycle
+!                end if
+!             else if(sideN.eq.4) then
+!                if(i.eq.7 .or. i.eq.8 .or. i.eq.9) then
+!                   ipp = i-6
+!                else
+!                   cycle
+!                end if
+!             end if  !sideN classification
+!             !----------------finish pairing------------------
+
+!             do k = 1, Ng, 1    !three gausspoints
+! intRm_S(k) = - Pep* phi_1d(k,ipp) * ( &
+!      zsi_packing(k,sideN,id)* ( uintfac_packing(k,sideN,id) - rdotintfac_packing(k,id) ) - &
+!      rsi_packing(k,sideN,id)* ( vintfac_packing(k,sideN,id) - zdotintfac_right(k,id) ) &
+!      ) *cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id)
+!             end do
+!             sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + gaussian_quadrature_1d(intRm_S)
+            
+!          end if   !packingside = 1
+!       end do  !sideN
+   
+!    end if  !packing surface node
 ! end if  !for s_mode=0
+
+
 
 
 

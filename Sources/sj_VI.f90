@@ -388,8 +388,8 @@ intRt_T(k,l) = intRt_T(k,l) + ( phir(k,l,i,id)*phir(k,l,j,id) + phiz(k,l,i,id)*p
 end if !no_Maran.eq.0
 
 !------------------------------------------Rm-------------------------------------
-if(packingE(m).eq.0) then
-! if(wall_left(m).eq.1) then
+! if(packingE(m).eq.0) then
+if(wall_left(m).eq.1) then
 
 !Rm_r_V
 if(cptime.eq.1) &

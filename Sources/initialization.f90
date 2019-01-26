@@ -129,22 +129,23 @@ subroutine initialization
        cprintfac_r(3,3,ths), cprintfac_z(3,3,ths), cpzintfac_r(3,3,ths), cpzintfac_z(3,3,ths) )
   allocate( flux(3,ths), flux_r(3,ths) )
   allocate( rsi_packing(3,4,ths), zsi_packing(3,4,ths), uintfac_packing(3,4,ths), &
-       vintfac_packing(3,4,ths), cpintfac_packing(3,4,ths), rintfac_packing(3,4,ths) )
+       vintfac_packing(3,4,ths), cpintfac_packing(3,4,ths), rintfac_packing(3,4,ths), &
+       rdotintfac_packing(3,4,ths), zdotintfac_packing(3,4,ths) )
   allocate( unit_direction_packing(3,4,ths) )
   !3 nodes, 4 element sides
 
   
-  ! !semipermeable wall flags
-  ! allocate( wall_left(NTE), BCwallN(NTN), BCwallE(NTE) )
-  ! do m = 1, NTE
-  !    if(m.gt.NEL**2+2*NEL*(13-1)) wall_left(m)=1
-  !    if(m.gt.NEL**2+2*NEL*(13-1) .and. m.le.NEL**2+2*NEL*13 ) then
-  !       BCwallE(m) = 1
-  !       do i = 1, 3
-  !          BCwallN(globalNM(m,i)) = 1
-  !       end do
-  !    end if
-  ! end do
+  !semipermeable wall flags
+  allocate( wall_left(NTE), BCwallN(NTN), BCwallE(NTE) )
+  do m = 1, NTE
+     if(m.gt.NEL**2+2*NEL*(13-1)) wall_left(m)=1
+     if(m.gt.NEL**2+2*NEL*(13-1) .and. m.le.NEL**2+2*NEL*13 ) then
+        BCwallE(m) = 1
+        do i = 1, 3
+           BCwallN(globalNM(m,i)) = 1
+        end do
+     end if
+  end do
 
 
 

@@ -214,6 +214,8 @@ subroutine values_in_an_element(m,id)
   cpintfac_packing(:,:,id) = 0.0_rk
   rintfac_packing(:,:,id) = 0.0_rk
   unit_direction_packing(:,:,id) = 0
+  rdotintfac_packing(:,:,id) = 0.0_rk
+  zdotintfac_packing(:,:,id) = 0.0_rk
   
   dTdsi(:,id) = 0.0_rk
   dcpdsi(:,id) = 0.0_rk
@@ -365,82 +367,92 @@ subroutine values_in_an_element(m,id)
 
 
 
-  !packing front
-  if( s_mode.eq.0 .and. BCpackingE(m).eq.1 )  then
-     if( BCpackingN( globalNM(m,1) ).eq.1 .and. BCpackingN( globalNM(m,2) ).eq.1 .and. &
-          BCpackingN( globalNM(m,3) ).eq.1 ) packingside(m,1) = 1
-     if( BCpackingN( globalNM(m,1) ).eq.1 .and. BCpackingN( globalNM(m,4) ).eq.1 .and. &
-          BCpackingN( globalNM(m,7) ).eq.1 ) packingside(m,2) = 1
-     if( BCpackingN( globalNM(m,3) ).eq.1 .and. BCpackingN( globalNM(m,6) ).eq.1 .and. &
-          BCpackingN( globalNM(m,9) ).eq.1 ) packingside(m,3) = 1
-     if( BCpackingN( globalNM(m,7) ).eq.1 .and. BCpackingN( globalNM(m,8) ).eq.1 .and. &
-          BCpackingN( globalNM(m,9) ).eq.1 ) packingside(m,4) = 1
+  ! !packing front
+  ! if( s_mode.eq.0 .and. BCpackingE(m).eq.1 )  then
+  !    if( BCpackingN( globalNM(m,1) ).eq.1 .and. BCpackingN( globalNM(m,2) ).eq.1 .and. &
+  !         BCpackingN( globalNM(m,3) ).eq.1 ) packingside(m,1) = 1
+  !    if( BCpackingN( globalNM(m,1) ).eq.1 .and. BCpackingN( globalNM(m,4) ).eq.1 .and. &
+  !         BCpackingN( globalNM(m,7) ).eq.1 ) packingside(m,2) = 1
+  !    if( BCpackingN( globalNM(m,3) ).eq.1 .and. BCpackingN( globalNM(m,6) ).eq.1 .and. &
+  !         BCpackingN( globalNM(m,9) ).eq.1 ) packingside(m,3) = 1
+  !    if( BCpackingN( globalNM(m,7) ).eq.1 .and. BCpackingN( globalNM(m,8) ).eq.1 .and. &
+  !         BCpackingN( globalNM(m,9) ).eq.1 ) packingside(m,4) = 1
      
-     do sideN = 1, 4
-        if(packingside(m,sideN).eq.1) then
+  !    do sideN = 1, 4
+  !       if(packingside(m,sideN).eq.1) then
 
-         do k = 1, Ng, 1    !three gausspoints
-            do n = 1, 3, 1 !the summation of three terms, eg: rsi = sum( rlocal(7,8,9)*phix_1d(1,2,3) )
-               if(sideN.eq.1) then
-                  npp = n  !only need r1, r2, r3 -->r(npp)
-               else if (sideN.eq.2) then
-                  npp = 3*n-2  !only need r1, r4, r7 -->r(npp)
-               else if(sideN.eq.3) then
-                  npp = 3*n  !only need r3, r6, r9 -->r(npp)
-               else  !sideN=4
-                  npp = n+6  !only need r7, r8, r9 -->r(npp)
-               end if
-               rsi_packing(k,sideN,id) = rsi_packing(k,sideN,id) + rlocal(npp,id) * phix_1d(k,n)
-               zsi_packing(k,sideN,id) = zsi_packing(k,sideN,id) + zlocal(npp,id) * phix_1d(k,n)
-               rintfac_packing(k,sideN,id) = rintfac_packing(k,sideN,id) + rlocal(npp,id) * phi_1d(k,n)
-               uintfac_packing(k,sideN,id) = uintfac_packing(k,sideN,id) + ulocal(npp,id) * phi_1d(k,n)
-               vintfac_packing(k,sideN,id) = vintfac_packing(k,sideN,id) + vlocal(npp,id) * phi_1d(k,n)
-               cpintfac_packing(k,sideN,id) = cpintfac_packing(k,sideN,id) + cplocal(npp,id)*phi_1d(k,n)
-            end do  !end for n
+  !        do k = 1, Ng, 1    !three gausspoints
+  !           do n = 1, 3, 1 !the summation of three terms, eg: rsi = sum( rlocal(7,8,9)*phix_1d(1,2,3) )
+  !              if(sideN.eq.1) then
+  !                 npp = n  !only need r1, r2, r3 -->r(npp)
+  !              else if (sideN.eq.2) then
+  !                 npp = 3*n-2  !only need r1, r4, r7 -->r(npp)
+  !              else if(sideN.eq.3) then
+  !                 npp = 3*n  !only need r3, r6, r9 -->r(npp)
+  !              else  !sideN=4
+  !                 npp = n+6  !only need r7, r8, r9 -->r(npp)
+  !              end if
+  !              rsi_packing(k,sideN,id) = rsi_packing(k,sideN,id) + rlocal(npp,id) * phix_1d(k,n)
+  !              zsi_packing(k,sideN,id) = zsi_packing(k,sideN,id) + zlocal(npp,id) * phix_1d(k,n)
+  !              rintfac_packing(k,sideN,id) = rintfac_packing(k,sideN,id) + rlocal(npp,id) * phi_1d(k,n)
+  !              uintfac_packing(k,sideN,id) = uintfac_packing(k,sideN,id) + ulocal(npp,id) * phi_1d(k,n)
+  !              vintfac_packing(k,sideN,id) = vintfac_packing(k,sideN,id) + vlocal(npp,id) * phi_1d(k,n)
+  !              cpintfac_packing(k,sideN,id) = cpintfac_packing(k,sideN,id) + cplocal(npp,id)*phi_1d(k,n)
+
+  !              rdotintfac_packing(k,sideN,id) = rdotintfac_packing(k,sideN,id) + &
+  !                   rdotlocal(npp,id) * phi_1d(k,n)
+  !              zdotintfac_packing(k,sideN,id) = zdotintfac_packing(k,sideN,id) + &
+  !                   zdotlocal(npp,id) * phi_1d(k,n)
+  !           end do  !end for n
             
-            !guruantee that unit vector is to the right, viz. zsi is positive
-            if(zsi_packing(k,sideN,id).lt.0.0_rk) then
-               unit_direction_packing(k,sideN,id) = 1
-               zsi_packing(k,sideN,id) = -zsi_packing(k,sideN,id)
-               rsi_packing(k,sideN,id) = -rsi_packing(k,sideN,id)
-            end if
-         end do    !end for k
-         ! test = unit_direction_packing(1,sideN,id) + unit_direction_packing(2,sideN,id) + &
-         !      unit_direction_packing(3,sideN,id)
-         ! if(test.ne.0 .and. test.ne.3 )then
-         !    print *, 'unit direction not consistent.', m, sideN, zsi_packing(1,sideN,id), &
-         !         zsi_packing(2,sideN,id), zsi_packing(3,sideN,id)
-         !    pause
-         ! end if
+  !           !guruantee that unit vector is to the right, viz. zsi is positive
+  !           if(zsi_packing(k,sideN,id).lt.0.0_rk) then
+  !              unit_direction_packing(k,sideN,id) = 1
+  !              zsi_packing(k,sideN,id) = -zsi_packing(k,sideN,id)
+  !              rsi_packing(k,sideN,id) = -rsi_packing(k,sideN,id)
+  !           end if
+  !        end do    !end for k
+  !        ! test = unit_direction_packing(1,sideN,id) + unit_direction_packing(2,sideN,id) + &
+  !        !      unit_direction_packing(3,sideN,id)
+  !        ! if(test.ne.0 .and. test.ne.3 )then
+  !        !    print *, 'unit direction not consistent.', m, sideN, zsi_packing(1,sideN,id), &
+  !        !         zsi_packing(2,sideN,id), zsi_packing(3,sideN,id)
+  !        !    pause
+  !        ! end if
 
          
-        end if  !this side is packingside
-     end do  !sideN, 4 sides
+  !       end if  !this side is packingside
+  !    end do  !sideN, 4 sides
      
-  end if  !packing front element
+  ! end if  !packing front element
 
 
 
 
 
-  ! !semipermeable wall
-  ! sideN=1
-  ! if( s_mode.eq.0 .and. BCwallE(m).eq.1 )  then
+  !semipermeable wall
+  sideN=1
+  if( s_mode.eq.0 .and. BCwallE(m).eq.1 )  then
 
-  !    do k = 1, Ng, 1    !three gausspoints
-  !       do n = 1, 3, 1 !the summation of three terms, eg: rsi = sum( rlocal(7,8,9)*phix_1d(1,2,3) )
-  !          npp = n  !only need r1, r2, r3 -->r(npp)
+     do k = 1, Ng, 1    !three gausspoints
+        do n = 1, 3, 1 !the summation of three terms, eg: rsi = sum( rlocal(7,8,9)*phix_1d(1,2,3) )
+           npp = n  !only need r1, r2, r3 -->r(npp)
 
-  !          rsi_packing(k,sideN,id) = rsi_packing(k,sideN,id) + rlocal(npp,id) * phix_1d(k,n)
-  !          zsi_packing(k,sideN,id) = zsi_packing(k,sideN,id) + zlocal(npp,id) * phix_1d(k,n)
-  !          rintfac_packing(k,sideN,id) = rintfac_packing(k,sideN,id) + rlocal(npp,id) * phi_1d(k,n)
-  !          uintfac_packing(k,sideN,id) = uintfac_packing(k,sideN,id) + ulocal(npp,id) * phi_1d(k,n)
-  !          vintfac_packing(k,sideN,id) = vintfac_packing(k,sideN,id) + vlocal(npp,id) * phi_1d(k,n)
-  !          cpintfac_packing(k,sideN,id) = cpintfac_packing(k,sideN,id) + cplocal(npp,id)*phi_1d(k,n)
-  !       end do  !end for n
+           rsi_packing(k,sideN,id) = rsi_packing(k,sideN,id) + rlocal(npp,id) * phix_1d(k,n)
+           zsi_packing(k,sideN,id) = zsi_packing(k,sideN,id) + zlocal(npp,id) * phix_1d(k,n)
+           rintfac_packing(k,sideN,id) = rintfac_packing(k,sideN,id) + rlocal(npp,id) * phi_1d(k,n)
+           uintfac_packing(k,sideN,id) = uintfac_packing(k,sideN,id) + ulocal(npp,id) * phi_1d(k,n)
+           vintfac_packing(k,sideN,id) = vintfac_packing(k,sideN,id) + vlocal(npp,id) * phi_1d(k,n)
+           cpintfac_packing(k,sideN,id) = cpintfac_packing(k,sideN,id) + cplocal(npp,id)*phi_1d(k,n)
+           
+           rdotintfac_packing(k,sideN,id) = rdotintfac_packing(k,sideN,id) + &
+                rdotlocal(npp,id) * phi_1d(k,n)
+           zdotintfac_packing(k,sideN,id) = zdotintfac_packing(k,sideN,id) + &
+                zdotlocal(npp,id) * phi_1d(k,n)
+        end do  !end for n
 
-  !    end do    !end for k
-  ! end if 
+     end do    !end for k
+  end if 
 
 
 
