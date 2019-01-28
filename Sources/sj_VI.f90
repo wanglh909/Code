@@ -387,6 +387,9 @@ intRt_T(k,l) = intRt_T(k,l) + ( phir(k,l,i,id)*phir(k,l,j,id) + phiz(k,l,i,id)*p
 
 end if !no_Maran.eq.0
 
+        end if  !cooling on the surface has no volume integral
+
+
 !------------------------------------------Rm-------------------------------------
 ! if(packingE(m).eq.0) then
 if(wall_left(m).eq.1) then
@@ -462,7 +465,6 @@ intRm_cp(k,l) = intRm_cp(k,l) + ( phir(k,l,i,id)*phir(k,l,j,id) + phiz(k,l,i,id)
 
 end if !packingE = 0
 
-        end if
 
 !------------------------------------------Rp------------------------------------- 
 if( PN( globalNM(m,i) ).eq.1 ) then

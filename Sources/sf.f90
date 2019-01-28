@@ -128,7 +128,9 @@ if(VE(m).eq.0) then
               intRt_V(k,l) = intRt_V(k,l) + ( &
               phir(k,l,i,id)*Trintfac(k,l,id) + phiz(k,l,i,id)*Tzintfac(k,l,id) ) &
               *rintfac(k,l,id)*abs(Jp(k,l,id))
-      end if
+      end if  !no_Maran=0
+      
+   end if  !not on free surface
 
       ! if(packingE(m).eq.0) then
       if(wall_left(m).eq.1) then
@@ -146,7 +148,6 @@ if(VE(m).eq.0) then
               *rintfac(k,l,id)*abs(Jp(k,l,id))
       end if
 
-   end if  !not on free surface
 
    if( PN( globalNM(m,i) ).eq.1 ) then
       intRp(k,l) = psi(k,l,i)* ( urintfac(k,l,id) + uintfac(k,l,id)/rintfac(k,l,id) + vzintfac(k,l,id) ) &
@@ -348,8 +349,8 @@ if(no_vapor.eq.1) then  !flux:  flux(k,id)
    if(uniflux.eq.1) intRsi_S(k) = intRsi_S(k) / flux(k,id)
 
    
-   !particle accumulation 2
-   intRm_S(k) = intRsi_S(k) * cpintfac_right(k,id) 
+   ! !particle accumulation 2
+   ! intRm_S(k) = intRsi_S(k) * cpintfac_right(k,id) 
 end if
 
 !KBC1
@@ -376,11 +377,19 @@ if(no_Maran.eq.0) intRt_S(k) = intRt_S(k) - phi_1d(k,ipp) * ( &
      Teta_right(k,id)* ( rsi_right(k,id)*reta_right(k,id) + zsi_right(k,id)*zeta_right(k,id) ) &
       ) *rintfac_right(k,id) /Jp_right(k,id)
 
-!particle accumulation 1
-intRm_S(k) = intRm_S(k) + KBCgroup/Pep* ( phi_1d(k,ipp) * ( &
-     -dcpdsi(k,id)* ( reta_right(k,id)**2 + zeta_right(k,id)**2 ) + &
-     cpeta_right(k,id)* ( rsi_right(k,id)*reta_right(k,id) + zsi_right(k,id)*zeta_right(k,id) ) &
-      ) *rintfac_right(k,id) /Jp_right(k,id) )
+! !particle accumulation 1
+! intRm_S(k) = intRm_S(k) + KBCgroup/Pep* ( phi_1d(k,ipp) * ( &
+!      -dcpdsi(k,id)* ( reta_right(k,id)**2 + zeta_right(k,id)**2 ) + &
+!      cpeta_right(k,id)* ( rsi_right(k,id)*reta_right(k,id) + zsi_right(k,id)*zeta_right(k,id) ) &
+!       ) *rintfac_right(k,id) /Jp_right(k,id) )
+
+
+!particle accumulation
+intRm_S(k) = Pep* phi_1d(k,ipp) * ( &
+     -zeta_right(k,id)*( uintfac_right(k,id) - rdotintfac_right(k,id) ) + &
+     reta_right(k,id)*( vintfac_right(k,id) - zdotintfac_right(k,id) )  &
+     ) *cpintfac_right(k,id) *rintfac_right(k,id)
+
 
    end do
 
@@ -414,13 +423,13 @@ intRsi_S(k) = phi_1d(k,ipp)*( &
 !evaporative cooling 2
 if(no_Maran.eq.0) intRt_S(k) = REH* intRsi_S(k)
 
-!particle accumulation 2
-intRm_S(k) = intRsi_S(k) * cpintfac_right(k,id)
+! !particle accumulation 2
+! intRm_S(k) = intRsi_S(k) * cpintfac_right(k,id)
 
    end do
       sf(LNOPP(i)+Nr) = sf(LNOPP(i)+Nr) + gaussian_quadrature_1d(intRsi_S)
       if(no_Maran.eq.0) sf(LNOPP(i)+NT) = sf(LNOPP(i)+NT) + gaussian_quadrature_1d(intRt_S)
-      sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + gaussian_quadrature_1d(intRm_S)
+      ! sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + gaussian_quadrature_1d(intRm_S)
 end if  !free surface nodes
 end if  !solve for vapor
 

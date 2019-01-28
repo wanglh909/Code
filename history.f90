@@ -8,15 +8,14 @@ subroutine SI_in_sj(m,i,j, sj, LNVar, LNOPP, id)                     !adding SI 
 
   integer(kind=ik), intent(in):: m,i,j, LNVar, LNOPP(9), id
   real(kind=rk), intent(out):: sj(LNVar, LNVar)
-  !real(kind=rk):: flux
 
-  integer(kind=ik):: k, ipp, jpp, sideN
+  integer(kind=ik):: k, ipp, jpp
   real(kind=rk):: intRsi_r_S(Ng), intRsi_z_S(Ng), intReta_r_S(Ng), intReta_z_S(Ng)
   real(kind=rk):: intRsi_u_S(Ng), intRsi_v_S(Ng), intRsi_c_S(Ng), &
        intRu_r_S(Ng), intRu_z_S(Ng), intRv_r_S(Ng), intRv_z_S(Ng), &
        intRu_T_S(Ng), intRv_T_S(Ng)
   real(kind=rk):: intRt_r_S(Ng), intRt_z_S(Ng), intRt_c_S(Ng), intRt_T_S(Ng)
-  real(kind=rk):: intRm_r_S(Ng), intRm_z_S(Ng), intRm_cp_S(Ng), intRm_c_S(Ng), intRm_u_S(Ng), intRm_v_S(Ng)
+  real(kind=rk):: intRm_r_S(Ng), intRm_z_S(Ng), intRm_u_S(Ng), intRm_v_S(Ng), intRm_cp_S(Ng)
   intRsi_r_S(:) = 0.0_rk
   intRsi_z_S(:) = 0.0_rk
   intReta_r_S(:) = 0.0_rk
@@ -36,10 +35,9 @@ subroutine SI_in_sj(m,i,j, sj, LNVar, LNOPP, id)                     !adding SI 
   intRt_T_S(:) = 0.0_rk
   intRm_r_S(:) = 0.0_rk
   intRm_z_S(:) = 0.0_rk
-  intRm_cp_S(:) = 0.0_rk
-  intRm_c_S(:) = 0.0_rk
   intRm_u_S(:) = 0.0_rk
   intRm_v_S(:) = 0.0_rk
+  intRm_cp_S(:) = 0.0_rk
 
 
   !axis
@@ -238,7 +236,6 @@ if(no_vapor.eq.1) then  !flux: flux( angle_c,rintfac_right(k,id) )
         phi_1d(k,ipp)* ( flux(k,id)+ flux_r(k,id)*rintfac_right(k,id) ) *&
         ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk *phi_1d(k,jpp)
 
-
    intRsi_z_S(k) = phi_1d(k,ipp)* flux(k,id) *&
         ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) *&
         zeta_right(k,id) *phix_1d(k,jpp)* rintfac_right(k,id)
@@ -251,21 +248,12 @@ if(no_vapor.eq.1) then  !flux: flux( angle_c,rintfac_right(k,id) )
    end if
 
    
-   !KBC2 with uniflux: flux = 1.0_rk, only apply in KBC & accumulation: Rsi&Rm
+   !KBC2 with uniflux: flux = 1.0_rk, only apply in KBC: Rsi
    if(uniflux.eq.1) then
       intRsi_r_S(k) = intRsi_r_S(k) / flux(k,id)
       intRsi_z_S(k) = intRsi_z_S(k) / flux(k,id)
    end if
 
-   
-   !particle accumulation 2
-   intRm_r_S(k) = intRsi_r_S(k) * cpintfac_right(k,id)
-   intRm_z_S(k) = intRsi_z_S(k) * cpintfac_right(k,id)
-   
-   intRm_cp_S(k) = phi_1d(k,ipp)* flux(k,id) *phi_1d(k,jpp)*&
-        rintfac_right(k,id)* ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(0.5_rk)
-   if(uniflux.eq.1) intRm_cp_S(k) = intRm_cp_S(k) / flux(k,id)
-   
 end if   !no_vapor=1
 
 
@@ -283,6 +271,37 @@ intRsi_z_S(k) = intRsi_z_S(k) + KBCgroup* ( phi_1d(k,ipp)*( -phix_1d(k,jpp)*&
 intRsi_u_S(k) = intRsi_u_S(k) + KBCgroup* ( -phi_1d(k,jpp)*phi_1d(k,ipp)*zeta_right(k,id)*rintfac_right(k,id) )
 
 intRsi_v_S(k) = intRsi_v_S(k) + KBCgroup* ( phi_1d(k,jpp)*phi_1d(k,ipp)*reta_right(k,id)*rintfac_right(k,id) )
+
+!particle accumulation
+intRm_r_S(k) = Pep* phi_1d(k,ipp)* ( zeta_right(k,id)*CTJ/dt*phi_1d(k,jpp) + &
+     phix_1d(k,jpp)*( Resisp_right(k,id) *vintfac_right(k,id) - zdotintfac_right(k,id) ) ) * &
+     cpintfac_right(k,id) * rintfac_right(k,id)    + &
+     
+     Pep* phi_1d(k,ipp)* ( &
+     -zeta_right(k,id)*( Resisp_right(k,id) *uintfac_right(k,id) - rdotintfac_right(k,id) ) + &
+     reta_right(k,id)*( Resisp_right(k,id) *vintfac_right(k,id) - zdotintfac_right(k,id) ) &
+     ) *phi_1d(k,jpp) * cpintfac_right(k,id)
+
+
+intRm_z_S(k) = Pep* phi_1d(k,ipp)* ( &
+     -phix_1d(k,jpp)* ( Resisp_right(k,id) *uintfac_right(k,id) - rdotintfac_right(k,id) ) - &
+     reta_right(k,id)*CTJ/dt*phi_1d(k,jpp) ) * cpintfac_right(k,id) *rintfac_right(k,id) 
+
+
+intRm_u_S(k) = -Pep * phi_1d(k,jpp) *phi_1d(k,ipp) *zeta_right(k,id) * &
+     Resisp_right(k,id) *cpintfac_right(k,id) *rintfac_right(k,id) 
+
+intRm_v_S(k) = Pep * phi_1d(k,jpp) *phi_1d(k,ipp) *reta_right(k,id) * &
+     Resisp_right(k,id) *cpintfac_right(k,id) *rintfac_right(k,id) 
+
+intRm_cp_S(k) = Pep* phi_1d(k,ipp)*( &
+     
+     ( -zeta_right(k,id) *uintfac_right(k,id) + reta_right(k,id) *vintfac_right(k,id) ) * &
+     Resisp_cp_right(k,id) *phi_1d(k,jpp) *cpintfac_right(k,id) + &
+     
+     ( -zeta_right(k,id) *( Resisp_right(k,id) *uintfac_right(k,id) - rdotintfac_right(k,id) ) + &
+     reta_right(k,id) *( Resisp_right(k,id) *vintfac_right(k,id) - zdotintfac_right(k,id) ) ) * &
+     phi_1d(k,jpp)  ) * rintfac_right(k,id)
 
 
 !traction BC
@@ -326,7 +345,7 @@ intRv_r_S(k) = zeta_right(k,id)*phix_1d(k,ipp)*&
 intRv_z_S(k) = phix_1d(k,ipp)*phix_1d(k,jpp) / sqrt( reta_right(k,id)**2 + zeta_right(k,id)**2 ) *rintfac_right(k,id) - &
      zeta_right(k,id)**2 *phix_1d(k,ipp)*phix_1d(k,jpp) / ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**1.5_rk *rintfac_right(k,id)
 
- if(no_Maran.eq.0) intRv_z_S(k) = intRv_z_S(k) - phi_1d(k,ipp) *beta *Teta_right(k,id)* ( &
+if(no_Maran.eq.0) intRv_z_S(k) = intRv_z_S(k) - phi_1d(k,ipp) *beta *Teta_right(k,id)* ( &
       phix_1d(k,jpp) *( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) - &
       ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-1.5_rk)*zeta_right(k,id)**2 *phix_1d(k,jpp) ) &
       *rintfac_right(k,id) 
@@ -334,7 +353,7 @@ intRv_z_S(k) = phix_1d(k,ipp)*phix_1d(k,jpp) / sqrt( reta_right(k,id)**2 + zeta_
 if(no_Maran.eq.0) intRv_T_S(k) = -phi_1d(k,ipp) *beta *phix_1d(k,jpp) * &
       ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk)* zeta_right(k,id) *rintfac_right(k,id) 
 
-         end do
+         end do  !k gausspoints
      
      sj(LNOPP(i)+Nr,LNOPP(j)+Nr) = sj(LNOPP(i)+Nr,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRsi_r_S)
      sj(LNOPP(i)+Nr,LNOPP(j)+Nz) = sj(LNOPP(i)+Nr,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRsi_z_S)
@@ -350,7 +369,13 @@ if(no_Maran.eq.0) intRv_T_S(k) = -phi_1d(k,ipp) *beta *phix_1d(k,jpp) * &
      sj(LNOPP(i)+Nv,LNOPP(j)+Nz) = sj(LNOPP(i)+Nv,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRv_z_S)!/Ca
      if(no_Maran.eq.0) &
        sj(LNOPP(i)+Nv,LNOPP(j)+NT) = sj(LNOPP(i)+Nv,LNOPP(j)+NT) + gaussian_quadrature_1d(intRv_T_S)!/Ca
-
+     
+     sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRm_r_S)
+     sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRm_z_S)
+     sj(LNOPP(i)+Ncp,LNOPP(j)+Nu) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nu) + gaussian_quadrature_1d(intRm_u_S)
+     sj(LNOPP(i)+Ncp,LNOPP(j)+Nv) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nv) + gaussian_quadrature_1d(intRm_v_S)
+     sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp) = sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) + gaussian_quadrature_1d(intRm_cp_S)
+      
       end if  !for j = 1,4,7 on the free surface
       
       !evaporation cooling 1
@@ -382,33 +407,6 @@ intRt_T_S(k) = intRt_T_S(k) - phi_1d(k,ipp)*( -phisi1_1d(k,j)*( reta_right(k,id)
       sj(LNOPP(i)+NT,LNOPP(j)+NT ) = sj(LNOPP(i)+NT,LNOPP(j)+NT ) + gaussian_quadrature_1d(intRt_T_S)
       
       end if   !no_Maran.eq.0
-
-      !particle accumulation 1
-      do k = 1, Ng, 1    !three gausspoints
-intRm_r_S(k) =  intRm_r_S(k) + KBCgroup/Pep* phi_1d(k,ipp)*( (-dcpdsi(k,id)*2.0_rk*reta_right(k,id)* phieta1_1d(k,j) +   &
-     cpeta_right(k,id)*( rsi_right(k,id)*phieta1_1d(k,j) + reta_right(k,id)*phisi1_1d(k,j) ) &
-     ) *rintfac_right(k,id)/Jp_right(k,id) + &
-
-     ( -dcpdsi(k,id)*( reta_right(k,id)**2 + zeta_right(k,id)**2 ) + &
-     cpeta_right(k,id)*( zsi_right(k,id)*zeta_right(k,id) + rsi_right(k,id)*reta_right(k,id) ) ) *&
-     (phi1_1d(k,j)/Jp_right(k,id) - rintfac_right(k,id)/Jp_right(k,id)**2 * Jp_r_right(k,id) ) )
-
-intRm_z_S(k) = intRm_z_S(k) + KBCgroup/Pep* phi_1d(k,ipp)*( (-dcpdsi(k,id)*2.0_rk*zeta_right(k,id)* phieta1_1d(k,j) + &
-     cpeta_right(k,id)*( zeta_right(k,id)*phisi1_1d(k,j) + zsi_right(k,id)*phieta1_1d(k,j) ) &
-     ) *rintfac_right(k,id)/Jp_right(k,id) + &
-
-     ( -dcpdsi(k,id)*( reta_right(k,id)**2 + zeta_right(k,id)**2 ) + &
-     cpeta_right(k,id)*( zsi_right(k,id)*zeta_right(k,id) + rsi_right(k,id)*reta_right(k,id) ) ) *&
-     (-rintfac_right(k,id))/Jp_right(k,id)**2 * Jp_z_right(k,id) )
-
-intRm_cp_S(k) = intRm_cp_S(k) + KBCgroup/Pep* phi_1d(k,ipp)*( -phisi1_1d(k,j)*( reta_right(k,id)**2 + zeta_right(k,id)**2 ) + &
-     phieta1_1d(k,j)*( zsi_right(k,id)*zeta_right(k,id) + rsi_right(k,id)*reta_right(k,id) ) ) * &
-     rintfac_right(k,id)/Jp_right(k,id)
-      end do
-      sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRm_r_S)
-      sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRm_z_S)
-      sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) = sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) + gaussian_quadrature_1d(intRm_cp_S)
-      
 
    end if   !for i = 1,4,7 on the free surface
 
@@ -452,20 +450,6 @@ if(no_Maran.eq.0) then
    intRt_c_S(k) = REH* intRsi_c_S(k)
 end if
 
-!particle accumulation 2  !??
-intRm_r_S(k) = cpintfac_right(k,id) * intRsi_r_S(k)
-intRm_z_S(k) = cpintfac_right(k,id) * intRsi_z_S(k)
-intRm_c_S(k) = cpintfac_right(k,id) * intRsi_c_S(k)
-
-if( BCflagN( globalNM(m,j),3 ).eq.1 .or. BCflagN( globalNM(m,j),3 ).eq.3 ) then
-   jpp = j/3 + 1  !phi_1d(k,l)
-intRm_cp_S(k) = phi_1d(k,ipp)*( &
-     -dcdsi(k,id)*( reta_right(k,id)**2 + zeta_right(k,id)**2 ) + &
-     dcdeta(k,id)*( zsi_right(k,id)*zeta_right(k,id) + rsi_right(k,id)*reta_right(k,id) ) &
-     ) *phi_1d(k,jpp) *rintfac_right(k,id)/Jp_right(k,id)
-end if
-
-
      end do
      
      sj(LNOPP(i)+Nr,LNOPP(j)+Nr) = sj(LNOPP(i)+Nr,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRsi_r_S)
@@ -479,163 +463,17 @@ end if
      sj(LNOPP(i)+NT,LNOPP(j)+ MDF( globalNM(m,j) ) -1 ) = &
           sj(LNOPP(i)+NT,LNOPP(j)+ MDF( globalNM(m,j) ) -1 ) + gaussian_quadrature_1d(intRt_c_S)
      end if
-     
-     sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRm_r_S)
-     sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRm_z_S)
-     sj(LNOPP(i)+Ncp,LNOPP(j)+ MDF( globalNM(m,j) ) -1 ) = &
-          sj(LNOPP(i)+Ncp,LNOPP(j)+ MDF( globalNM(m,j) ) -1 ) + gaussian_quadrature_1d(intRm_c_S)
-     
-     if( BCflagN( globalNM(m,j),3 ).eq.1 .or. BCflagN( globalNM(m,j),3 ).eq.3 ) &
-          sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) = &
-          sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) + gaussian_quadrature_1d(intRm_cp_S)
-     
-
+      
   end if   !for i = 1,4,7 on the free surface
   end if   !solve for vapor phase
   
 end if   !for s_mode=0
 
 
-
-
-! !packing surface
-! if(s_mode.eq.0) then
-!    !packing surface node from the unpacking element
-!    if( BCpackingN( globalNM(m,i) ).eq.1 .and. BCpackingE(m).eq.1 ) then
-      
-!       do sideN = 1, 4
-!          if(packingside(m,sideN).eq.1) then
-!             !--------pair node i with sideN & ipp----------
-!             if(sideN.eq.1 ) then
-!                if(i.eq.1 .or. i.eq.2 .or. i.eq.3) then
-!                   ipp = i
-!                   if( .not.(j.eq.1 .or. j.eq.2 .or. j.eq.3) ) cycle
-!                   jpp = j
-!                else
-!                   cycle
-!                end if
-!             else if(sideN.eq.2) then
-!                if(i.eq.1 .or. i.eq.4 .or. i.eq.7) then
-!                   ipp = i/3+1
-!                   if( .not.(j.eq.1 .or. j.eq.4 .or. j.eq.7) ) cycle
-!                   jpp = j/3+1
-!                else
-!                   cycle
-!                end if
-!             else if(sideN.eq.3) then
-!                if(i.eq.3 .or. i.eq.6 .or. i.eq.9) then
-!                   ipp = i/3
-!                   if( .not.(j.eq.3 .or. j.eq.6 .or. j.eq.9) ) cycle
-!                   jpp = j/3
-!                else
-!                   cycle
-!                end if
-!             else if(sideN.eq.4) then
-!                if(i.eq.7 .or. i.eq.8 .or. i.eq.9) then
-!                   ipp = i-6
-!                   if( .not.(j.eq.7 .or. j.eq.8 .or. j.eq.9) ) cycle
-!                   jpp = j-6
-!                else
-!                   cycle
-!                end if
-!             end if  !sideN classification
-!             !----------------finish pairing------------------
-            
-!             do k = 1, Ng, 1    !three gausspoints
-! !particle accumulation
-! if(unit_direction_packing(k,sideN,id).eq.0) then
-! intRm_r_S(k) = -Pep* phi_1d(k,ipp)* ( -phix_1d(k,jpp)*vintfac_packing(k,sideN,id) ) * &
-!      cpintfac_packing(k,sideN,id) * rintfac_packing(k,sideN,id) + &
-     
-!      (-Pep)* phi_1d(k,ipp)* ( zsi_packing(k,sideN,id)*uintfac_packing(k,sideN,id) - &
-!      rsi_packing(k,sideN,id)*vintfac_packing(k,sideN,id) ) *phi_1d(k,jpp) * cpintfac_packing(k,sideN,id)
-
-! intRm_z_S(k) = -Pep* phi_1d(k,ipp)* phix_1d(k,jpp)* uintfac_packing(k,sideN,id) * &
-!      cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id)
-
-! else   !unit_direction_packing(k,sideN,id) = 1
-! intRm_r_S(k) = -Pep* phi_1d(k,ipp)* ( phix_1d(k,jpp)*vintfac_packing(k,sideN,id) ) * &
-!      cpintfac_packing(k,sideN,id) * rintfac_packing(k,sideN,id) + &
-     
-!      (-Pep)* phi_1d(k,ipp)* ( zsi_packing(k,sideN,id)*uintfac_packing(k,sideN,id) - &
-!      rsi_packing(k,sideN,id)*vintfac_packing(k,sideN,id) ) *phi_1d(k,jpp) * cpintfac_packing(k,sideN,id)
-
-! intRm_z_S(k) = -Pep* phi_1d(k,ipp)* (-phix_1d(k,jpp)) * uintfac_packing(k,sideN,id) * &
-!      cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id)
-
-! end if !unit_direction_packing(k,sideN,id)
-   
-
-! intRm_u_S(k) = -Pep* phi_1d(k,jpp) *phi_1d(k,ipp) *zsi_packing(k,sideN,id) * &
-!      cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id) 
-
-! intRm_v_S(k) = Pep * phi_1d(k,jpp) *phi_1d(k,ipp) *rsi_packing(k,sideN,id) * &
-!      cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id) 
-
-! intRm_cp_S(k) = -Pep* phi_1d(k,ipp)* ( zsi_packing(k,sideN,id) *uintfac_packing(k,sideN,id) - &
-!      rsi_packing(k,sideN,id) *vintfac_packing(k,sideN,id) ) *phi_1d(k,jpp) * rintfac_packing(k,sideN,id)
-!             end do
-!      sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRm_r_S)
-!      sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRm_z_S)
-!      sj(LNOPP(i)+Ncp,LNOPP(j)+Nu) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nu) + gaussian_quadrature_1d(intRm_u_S)
-!      sj(LNOPP(i)+Ncp,LNOPP(j)+Nv) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nv) + gaussian_quadrature_1d(intRm_v_S)
-!      sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp) = sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) + gaussian_quadrature_1d(intRm_cp_S)
-!      if(m.eq.40 .and. i.eq.8 .and. j.eq.1) then
-!         print *, 'wrong sj_SI_packing'
-!         pause
-!      end if
-
-!          end if   !packingside = 1
-!       end do  !sideN
-      
-!    end if  !packing surface node & element
-! end if  !s_mode
-
-
-
-!semipermeable wall
-if(s_mode.eq.0) then
-   sideN=1
-   !packing surface node from the unpacking element
-   if( BCwallN( globalNM(m,i) ).eq.1 .and. BCwallE(m).eq.1 ) then
-      
-      ipp = i
-      if( j.eq.1 .or. j.eq.2 .or. j.eq.3 ) then
-         jpp = j
-
-      do k = 1, Ng, 1    !three gausspoints
-!particle accumulation
-intRm_r_S(k) = -Pep* phi_1d(k,ipp)* ( -phix_1d(k,jpp)*vintfac_packing(k,sideN,id) ) * &
-     cpintfac_packing(k,sideN,id) * rintfac_packing(k,sideN,id) + &
-     
-     (-Pep)* phi_1d(k,ipp)* ( zsi_packing(k,sideN,id)*uintfac_packing(k,sideN,id) - &
-     rsi_packing(k,sideN,id)*vintfac_packing(k,sideN,id) ) *phi_1d(k,jpp) * cpintfac_packing(k,sideN,id)
-
-intRm_z_S(k) = -Pep* phi_1d(k,ipp)* phix_1d(k,jpp)* uintfac_packing(k,sideN,id) * &
-     cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id)
-   
-
-intRm_u_S(k) = -Pep* phi_1d(k,jpp) *phi_1d(k,ipp) *zsi_packing(k,sideN,id) * &
-     cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id) 
-
-intRm_v_S(k) = Pep * phi_1d(k,jpp) *phi_1d(k,ipp) *rsi_packing(k,sideN,id) * &
-     cpintfac_packing(k,sideN,id) *rintfac_packing(k,sideN,id) 
-
-intRm_cp_S(k) = -Pep* phi_1d(k,ipp)* ( zsi_packing(k,sideN,id) *uintfac_packing(k,sideN,id) - &
-     rsi_packing(k,sideN,id) *vintfac_packing(k,sideN,id) ) *phi_1d(k,jpp) * rintfac_packing(k,sideN,id)
-     end do
-     sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRm_r_S)
-     sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRm_z_S)
-     sj(LNOPP(i)+Ncp,LNOPP(j)+Nu) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nu) + gaussian_quadrature_1d(intRm_u_S)
-     sj(LNOPP(i)+Ncp,LNOPP(j)+Nv) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nv) + gaussian_quadrature_1d(intRm_v_S)
-     sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp) = sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) + gaussian_quadrature_1d(intRm_cp_S)
-
-     end if  !j=1,2,3
-   end if  !semipermeable wall surface node & element
-end if  !s_mode
-
-
-
+! if(initial_vapor_solved.eq.1 .and. m.eq.28 .and. i.eq.4 .and. j.eq.2) then
+!    write(*,*) sj(LNOPP(i)+NT,LNOPP(j)+Nr)
+!    pause
+! end if
 
   return
 end subroutine SI_in_sj
