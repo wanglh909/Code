@@ -42,7 +42,9 @@ program main
   !Use single or dual for debugging, same with debug_NAN
 !-----------------------------------done settings------------------------------------
   
-  no_Maran = 0  !1: no Marangoni stress
+  ! no_Maran = 0  !1: no Marangoni stress
+  Maran_flow = 1
+  solve_T = 1
   !set terms option
   NStrans = 1
   Inert = 1
@@ -103,7 +105,7 @@ program main
   if(substrate.eq.0.0_rk) NES = 0
 
   !Solving T or not affects the value of NNVar1, Nu, Nv, Ncp, Np
-  if(no_Maran.eq.1) then
+  if(solve_T.eq.0) then
      NNVar1 = 6  !not solve T
      Nu = 2
      Nv = 3

@@ -65,7 +65,7 @@ subroutine initialization
   initial_vapor_solving = 0
   diverge = 0
   pack_condition = 0.0_rk
-  if(no_Maran.eq.0) then  !change from 0 to 1 if solving for Marangoni cases
+  if(Maran_flow.eq.1) then  !change from 0 to 1 if solving for Marangoni cases
      init_stability = 1
   else
      init_stability = 1

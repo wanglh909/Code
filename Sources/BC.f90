@@ -95,7 +95,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
               end do
            end if
            !dT = 0 if no substrate phase
-           if( substrate.eq.0.0_rk .and. no_Maran.eq.0) then
+           if( substrate.eq.0.0_rk .and. solve_T.eq.1) then
               j = LNOPP(i) + NT 
               locJac(j,:) = 0.0_rk
               locJac(j,j) = 1.0_rk
@@ -208,7 +208,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
 
         ! !if use no flux BC at outer substrate surface, then comment out
         ! !dT=0
-        ! if(s_mode.eq.0 .and. no_Maran.eq.0) then
+        ! if(s_mode.eq.0 .and. solve_T.eq.1) then
         !    j = LNOPP(i) + NTs
         !    locJac(j,:) = 0.0_rk
         !    locJac(j,j) = 1.0_rk    !dRt/dT
@@ -258,7 +258,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
         end if
 
         !dT=0
-        if(s_mode.eq.0 .and. no_Maran.eq.0) then
+        if(s_mode.eq.0 .and. solve_T.eq.1) then
            j = LNOPP(i) + NTs
            locJac(j,:) = 0.0_rk
            locJac(j,j) = 1.0_rk      !dRt(i)/dT(i)
@@ -311,7 +311,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
      end if
 
      !fix T in substrate
-     if(VE(m).eq.5 .and. no_Maran.eq.0) then
+     if(VE(m).eq.5 .and. solve_T.eq.1) then
         do i = 1, 9
            j = LNOPP(i) + NT
            locJac(j,:) = 0.0_rk
@@ -410,7 +410,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
 
 
      ! !make variable T not change
-     ! if(no_Maran.eq.0)  then
+     ! if(solve_T.eq.1)  then
      !    if( VE(m).eq.0 ) then
      !       do i = 1, 9    
      !          j = LNOPP(i) + NT     !The location of Rt(i) in locRes

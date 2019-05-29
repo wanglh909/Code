@@ -2,7 +2,7 @@ subroutine parameter_values
   use kind
   use data, only: Re, Ca, Kdi, Pe, KBCgroup, REH, beta, Oh, Grav, R, Hum, F0, kR, folder, substrate, outer, &
        NStrans, Inert, Capil, Viscous, GravI, Ttime, Tconv, Tdiff, TtimeS, TdiffS, NEM, NEL, NES, NEV, NEM_alge, T_sub, uniflux, &
-       diameterp, Pep, kboltz, pi, no_Maran, cp_pack, Dp, no_vapor
+       diameterp, Pep, kboltz, pi, solve_T, Maran_flow, cp_pack, Dp, no_vapor
   implicit none
 
   integer(kind=ik):: Ltype !, water, octane, hexanol
@@ -97,7 +97,7 @@ subroutine parameter_values
   F0 = alphaS*(lc/vc)/(lc**2)!?
   kR = ks/kT  !relative thermal conductivity
   Pep = lc*vc/Dp    !267.35_rk
-  if(no_Maran.eq.1) then
+  if(solve_T.eq.0) then
      !beta = 0.0_rk
      substrate = 0.0_rk
   end if
@@ -144,7 +144,8 @@ subroutine parameter_values
   write(10,'(A, i8)') 'TdiffS =', TdiffS
   write(10,'(A, i8)') 'no_vapor =', no_vapor
   write(10,'(A, i8)') 'uniflux =', uniflux
-  write(10,'(A, i8)') 'no_Maran =', no_Maran
+  write(10,'(A, i8)') 'solve_T =', solve_T
+  write(10,'(A, i8)') 'Maran_flow =', Maran_flow
 
   write(10,'(A)') ' '
 

@@ -355,7 +355,7 @@ close(10)
      if( VN(i).eq.0 .or. VN(i).eq.2 ) then
         sol( NOPP(i) + Nu ) = usol(i)
         sol( NOPP(i) + Nv ) = vsol(i)
-        if(no_Maran.eq.0) sol( NOPP(i) + NT ) = Tsol(i)
+        if(solve_T.eq.1) sol( NOPP(i) + NT ) = Tsol(i)
         sol( NOPP(i) + Ncp ) = cpsol(i)
         if ( PN(i).eq.1 )  then
            sol( NOPP(i) + Np ) = psol(i)
@@ -364,8 +364,8 @@ close(10)
      if( VN(i).eq.1 .or. VN(i).eq.2 ) then
         sol( NOPP(i) + MDF(i)-1 ) = csol(i)
      end if
-     if( VN(i).eq.1 .and. BCflagN(i,2).eq.1 .and. no_Maran.eq.0) sol( NOPP(i) + NT) = Tsol(i)
-     if( VN(i).eq.5 .and. no_Maran.eq.0)  sol( NOPP(i) + NTs) = Tsol(i)
+     if( VN(i).eq.1 .and. BCflagN(i,2).eq.1 .and. solve_T.eq.1) sol( NOPP(i) + NT) = Tsol(i)
+     if( VN(i).eq.5 .and. solve_T.eq.1)  sol( NOPP(i) + NTs) = Tsol(i)
   end do
 
 
@@ -374,7 +374,7 @@ close(10)
 !    if(VN(i).eq.0) then
 !       write(10, '(i8, 4es15.7)', advance = 'no' ) i, sol( NOPP(i) + Nr ), sol( NOPP(i) + Nz ), &
 !            sol( NOPP(i) + Nu ), sol( NOPP(i) + Nv )
-!       if(no_Maran.eq.0)  write(10, '(es15.7)', advance = 'no') sol( NOPP(i) + NT )
+!       if(solve_T.eq.1)  write(10, '(es15.7)', advance = 'no') sol( NOPP(i) + NT )
 !       if(PN(i).eq.1) then 
 !          write(10, '(es15.7)' ) sol( NOPP(i) + Np )
 !       else
@@ -388,7 +388,7 @@ close(10)
 !    if(VN(i).eq.2) then
 !       write(10, '(i8, 4es15.7)', advance = 'no' ) i, sol( NOPP(i) + Nr ), sol( NOPP(i) + Nz ), &
 !            sol( NOPP(i) + Nu ), sol( NOPP(i) + Nv )
-!       if(no_Maran.eq.0)  write(10, '(es15.7)', advance = 'no') sol( NOPP(i) + NT )
+!       if(solve_T.eq.1)  write(10, '(es15.7)', advance = 'no') sol( NOPP(i) + NT )
 !       if(PN(i).eq.1) then
 !          write(10,'(es15.7)', advance = 'no' ) sol( NOPP(i) + Np )
 !       else

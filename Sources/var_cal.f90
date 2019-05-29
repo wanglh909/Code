@@ -173,7 +173,7 @@ subroutine variable_cal
 
 
 ! !-------------------------------------peclet number---------------------------------
-!   if(no_Maran.eq.0) then
+!   if(Maran_flow.eq.1) then
 !      Pe_change = Pe*vmax*ztop
 
 !      if(timestep.eq.1) then
@@ -213,7 +213,7 @@ subroutine variable_cal
   !----------------------------temperature&cp of free surface-------------------------
   if(timestep.ne.0) then
      
-     if(no_Maran.eq.0) then
+     if(solve_T.eq.1) then
         if(timestep.eq.1 ) then
            open(unit = 13, file = trim(folder)//'temp_surface.dat', status = 'replace')   
         else
@@ -235,7 +235,7 @@ subroutine variable_cal
 
 
      if(timestep.le.5 .or. mod(timestep,graph_step).eq.0) then   !write data every several timestep
-        if(no_Maran.eq.0) then
+        if(solve_T.eq.1) then
            write(13, '(A)') 'variables = "r", "T"'
            write(13, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
            do i = 1, NTN
@@ -264,7 +264,7 @@ subroutine variable_cal
      end if
 
      
-     if(no_Maran.eq.0) close(13)
+     if(solve_T.eq.1) close(13)
      close(113)
      close(114)
 
@@ -371,7 +371,7 @@ subroutine variable_cal
   !--------velocity direction change location on free surface & grad(T) direction------
   if(timestep.gt.0) then
    
-     if(no_Maran.eq.0) then
+     if(solve_T.eq.1) then
         if(timestep.eq.1) then
            open(unit = 18, file = trim(folder)//'surf_gradT_dir.dat', status = 'replace')
            write(18, '(A)') 'variables = "contact angle", "r", "time", "element" '
@@ -404,7 +404,7 @@ subroutine variable_cal
            retap(1) = -3.0_rk*rcoordinate(globalNM(i,3)) + 4.0_rk*rcoordinate(globalNM(i,6)) - rcoordinate(globalNM(i,9))
            zetap(1) = -3.0_rk*zcoordinate(globalNM(i,3)) + 4.0_rk*zcoordinate(globalNM(i,6)) - zcoordinate(globalNM(i,9))
            v_surf(1) = ( usol(globalNM(i,3))*retap(1) + vsol(globalNM(i,3))*zetap(1) ) /sqrt( retap(1)**2+zetap(1)**2 )
-           if(no_Maran.eq.0) then
+           if(solve_T.eq.1) then
               Teta(1) = -3.0_rk*Tsol(globalNM(i,3)) + 4.0_rk*Tsol(globalNM(i,6)) - Tsol(globalNM(i,9))
               gradT(1) = -Teta(1)/sqrt( retap(1)**2+zetap(1)**2 )
            end if
@@ -415,7 +415,7 @@ subroutine variable_cal
            retap(2) = rcoordinate(globalNM(i,3)) - 4.0_rk*rcoordinate(globalNM(i,6)) + 3.0_rk*rcoordinate(globalNM(i,9))
            zetap(2) = zcoordinate(globalNM(i,3)) - 4.0_rk*zcoordinate(globalNM(i,6)) + 3.0_rk*zcoordinate(globalNM(i,9))
            v_surf(2) = ( usol(globalNM(i,9))*retap(2) + vsol(globalNM(i,9))*zetap(2) ) /sqrt( retap(2)**2+zetap(2)**2 )
-           if(no_Maran.eq.0) then
+           if(solve_T.eq.1) then
               Teta(2) = Tsol(globalNM(i,3)) - 4.0_rk*Tsol(globalNM(i,6)) + 3.0_rk*Tsol(globalNM(i,9))
               gradT(2) = -Teta(2)/sqrt( retap(2)**2+zetap(2)**2 )
            end if
@@ -433,15 +433,15 @@ subroutine variable_cal
            !       eta3 = (eta1+eta2)/2.0_rk
            !       retap(3) = 0.0_rk
            !       zetap(3) = 0.0_rk
-           !       if(no_Maran.eq.0) Teta(3) = 0.0_rk
+           !       if(solve_T.eq.1) Teta(3) = 0.0_rk
            !       zsolp = 0.0_rk
            !       do j = 1, 3
            !          retap(3) = retap(3) + rcoordinate(globalNM(i,3*j))*phiix_1d(eta3,j)
            !          zetap(3) = zetap(3) + zcoordinate(globalNM(i,3*j))*phiix_1d(eta3,j)
-           !          if(no_Maran.eq.0) Teta(3) = Teta(3) + Tsol(globalNM(i,3*j))*phiix_1d(eta3,j)
+           !          if(solve_T.eq.1) Teta(3) = Teta(3) + Tsol(globalNM(i,3*j))*phiix_1d(eta3,j)
            !          zsolp = zsolp + zcoordinate(globalNM(i,3*j))*phii_1d(eta3,j)
            !       end do
-           !       if(no_Maran.eq.0) gradT(3) = -Teta(3)/sqrt( retap(3)**2+zetap(3)**2 )
+           !       if(solve_T.eq.1) gradT(3) = -Teta(3)/sqrt( retap(3)**2+zetap(3)**2 )
            !       dPdr(3) = ( psol(globalNM(i,9)) - psol(globalNM(i,3)) ) /retap(3)
            !       v_surf_p(3) = -0.5_rk*dPdr(3)*zsolp + beta*gradT(3)
            !       if( v_surf_p(3) * v_surf_p(1) .lt. 0.0_rk ) then
@@ -501,7 +501,7 @@ subroutine variable_cal
 
 
            !grad(T) direction change
-           if(no_Maran.eq.0) then
+           if(solve_T.eq.1) then
               if( gradT(1) * gradT(2) .lt. 0.0_rk .and. (i.ne.top_element .and. i.ne.CL_element) ) then  
                  eta1 = 0.0_rk
                  eta2 = 1.0_rk

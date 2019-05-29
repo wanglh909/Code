@@ -311,7 +311,7 @@ intRv_z_V(k,l) = intRv_z_V(k,l) + Re*phi(k,l,i)* Grav *rintfac(k,l,id)* Jp_z(k,l
         !(cooling & accumulation) on free surface, no volume integral
         if( BCflagN( globalNM(m,i), 3 ).ne.1 .and. BCflagN( globalNM(m,i), 3 ).ne.3 ) then
 !------------------------------------------Rt-------------------------------------
-if(no_Maran.eq.0) then
+if(solve_T.eq.1) then
               
 !Rt_r_V
 if(Ttime.eq.1) &
@@ -382,7 +382,7 @@ if(Tdiff.eq.1) &
 intRt_T(k,l) = intRt_T(k,l) + ( phir(k,l,i,id)*phir(k,l,j,id) + phiz(k,l,i,id)*phiz(k,l,j,id) ) &
 *rintfac(k,l,id)*abs(Jp(k,l,id))
 
-end if !no_Maran.eq.0
+end if !solve_T.eq.1
 
 !------------------------------------------Rm------------------------------------- 
 !Rm_r_V
@@ -609,7 +609,7 @@ intRt_T(k,l) = intRt_T(k,l) + F0*( phir(k,l,i,id)*phir(k,l,j,id) + phiz(k,l,i,id
         if( BCflagN( globalNM(m,i), 3 ).eq.0 ) then  !(evaporation cooling & particle accumulation) on free surface, no volume integral
 
            
-          if(no_Maran.eq.0) then
+          if(solve_T.eq.1) then
              if( BCflagN( globalNM(m,i),2 ) .eq. 0 ) then
         sj(LNOPP(i)+NT,LNOPP(j)+Nr) = gaussian_quadrature(intRt_r_V)      ! sjRur(i,j) 
         sj(LNOPP(i)+NT,LNOPP(j)+Nz) = gaussian_quadrature(intRt_z_V)      ! sjRuz(i,j) 
@@ -650,7 +650,7 @@ intRt_T(k,l) = intRt_T(k,l) + F0*( phir(k,l,i,id)*phir(k,l,j,id) + phiz(k,l,i,id
         sj(LNOPP(i)+MDF(globalNM(m,i))-1,LNOPP(j)+MDF(globalNM(m,j))-1) = gaussian_quadrature(intRc_c)!sjRcr(i,j)
 
      else !VE = 5
-        if(no_Maran.eq.0) then
+        if(solve_T.eq.1) then
         if( VN(globalNM(m,i)) .eq. 5 ) then
            sj(LNOPP(i)+NTs,LNOPP(j)+Nr) = gaussian_quadrature(intRt_r_V)  ! sjRur(i,j) 
            sj(LNOPP(i)+NTs,LNOPP(j)+Nz) = gaussian_quadrature(intRt_z_V)  ! sjRuz(i,j) 
@@ -668,7 +668,7 @@ intRt_T(k,l) = intRt_T(k,l) + F0*( phir(k,l,i,id)*phir(k,l,j,id) + phiz(k,l,i,id
               sj(LNOPP(i)+NT,LNOPP(j)+NT) = gaussian_quadrature(intRt_T)/F0! sjRup(i,j)
            end if
         end if  !i condition
-        end if  !no_Maran.eq.0
+        end if  !solve_T.eq.1
      end if   !for  VE
 
   end if   !for s_mode=0
