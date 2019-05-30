@@ -127,18 +127,20 @@ if(VE(m).eq.0) then
               *rintfac(k,l,id)*abs(Jp(k,l,id))
       end if
       
-      if(cptime.eq.1) &
-           intRm_V(k,l) = intRm_V(k,l) + Pep*phi(k,l,i)*( cpdotintfac(k,l,id) &
-           - rdotintfac(k,l,id) *cprintfac(k,l,id)  - zdotintfac(k,l,id) *cpzintfac(k,l,id) ) &
-           *rintfac(k,l,id)*abs(Jp(k,l,id))
-      if(cpconv.eq.1) &
-           intRm_V(k,l) = intRm_V(k,l) + Pep*phi(k,l,i)*(  &
-           uintfac(k,l,id) *cprintfac(k,l,id) + vintfac(k,l,id) *cpzintfac(k,l,id) ) &
-           *rintfac(k,l,id)*abs(Jp(k,l,id))
-      if(cpdiff.eq.1) &
-           intRm_V(k,l) = intRm_V(k,l) + ( &
-           phir(k,l,i,id)*cprintfac(k,l,id) + phiz(k,l,i,id)*cpzintfac(k,l,id) ) &
-           *rintfac(k,l,id)*abs(Jp(k,l,id))
+      if(solve_cp.eq.1) then
+         if(cptime.eq.1) &
+              intRm_V(k,l) = intRm_V(k,l) + Pep*phi(k,l,i)*( cpdotintfac(k,l,id) &
+              - rdotintfac(k,l,id) *cprintfac(k,l,id)  - zdotintfac(k,l,id) *cpzintfac(k,l,id) ) &
+              *rintfac(k,l,id)*abs(Jp(k,l,id))
+         if(cpconv.eq.1) &
+              intRm_V(k,l) = intRm_V(k,l) + Pep*phi(k,l,i)*(  &
+              uintfac(k,l,id) *cprintfac(k,l,id) + vintfac(k,l,id) *cpzintfac(k,l,id) ) &
+              *rintfac(k,l,id)*abs(Jp(k,l,id))
+         if(cpdiff.eq.1) &
+              intRm_V(k,l) = intRm_V(k,l) + ( &
+              phir(k,l,i,id)*cprintfac(k,l,id) + phiz(k,l,i,id)*cpzintfac(k,l,id) ) &
+              *rintfac(k,l,id)*abs(Jp(k,l,id))
+      end if
 
    end if
 
@@ -189,7 +191,7 @@ end if    !for VE=0
                  sf(LNOPP(i)+NT) = gaussian_quadrature(intRt_V)/kR
               end if
            end if
-           sf(LNOPP(i)+Ncp) = gaussian_quadrature(intRm_V)
+           if(solve_cp.eq.1) sf(LNOPP(i)+Ncp) = gaussian_quadrature(intRm_V)
         end if
 
         if( PN( globalNM(m,i) ).eq.1 )  sf(LNOPP(i)+Np) = gaussian_quadrature(intRp)
@@ -322,7 +324,7 @@ if(no_vapor.eq.1) then  !flux:  flux(k,id)
 
    
    !particle accumulation 2
-   intRm_S(k) = intRsi_S(k) * cpintfac_right(k,id) 
+   if(solve_cp.eq.1) intRm_S(k) = intRsi_S(k) * cpintfac_right(k,id) 
 end if
 
 !KBC1
@@ -363,6 +365,7 @@ if(solve_T.eq.1) intRt_S(k) = intRt_S(k) - phi_1d(k,ipp) * ( &
       ) *rintfac_right(k,id) /Jp_right(k,id)
 
 !particle accumulation 1
+if(solve_cp.eq.1) &
 intRm_S(k) = intRm_S(k) + KBCgroup/Pep* ( phi_1d(k,ipp) * ( &
      -dcpdsi(k,id)* ( reta_right(k,id)**2 + zeta_right(k,id)**2 ) + &
      cpeta_right(k,id)* ( rsi_right(k,id)*reta_right(k,id) + zsi_right(k,id)*zeta_right(k,id) ) &
@@ -374,13 +377,13 @@ intRm_S(k) = intRm_S(k) + KBCgroup/Pep* ( phi_1d(k,ipp) * ( &
    sf(LNOPP(i)+Nu) = sf(LNOPP(i)+Nu) + gaussian_quadrature_1d(intRu_S)!/Ca
    sf(LNOPP(i)+Nv) = sf(LNOPP(i)+Nv) + gaussian_quadrature_1d(intRv_S)!/Ca
    if(solve_T.eq.1) sf(LNOPP(i)+NT) = sf(LNOPP(i)+NT) + gaussian_quadrature_1d(intRt_S)
-   sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + gaussian_quadrature_1d(intRm_S)
+   if(solve_cp.eq.1) sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + gaussian_quadrature_1d(intRm_S)
 
-   !debug lines
-   if(m.eq.81 .and. gaussian_quadrature_1d(intRm_S) .ne. gaussian_quadrature_1d(intRm_S)) then
-      write(*,*) 'Rsi', flux_f( angle_c,rintfac_right(1,id) ) ,angle_c,rintfac_right(1,id)
-      pause
-   end if
+   ! !debug lines
+   ! if(m.eq.81 .and. gaussian_quadrature_1d(intRm_S) .ne. gaussian_quadrature_1d(intRm_S)) then
+   !    write(*,*) 'Rsi', flux_f( angle_c,rintfac_right(1,id) ) ,angle_c,rintfac_right(1,id)
+   !    pause
+   ! end if
    
 end if
 
@@ -407,12 +410,12 @@ intRsi_S(k) = phi_1d(k,ipp)*( &
 if(solve_T.eq.1) intRt_S(k) = REH* intRsi_S(k)
 
 !particle accumulation 2
-intRm_S(k) = intRsi_S(k) * cpintfac_right(k,id)
+if(solve_cp.eq.1) intRm_S(k) = intRsi_S(k) * cpintfac_right(k,id)
 
    end do
       sf(LNOPP(i)+Nr) = sf(LNOPP(i)+Nr) + gaussian_quadrature_1d(intRsi_S)
       if(solve_T.eq.1) sf(LNOPP(i)+NT) = sf(LNOPP(i)+NT) + gaussian_quadrature_1d(intRt_S)
-      sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + gaussian_quadrature_1d(intRm_S)
+      if(solve_cp.eq.1) sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + gaussian_quadrature_1d(intRm_S)
 end if  !free surface nodes
 end if  !solve for vapor
 

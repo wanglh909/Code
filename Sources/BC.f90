@@ -114,7 +114,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
      end if
      
      ! !maximum packing
-     ! if( pack_flag( globalNM(m,i) ).eq.1 ) then  
+     ! if( solve_cp.eq.1 .and. pack_flag( globalNM(m,i) ).eq.1 ) then  
      ! if( VE(m).eq.0 ) then
      !    do i = 1, 9    
      !       j = LNOPP(i) + Ncp     !The location of Rcp(i) in locRes
@@ -334,7 +334,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
 
   
   !for the initial stage when stability hasn't been set up, make variable cp not change
-  if( s_mode.eq.0 .and. init_stability.eq.0 ) then     
+  if( solve_cp.eq.1 .and. s_mode.eq.0 .and. init_stability.eq.0 ) then  
      if( VE(m).eq.0 ) then
         do i = 1, 9    
            j = LNOPP(i) + Ncp     !The location of Rcp(i) in locRes

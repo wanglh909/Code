@@ -53,10 +53,12 @@ if(diverge.eq.0) then
                     var = 'v'
                  end if
                  !skip calculating cp change?
+                 if(solve_cp.eq.1) then
                  if (ABS( sol(NOPP(i)+Ncp) - solpred(NOPP(i)+Ncp) )/cpmax .gt.trunerr) then
                     trunerr = ABS( sol(NOPP(i)+Ncp) - solpred(NOPP(i)+Ncp) ) /cpmax
                     imax = i
                     var = 'cp'
+                 end if
                  end if
                  
                  ! if(PN(i).eq.1) then    ! skip calculating P change

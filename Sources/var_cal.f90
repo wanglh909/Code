@@ -82,7 +82,7 @@ subroutine variable_cal
         do j = 1, 9
            rlocal(j,1) = rcoordinate( globalNM(i,j) )
            zlocal(j,1) = zcoordinate( globalNM(i,j) )
-           cplocal(j,1) = cpsol( globalNM(i,j) )
+           if(solve_cp.eq.1) cplocal(j,1) = cpsol( globalNM(i,j) )
         end do
         do k = 1, Ng, 1
            do l = 1, Ng, 1
@@ -94,7 +94,8 @@ subroutine variable_cal
               cpintfac = 0.0_rk
               do n = 1, 9, 1
                  rintfac = rintfac + rlocal(n,1)*phi(k,l,n)
-                 cpintfac = cpintfac + cplocal(n,1)*phi(k,l,n)
+                 if(solve_cp.eq.1) &
+                      cpintfac = cpintfac + cplocal(n,1)*phi(k,l,n)
                  rsi = rsi + rlocal(n,1)*phisi(k,l,n)
                  reta = reta + rlocal(n,1)*phieta(k,l,n)
                  zsi = zsi + zlocal(n,1)*phisi(k,l,n)
@@ -102,25 +103,29 @@ subroutine variable_cal
               end do
               !define Jp(3,3)
               Jp =  rsi*zeta - reta*zsi
-              intMass(k,l) = cpintfac * rintfac * abs( Jp )
+              if(solve_cp.eq.1) &
+                   intMass(k,l) = cpintfac * rintfac * abs( Jp )
               intVol(k,l) = rintfac * abs( Jp )
            end do
         end do
-        particle_m = particle_m + gaussian_quadrature(intMass)
+        if(solve_cp.eq.1) &
+             particle_m = particle_m + gaussian_quadrature(intMass)
         volume1 = volume1 + gaussian_quadrature(intVol)
         if(timestep.eq.1) volume0 = volume1
      end do
      ! write(*,*) 'particle mass', particle_m
 
      !write particle mass
-     if(timestep.eq.0) then
-        open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'replace')
-        write(31, '(A)') 'variables = "contact angle", "m", "time" '
-     else
-        open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'old', access = 'append')
+     if(solve_cp.eq.1) then
+        if(timestep.eq.0) then
+           open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'replace')
+           write(31, '(A)') 'variables = "contact angle", "m", "time" '
+        else
+           open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'old', access = 'append')
+        end if
+        write(31, '(3es15.7)') angle_c, particle_m, time
+        close(31)
      end if
-     write(31, '(3es15.7)') angle_c, particle_m, time
-     close(31)
 
      ! !write drop volume
      ! write(*,*) 'drop volume', volume1, 'particle mass limit', volume1*(cpmax+1.0_rk)
@@ -139,18 +144,20 @@ subroutine variable_cal
 
 
   ! radial particle mass
-  if(timestep.ge.10 .and. mod(timestep,graph_step).eq.0) then
-     if(angle_c_degree.le.angle_int) then
-        if(real(int(angle_c_degree),rk) .eq. angle_c_degree) then
-           angle_int = angle_c_degree - 1.0_rk
-        else
-           angle_int = real(int(angle_c_degree),rk)
+  if(solve_cp.eq.1) then
+     if(timestep.ge.10 .and. mod(timestep,graph_step).eq.0) then
+        if(angle_c_degree.le.angle_int) then
+           if(real(int(angle_c_degree),rk) .eq. angle_c_degree) then
+              angle_int = angle_c_degree - 1.0_rk
+           else
+              angle_int = real(int(angle_c_degree),rk)
+           end if
+           ! if(timestep.ge.1) then
+           radial_cal_time = radial_cal_time + 1
+           call radial_accumulation
+           !       pause
+           ! end if
         end if
-  ! if(timestep.ge.1) then
-        radial_cal_time = radial_cal_time + 1
-        call radial_accumulation
-  !       pause
-  ! end if
      end if
   end if
            
@@ -221,16 +228,18 @@ subroutine variable_cal
         end if
      end if
 
-     if(timestep.eq.1) then 
-        open(unit = 113, file = trim(folder)//'cp_surface.dat', status = 'replace')    
-     else
-        open(unit = 113, file = trim(folder)//'cp_surface.dat', status = 'old', access = 'append')
-     end if
+     if(solve_cp.eq.1) then
+        if(timestep.eq.1) then 
+           open(unit = 113, file = trim(folder)//'cp_surface.dat', status = 'replace')    
+        else
+           open(unit = 113, file = trim(folder)//'cp_surface.dat', status = 'old', access = 'append')
+        end if
 
-     if(timestep.eq.1) then 
-        open(unit = 114, file = trim(folder)//'normalized_cp_surface.dat', status = 'replace')    
-     else
-        open(unit = 114, file = trim(folder)//'normalized_cp_surface.dat', status = 'old', access = 'append')
+        if(timestep.eq.1) then 
+           open(unit = 114, file = trim(folder)//'normalized_cp_surface.dat', status = 'replace')    
+        else
+           open(unit = 114, file = trim(folder)//'normalized_cp_surface.dat', status = 'old', access = 'append')
+        end if
      end if
 
 
@@ -245,28 +254,32 @@ subroutine variable_cal
            end do
         end if
 
-        write(113, '(A)') 'variables = "r", "cp"'
-        write(113, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
-        do i = 1, NTN
-           if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) )  &
-              write(113,'(2es15.7)')  rcoordinate(i), cpsol(i)
-        end do
+        if(solve_cp.eq.1) then
+           write(113, '(A)') 'variables = "r", "cp"'
+           write(113, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
+           do i = 1, NTN
+              if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) )  &
+                   write(113,'(2es15.7)')  rcoordinate(i), cpsol(i)
+           end do
+
+           cp_average = volume0/volume1
+           print *, 'cp_average', cp_average
+           write(114, '(A)') 'variables = "r", "cp"'
+           write(114, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
+           do i = 1, NTN
+              if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) )  &
+                   write(114,'(2es15.7)')  rcoordinate(i), cpsol(i)/cp_average
+           end do
+        end if !solve_cp.eq.1
         
-        cp_average = volume0/volume1
-        print *, 'cp_average', cp_average
-        write(114, '(A)') 'variables = "r", "cp"'
-        write(114, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
-        do i = 1, NTN
-           if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) )  &
-              write(114,'(2es15.7)')  rcoordinate(i), cpsol(i)/cp_average
-        end do
-        
-     end if
+     end if!write data every several timestep
 
      
      if(solve_T.eq.1) close(13)
-     close(113)
-     close(114)
+     if(solve_cp.eq.1) then
+        close(113)
+        close(114)
+     end if
 
   end if  !timestep.ne.0
 
@@ -696,16 +709,16 @@ subroutine variable_cal
 !   deallocate(flux, flux1, Dflux)
 
 
-
-
-  !flag to judge if maximum packing everywhere
-  pack_condition = 1.0_rk
-  do i = 1, NTN
-     if(pack_flag(i).eq.2) cycle
-     pack_condition = pack_condition * real(pack_flag(i),rk)
-     if(pack_condition.eq.0.0_rk) exit
-  end do
-     
+  
+  if(solve_cp.eq.1) then
+     !flag to judge if maximum packing everywhere
+     pack_condition = 1.0_rk
+     do i = 1, NTN
+        if(pack_flag(i).eq.2) cycle
+        pack_condition = pack_condition * real(pack_flag(i),rk)
+        if(pack_condition.eq.0.0_rk) exit
+     end do
+  end if
 
 
   

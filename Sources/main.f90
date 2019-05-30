@@ -45,6 +45,8 @@ program main
   ! no_Maran = 0  !1: no Marangoni stress
   Maran_flow = 1
   fixed_Ma = 1  !does not matter if Maran_flow = 0
+  !option to solve cp
+  solve_cp = 0
   !set terms option
   NStrans = 0
   Inert = 0
@@ -104,20 +106,35 @@ program main
   
   if(substrate.eq.0.0_rk) NES = 0
 
-  !Solving T or not affects the value of NNVar1, Nu, Nv, Ncp, Np
-  if(solve_T.eq.0) then
-     NNVar1 = 6  !not solve T
-     Nu = 2
-     Nv = 3
-     Ncp = 4
-     Np = 5
-  else
-     NNVar1 = 7   !solve T
-     Nu = 3
-     Nv = 4
-     Ncp = 5
-     Np = 6
+  !Solving T&cp or not affects the value of NNVar1, Nu, Nv, Ncp, Np     
+  if(solve_cp.eq.1) then
+     if(solve_T.eq.0) then
+        NNVar1 = 6  !not solve T
+        Nu = 2
+        Nv = 3
+        Ncp = 4
+        Np = 5
+     else
+        NNVar1 = 7   !solve T
+        Nu = 3
+        Nv = 4
+        Ncp = 5
+        Np = 6
+     end if
+  else  !solve_cp.eq.0
+     if(solve_T.eq.0) then
+        NNVar1 = 5  !not solve T
+        Nu = 2
+        Nv = 3
+        Np = 4
+     else
+        NNVar1 = 6   !solve T
+        Nu = 3
+        Nv = 4
+        Np = 5
+     end if
   end if
+     
 
 !-----------------------------------calculation start--------------------------------------
 

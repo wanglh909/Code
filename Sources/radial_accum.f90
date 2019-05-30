@@ -30,7 +30,7 @@ subroutine radial_accumulation
   dr3 = 0.0002_rk
   dr4 = 0.00005_rk
   do while (rlocation.lt.1.0_rk-0.00006_rk)
-     z_surf = sqrt( (1.0_rk/sin(angle_c))**2 - rlocation**2 ) - 1.0_rk/tan(angle_c)
+     z_surf = sqrt( (1.0_rk/sin(angle_c))**2 - rlocation**2 ) - 1.0_rk/tan(angle_c)  !you may want to change the way z_surf is calculated.?? figure out the real z_surf from surface element.
      dzfix = z_surf/real(divide,rk)
      dz = dzfix
      dz(1) = 0.3_rk*dzfix
@@ -40,7 +40,7 @@ subroutine radial_accumulation
      dz(4:2*NEL-3) = dzrest
      dz(2*NEL-2) = dz(3)
      dz(2*NEL-1) = dz(2)
-     dz(2*NEL) = dz(1)*0.9_rk
+     dz(2*NEL) = dz(1)*0.8_rk
 
      zaccum = 0.0_rk
      do k = 1, divide

@@ -356,7 +356,7 @@ close(10)
         sol( NOPP(i) + Nu ) = usol(i)
         sol( NOPP(i) + Nv ) = vsol(i)
         if(solve_T.eq.1) sol( NOPP(i) + NT ) = Tsol(i)
-        sol( NOPP(i) + Ncp ) = cpsol(i)
+        if(solve_cp.eq.1) sol( NOPP(i) + Ncp ) = cpsol(i)
         if ( PN(i).eq.1 )  then
            sol( NOPP(i) + Np ) = psol(i)
         end if

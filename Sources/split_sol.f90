@@ -33,12 +33,14 @@ subroutine split_sol
      !the contact line
      if( BCflagN(i,3).eq.3 )  sol( NOPP(i) + Nr ) = R!1.0_rk
 
+     if(solve_cp.eq.1) then
      ! !maximum packing
      ! if(pack_flag(i).eq.1) sol(NOPP(i) + Ncp) = cp_pack
-
      
      !for the initial stage when stability hasn't been set up, cp not change
      if( init_stability.eq.0 .and. ( VN(i).eq.0 .or. VN(i).eq.2 ) ) sol(NOPP(i) + Ncp) = 1.0_rk
+
+     end if !solve_cp.eq.1
 
      
      !substrate base
@@ -75,7 +77,7 @@ subroutine split_sol
            if( VN(i).eq.0 .or. VN(i).eq.2 ) then           
               usol(i) = sol( NOPP(i) + Nu ) 
               vsol(i) = sol( NOPP(i) + Nv ) 
-              cpsol(i) = sol( NOPP(i) + Ncp ) 
+              if(solve_cp.eq.1) cpsol(i) = sol( NOPP(i) + Ncp ) 
               if ( PN(i).eq.1 )     psol(i) = sol( NOPP(i) + Np ) 
            end if
         end if

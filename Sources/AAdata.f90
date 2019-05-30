@@ -145,7 +145,7 @@ module data
   real(kind=rk):: diameterp, Dp, Pep, kboltz = 1.3806485279e-23 !(J/K)    
 
 
-  integer(kind=ik):: Maran_flow, solve_T, fixed_Ma
+  integer(kind=ik):: Maran_flow, solve_T, fixed_Ma, solve_cp
 
   integer(kind=ik):: init_stability, timestep_stable, radial_cal_time
   

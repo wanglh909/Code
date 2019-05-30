@@ -234,22 +234,25 @@ contains
        !write headlines
        if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
           if(Nregion.eq.1) then
-             if(solve_T.eq.1) then
-                write(11, '(A)') 'variables = "r", "z", "u", "v", "cp", "cpN", "cp_flag", "T"'
-             else
-                write(11, '(A)') 'variables = "r", "z", "u", "v", "cp", "cpN", "cp_flag"'
-             end if
+             write(11,'(A)',advance='no') 'variables = "r", "z", "u", "v"'
+             if(solve_cp.eq.1) &
+                write(11,'(A)',advance='no') ', "cp", "cpN", "cp_flag"'
+             if(solve_T.eq.1) &
+                  write(11, '(A)',advance='no') ', "T"'
+             write(11,'(A)') ', "p"'
              ! write(11, '(A,es13.6,A)') 'DATASETAUXDATA Umax = "', umax, '"'
              ! write(11, '(A,es13.6,A)') 'DATASETAUXDATA Vmax = "', vmax, '"'
 
-             write(11,202) 'Zone T = "step:', step_indicator, &!', RGN: ', Nregion, &
+             write(11,202,advance='no') 'Zone T = "step:', step_indicator, &!', RGN: ', Nregion, &
                   '", STRANDID = 1, SOLUTIONTIME =', time_indicator, &
                   ', Datapacking = Point, Zonetype = FEQuadrilateral, N =', Nnode, ', E =', Nele, &
                   ', DT = (double,double,double,double,double,double), &
                   AUXDATA angle = "',angle_c_degree, '", AUXDATA UMAX = "', umax, '", &
-                  AUXDATA VMAX = "', vmax, '", AUXDATA ZTOP = "', ztop, '", &
-                  AUXDATA CP0 = "', cp_average, '"'
-202    format(A,i8,A,es14.7,A,i8,A,i8,A, f7.3, A,es13.6,A,es13.6,A,ES13.6,A,ES13.6,A)
+                  AUXDATA VMAX = "', vmax, '", AUXDATA ZTOP = "', ztop, '"'
+             if(solve_cp.eq.1) write(11,'(A,ES13.6,A)',advance='no') &
+                  ', AUXDATA CP0 = "', cp_average, '"'
+             write(11,'(A)') ''
+202    format(A,i8,A,es14.7,A,i8,A,i8,A, f7.3, A,es13.6,A,es13.6,A,ES13.6,A)
              zone_d = zone_d + 1
 
           end if
@@ -292,13 +295,18 @@ contains
 
           if(.not.(diverge.eq.1 .and. graph_mode.eq.1)) then
              if(Nregion.eq.1) then
-                if(solve_T.eq.1) then
-                   write(11,'(6es15.7,i4,es15.7)') rcoordinate(i), zcoordinate(i), &
-                        usol(i), vsol(i), cpsol(i), cpsol(i)/cp_average, pack_flag(i), Tsol(i)
-                else
-                   write(11,'(6es15.7,i4)') rcoordinate(i), zcoordinate(i), &
-                        usol(i), vsol(i), cpsol(i), cpsol(i)/cp_average, pack_flag(i)
-                end if
+                write(11,'(4es15.7)',advance='no') &
+                     rcoordinate(i), zcoordinate(i), usol(i), vsol(i)
+                if(solve_cp.eq.1) write(11,'(2es15.7,i4)',advance='no') &
+                     cpsol(i), cpsol(i)/cp_average, pack_flag(i)
+                if(solve_T.eq.1) write(11,'(es15.7)',advance='no') Tsol(i)
+                write(11,'(es15.7)') psol(i)                ! if(solve_T.eq.1) then
+                !    write(11,'(6es15.7,i4,es15.7)') rcoordinate(i), zcoordinate(i), &
+                !         usol(i), vsol(i), cpsol(i), cpsol(i)/cp_average, pack_flag(i), Tsol(i)
+                ! else
+                !    write(11,'(6es15.7,i4)') rcoordinate(i), zcoordinate(i), &
+                !         usol(i), vsol(i), cpsol(i), cpsol(i)/cp_average, pack_flag(i)
+                ! end if
              end if
              if( (Nregion.eq.1 .or. Nregion.eq.3) .and. solve_T.eq.1 ) then
                 write(12,'(7es15.7)') rcoordinate(i), zcoordinate(i), Tsol(i)

@@ -24,7 +24,7 @@ subroutine values_in_an_element(m,id)
            ulocal(j,id) = sol( NOPP( globalNM(m,j) ) + Nu )
            vlocal(j,id) = sol( NOPP( globalNM(m,j) ) + Nv )  
            if(solve_T.eq.1) Tlocal(j,id) = sol( NOPP( globalNM(m,j) ) + NT ) 
-           cplocal(j,id) = sol( NOPP( globalNM(m,j) ) + Ncp )
+           if(solve_cp.eq.1) cplocal(j,id) = sol( NOPP( globalNM(m,j) ) + Ncp )
            if( PN( globalNM(m,j) ) .eq. 1 )  plocal(j,id) = sol( NOPP( globalNM(m,j) ) + Np )   ! plocal(2, 4, 5, 6, 8) remain unchanged
 
            rdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Nr )
@@ -32,7 +32,7 @@ subroutine values_in_an_element(m,id)
            udotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Nu )
            vdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Nv )
            if(solve_T.eq.1) Tdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + NT )
-           cpdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Ncp )
+           if(solve_cp.eq.1) cpdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Ncp )
         else if( VE(m).eq.1 ) then
            clocal(j,id) = sol( NOPP( globalNM(m,j) ) + MDF( globalNM(m,j) ) - 1 )
         else  !VE = 5
@@ -127,8 +127,10 @@ subroutine values_in_an_element(m,id)
                     Trintfac(k,l,id) = Trintfac(k,l,id) +  Tlocal(n,id)*phir(k,l,n,id)
                     Tzintfac(k,l,id) = Tzintfac(k,l,id) +  Tlocal(n,id)*phiz(k,l,n,id)
                  end if
-                 cprintfac(k,l,id) = cprintfac(k,l,id) +  cplocal(n,id)*phir(k,l,n,id)
-                 cpzintfac(k,l,id) = cpzintfac(k,l,id) +  cplocal(n,id)*phiz(k,l,n,id)
+                 if(solve_cp.eq.1) then
+                    cprintfac(k,l,id) = cprintfac(k,l,id) +  cplocal(n,id)*phir(k,l,n,id)
+                    cpzintfac(k,l,id) = cpzintfac(k,l,id) +  cplocal(n,id)*phiz(k,l,n,id)
+                 end if
                  pintfac(k,l,id) =  pintfac(k,l,id) +  plocal(n,id)*psi(k,l,n)
 
                  rdotintfac(k,l,id) = rdotintfac(k,l,id) + rdotlocal(n,id)*phi(k,l,n)
@@ -136,7 +138,7 @@ subroutine values_in_an_element(m,id)
                  udotintfac(k,l,id) = udotintfac(k,l,id) + udotlocal(n,id)*phi(k,l,n)
                  vdotintfac(k,l,id) = vdotintfac(k,l,id) + vdotlocal(n,id)*phi(k,l,n)
                  if(solve_T.eq.1)  Tdotintfac(k,l,id) = Tdotintfac(k,l,id) + Tdotlocal(n,id)*phi(k,l,n)
-                 cpdotintfac(k,l,id) = cpdotintfac(k,l,id) + cpdotlocal(n,id)*phi(k,l,n)
+                 if(solve_cp.eq.1) cpdotintfac(k,l,id) = cpdotintfac(k,l,id) + cpdotlocal(n,id)*phi(k,l,n)
               end do
 
            end do

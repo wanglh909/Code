@@ -2,7 +2,7 @@ subroutine parameter_values
   use kind
   use data, only: Re, Ca, Kdi, Pe, KBCgroup, REH, beta, Oh, Grav, MaN, R, Hum, F0, kR, folder, substrate, outer, &
        NStrans, Inert, Capil, Viscous, GravI, Ttime, Tconv, Tdiff, TtimeS, TdiffS, NEM, NEL, NES, NEV, NEM_alge, T_sub, uniflux, &
-       diameterp, Pep, kboltz, pi, solve_T, Maran_flow, fixed_Ma, cp_pack, Dp, no_vapor
+       diameterp, Pep, kboltz, pi, solve_T, Maran_flow, fixed_Ma, cp_pack, Dp, no_vapor, solve_cp
   implicit none
 
   integer(kind=ik):: Ltype !, water, octane, hexanol
@@ -155,6 +155,7 @@ subroutine parameter_values
   write(10,'(A, i8)') 'uniflux =', uniflux
   write(10,'(A, i8)') 'solve_T =', solve_T
   write(10,'(A, i8)') 'Maran_flow =', Maran_flow
+  write(10,'(A, i8)') 'solve_cp =', solve_cp
 
   write(10,'(A)') ' '
 
