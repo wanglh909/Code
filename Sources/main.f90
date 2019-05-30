@@ -44,10 +44,10 @@ program main
   
   ! no_Maran = 0  !1: no Marangoni stress
   Maran_flow = 1
-  solve_T = 1
+  fixed_Ma = 1  !does not matter if Maran_flow = 0
   !set terms option
-  NStrans = 1
-  Inert = 1
+  NStrans = 0
+  Inert = 0
   Capil = 1
   Viscous = 1
   GravI = 1

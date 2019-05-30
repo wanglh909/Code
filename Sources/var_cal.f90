@@ -138,7 +138,7 @@ subroutine variable_cal
 
 
 
-  !radial particle mass
+  ! radial particle mass
   if(timestep.ge.10 .and. mod(timestep,graph_step).eq.0) then
      if(angle_c_degree.le.angle_int) then
         if(real(int(angle_c_degree),rk) .eq. angle_c_degree) then

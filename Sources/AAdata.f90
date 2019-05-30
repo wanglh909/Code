@@ -13,7 +13,7 @@ module data
 
   
   real(kind=rk):: R, outer, substrate
-  real(kind=rk):: Re, Ca, Oh, Grav, Kdi, KBCgroup, Pe, REH, beta, F0, kR
+  real(kind=rk):: Re, Ca, Oh, Grav, Kdi, KBCgroup, Pe, REH, beta, F0, kR, MaN !Marangoni number (MaN)
 
   integer(kind=ik):: NEL, NEM, NEV, NES, NNX34, NNX3456, NNXV, NNR1278, NNR1278p, iBW,iBW1,iBW2
   !NVar: Number of Variables   !NNX: number of nodes in r (abscissa)   
@@ -145,7 +145,7 @@ module data
   real(kind=rk):: diameterp, Dp, Pep, kboltz = 1.3806485279e-23 !(J/K)    
 
 
-  integer(kind=ik):: Maran_flow, solve_T
+  integer(kind=ik):: Maran_flow, solve_T, fixed_Ma
 
   integer(kind=ik):: init_stability, timestep_stable, radial_cal_time
   

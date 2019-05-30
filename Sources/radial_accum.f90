@@ -116,7 +116,9 @@ subroutine radial_accumulation
               !pause
               exit
            else if(eleN.eq.NTE) then
-              print *, 'did not find an element for this r,z', rlocation, zlocation, 'zdivideNum k', k
+              print *, 'did not find an element for this r,z', rlocation,&
+                   zlocation, 'z_surf', x(1:4), y(1:4), zcoordinate(NTN),&
+                   z_surf, 'zdivideNum k', k
               pause
            end if
            

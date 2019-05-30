@@ -335,13 +335,26 @@ intRsi_S(k) = intRsi_S(k) + KBCgroup* ( phi_1d(k,ipp)* &
 intRu_S(k) = ( reta_right(k,id)*phix_1d(k,ipp) / ( reta_right(k,id)**2 + zeta_right(k,id)**2 ) &
      + phi_1d(k,ipp)/rintfac_right(k,id) )*rintfac_right(k,id)* &
      ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk
-  if(Maran_flow.eq.1) intRu_S(k) = intRu_S(k) - phi_1d(k,ipp) *beta *Teta_right(k,id)* &
-       ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) *reta_right(k,id)*rintfac_right(k,id)
+if(Maran_flow.eq.1) then
+   if(fixed_Ma.eq.0) then
+      intRu_S(k) = intRu_S(k) - phi_1d(k,ipp) *beta *Teta_right(k,id)* &
+           ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) *reta_right(k,id)*rintfac_right(k,id)
+   else !fixed_Ma.eq.1
+      intRu_S(k) = intRu_S(k) + Ca*MaN*phi_1d(k,ipp)*reta_right(k,id)*rintfac_right(k,id)
+   end if  !fixed_Ma
+end if  !Maran_flow
+
 
 intRv_S(k) = zeta_right(k,id)*phix_1d(k,ipp) / &
      ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk *rintfac_right(k,id)
-  if(Maran_flow.eq.1) intRv_S(k) = intRv_S(k) - phi_1d(k,ipp) *beta *Teta_right(k,id)* &
-       ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) *zeta_right(k,id)*rintfac_right(k,id)
+if(Maran_flow.eq.1) then
+   if(fixed_Ma.eq.0) then
+      intRv_S(k) = intRv_S(k) - phi_1d(k,ipp) *beta *Teta_right(k,id)* &
+           ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) *zeta_right(k,id)*rintfac_right(k,id)
+   else !fixed_Ma.eq.1
+      intRu_S(k) = intRu_S(k) + Ca*MaN*phi_1d(k,ipp)*zeta_right(k,id)*rintfac_right(k,id)
+   end if  !fixed_Ma
+end if  !Maran_flow
 
 !evaporative cooling 1
 if(solve_T.eq.1) intRt_S(k) = intRt_S(k) - phi_1d(k,ipp) * ( &

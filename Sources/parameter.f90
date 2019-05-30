@@ -1,8 +1,8 @@
 subroutine parameter_values
   use kind
-  use data, only: Re, Ca, Kdi, Pe, KBCgroup, REH, beta, Oh, Grav, R, Hum, F0, kR, folder, substrate, outer, &
+  use data, only: Re, Ca, Kdi, Pe, KBCgroup, REH, beta, Oh, Grav, MaN, R, Hum, F0, kR, folder, substrate, outer, &
        NStrans, Inert, Capil, Viscous, GravI, Ttime, Tconv, Tdiff, TtimeS, TdiffS, NEM, NEL, NES, NEV, NEM_alge, T_sub, uniflux, &
-       diameterp, Pep, kboltz, pi, solve_T, Maran_flow, cp_pack, Dp, no_vapor
+       diameterp, Pep, kboltz, pi, solve_T, Maran_flow, fixed_Ma, cp_pack, Dp, no_vapor
   implicit none
 
   integer(kind=ik):: Ltype !, water, octane, hexanol
@@ -12,6 +12,13 @@ subroutine parameter_values
   outer = 1.3_rk    !10.0_rk!   20.0_rk, 1.3_rk
 
   Ltype = 1
+
+  !solve_T
+  if(Maran_flow.eq.1 .and. fixed_Ma.eq.0) then
+     solve_T = 1
+  else
+     solve_T = 0
+  end if
 
   !fluid
   select case(Ltype)
@@ -101,6 +108,7 @@ subroutine parameter_values
      !beta = 0.0_rk
      substrate = 0.0_rk
   end if
+  MaN = -beta0*Tc/(mu*vc)
 
   !change for equations
   Re = Re*Ca
@@ -121,6 +129,7 @@ subroutine parameter_values
   write(10,'(A, es14.7)') 'F0 =', F0
   write(10,'(A, es14.7)') 'kR =', kR
   write(10,'(A, es14.7)') 'Grav =', Grav
+  write(10,'(A, es14.7)') 'Ma =', MaN
   write(10,'(A, es14.7)') 'substrate =', substrate
   write(10,'(A, es14.7)') 'outer =', outer
   write(10,'(A, es14.7)') 'T_sub =', T_sub
@@ -156,8 +165,10 @@ subroutine parameter_values
   write(10,'(A, i8)') 'NEM_alge = ', NEM_alge
   if(no_vapor.eq.1) then
      write(10,'(A, i8)') 'rad_ele =', NEL*2+NES
+     write(10,'(A, i8)') 'total elements: ', NEL**2+2*NEL*NEM+NES*(NEM+NEL+NEV)
   else ! no_vapor=0
      write(10,'(A, i8)') 'rad_ele =', NEL*2+NES+NEV
+     ! write(10,'(A, i8)') 'total elements: '
   end if
 
   close(10)

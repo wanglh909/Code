@@ -293,10 +293,18 @@ intRu_r_S(k) = ( phix_1d(k,ipp)*phix_1d(k,jpp) / ( reta_right(k,id)**2 + zeta_ri
      *( phi_1d(k,jpp)*( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk + &
      rintfac_right(k,id) / ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk *reta_right(k,id)*phix_1d(k,jpp) )
 
- if(Maran_flow.eq.1) intRu_r_S(k) = intRu_r_S(k) - phi_1d(k,ipp) *beta *Teta_right(k,id)* ( &
-      -( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-1.5_rk) *reta_right(k,id)**2 *phix_1d(k,jpp) *rintfac_right(k,id) + &
-      ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) *&
-      ( phix_1d(k,jpp) *rintfac_right(k,id) + reta_right(k,id) *phi_1d(k,jpp) ) )
+
+if(Maran_flow.eq.1) then
+   if(fixed_Ma.eq.0) then
+   intRu_r_S(k) = intRu_r_S(k) - phi_1d(k,ipp) *beta *Teta_right(k,id)* ( &
+        -( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-1.5_rk) *reta_right(k,id)**2 *phix_1d(k,jpp) *rintfac_right(k,id) + &
+        ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) *&
+        ( phix_1d(k,jpp) *rintfac_right(k,id) + reta_right(k,id) *phi_1d(k,jpp) ) )
+   else !fixed_Ma.eq.1
+   intRu_r_S(k) = intRu_r_S(k) + Ca*MaN*phi_1d(k,ipp)* &
+        ( phix_1d(k,jpp) *rintfac_right(k,id) + reta_right(k,id) *phi_1d(k,jpp) )
+   end if !fixed_Ma
+end if  !Maran_flow
 
 intRu_z_S(k) = -reta_right(k,id)*phix_1d(k,ipp)*( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-1.5_rk) *&
      2.0_rk*zeta_right(k,id)*phix_1d(k,jpp)*rintfac_right(k,id) + &
@@ -304,33 +312,48 @@ intRu_z_S(k) = -reta_right(k,id)*phix_1d(k,ipp)*( reta_right(k,id)**2 + zeta_rig
      ( reta_right(k,id)*phix_1d(k,ipp) / ( reta_right(k,id)**2 + zeta_right(k,id)**2 ) + phi_1d(k,ipp)/rintfac_right(k,id) ) *&
      rintfac_right(k,id) / ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk *zeta_right(k,id)*phix_1d(k,jpp)
 
- if(Maran_flow.eq.1) intRu_z_S(k) = intRu_z_S(k) + phi_1d(k,ipp) *beta *Teta_right(k,id)* &
-      ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-1.5_rk)* &
-      zeta_right(k,id) *phix_1d(k,jpp) *reta_right(k,id) *rintfac_right(k,id) 
+if(Maran_flow.eq.1 .and. fixed_Ma.eq.0) then
+   intRu_z_S(k) = intRu_z_S(k) + phi_1d(k,ipp) *beta *Teta_right(k,id)* &
+        ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-1.5_rk)* &
+        zeta_right(k,id) *phix_1d(k,jpp) *reta_right(k,id) *rintfac_right(k,id) 
 
-if(Maran_flow.eq.1) intRu_T_S(k) = -phi_1d(k,ipp) *beta *phix_1d(k,jpp) * &
-      ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk)* reta_right(k,id) *rintfac_right(k,id) 
+   intRu_T_S(k) = -phi_1d(k,ipp) *beta *phix_1d(k,jpp) * &
+        ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk)* reta_right(k,id) *rintfac_right(k,id)
+end if   !Maran_flow.eq.1 .and. fixed_Ma.eq.0
 
 
 intRv_r_S(k) = zeta_right(k,id)*phix_1d(k,ipp)*&
      ( -( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-1.5_rk) *reta_right(k,id)*phix_1d(k,jpp)*rintfac_right(k,id) + &
      ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) *phi_1d(k,jpp) )
 
- if(Maran_flow.eq.1) intRv_r_S(k) = intRv_r_S(k) - phi_1d(k,ipp)*beta*Teta_right(k,id)*zeta_right(k,id)* ( &
+ if(Maran_flow.eq.1) then
+   if(fixed_Ma.eq.0) then
+   intRv_r_S(k) = intRv_r_S(k) - phi_1d(k,ipp)*beta*Teta_right(k,id)*zeta_right(k,id)* ( &
       -( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-1.5_rk) *reta_right(k,id) *phix_1d(k,jpp) *rintfac_right(k,id) + &
       ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) * phi_1d(k,jpp) )
-
+   else
+   intRv_r_S(k) = intRv_r_S(k) + Ca*MaN*phi_1d(k,ipp)*zeta_right(k,id)*phi_1d(k,jpp)
+   end if !fixed_Ma
+end if  !Maran_flow
+      
 
 intRv_z_S(k) = phix_1d(k,ipp)*phix_1d(k,jpp) / sqrt( reta_right(k,id)**2 + zeta_right(k,id)**2 ) *rintfac_right(k,id) - &
      zeta_right(k,id)**2 *phix_1d(k,ipp)*phix_1d(k,jpp) / ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**1.5_rk *rintfac_right(k,id)
 
- if(Maran_flow.eq.1) intRv_z_S(k) = intRv_z_S(k) - phi_1d(k,ipp) *beta *Teta_right(k,id)* ( &
+ if(Maran_flow.eq.1) then
+    if(fixed_Ma.eq.0) then
+       intRv_z_S(k) = intRv_z_S(k) - phi_1d(k,ipp) *beta *Teta_right(k,id)* ( &
       phix_1d(k,jpp) *( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) - &
       ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-1.5_rk)*zeta_right(k,id)**2 *phix_1d(k,jpp) ) &
       *rintfac_right(k,id) 
 
-if(Maran_flow.eq.1) intRv_T_S(k) = -phi_1d(k,ipp) *beta *phix_1d(k,jpp) * &
-      ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk)* zeta_right(k,id) *rintfac_right(k,id) 
+       intRv_T_S(k) = -phi_1d(k,ipp) *beta *phix_1d(k,jpp) * &
+            ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk)* zeta_right(k,id) *rintfac_right(k,id)
+    else  !fixed_Ma.eq.1
+       intRv_z_S(k) = intRv_z_S(k) + Ca*MaN*phi_1d(k,ipp)*phix_1d(k,jpp)*rintfac_right(k,id)
+    end if !fixed_Ma
+ end if !Maran_flow
+       
 
          end do
      
