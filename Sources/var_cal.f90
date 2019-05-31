@@ -18,7 +18,7 @@ subroutine variable_cal
   real(kind=rk):: Rp, angle_c_sphe, err_sphe, z_sphe
   real(kind=rk):: MaranD, gradP, peta, Teta(3), gradT(3)
   real(kind=rk):: p0, Pe_change
-  real(kind=rk):: t
+  real(kind=rk):: t, cut
   real(kind=rk):: v_surf_p(3), h_surf, dPdr(3), zsolp
   
   real(kind=rk):: particle_m, intMass(3,3), intVol(3,3), cpintfac, rintfac, Jp
@@ -112,7 +112,7 @@ subroutine variable_cal
              particle_m = particle_m + gaussian_quadrature(intMass)
         volume1 = volume1 + gaussian_quadrature(intVol)
         if(timestep.eq.1) volume0 = volume1
-     end do
+     end do !NTE
      ! write(*,*) 'particle mass', particle_m
 
      !write particle mass
@@ -123,7 +123,7 @@ subroutine variable_cal
         else
            open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'old', access = 'append')
         end if
-        write(31, '(3es15.7)') angle_c, particle_m, time
+        write(31, '(3es15.7)') angle_c_degree, particle_m, time
         close(31)
      end if
 
@@ -382,14 +382,18 @@ subroutine variable_cal
 
 
   !--------velocity direction change location on free surface & grad(T) direction------
+  !we only care about stagnation points and extremum points:
+  !1. after initial chaos are passed. viz. angle<40
+  !2. not too close to CL. viz. 1.0-r>cut
+  cut = 1.0e-4_rk
   if(timestep.gt.0) then
    
      if(solve_T.eq.1) then
         if(timestep.eq.1) then
-           open(unit = 18, file = trim(folder)//'surf_gradT_dir.dat', status = 'replace')
+           open(unit = 18, file = trim(folder)//'extremum.dat', status = 'replace')
            write(18, '(A)') 'variables = "contact angle", "r", "time", "element" '
         else
-           open(unit = 18, file = trim(folder)//'surf_gradT_dir.dat', status = 'old', access = 'append')
+           open(unit = 18, file = trim(folder)//'extremum.dat', status = 'old', access = 'append')
         end if
      end if
      
@@ -402,13 +406,15 @@ subroutine variable_cal
 
 
      if(timestep.eq.1) then
-        open(unit = 14, file = trim(folder)//'surf_flow_dir.dat', status = 'replace')
+        open(unit = 14, file = trim(folder)//'stagnation.dat', status = 'replace')
         write(14, '(A)') 'variables = "contact angle", "r", "time", "element" '
      else
-        open(unit = 14, file = trim(folder)//'surf_flow_dir.dat', status = 'old', access = 'append')
+        open(unit = 14, file = trim(folder)//'stagnation.dat', status = 'old', access = 'append')
      end if
 
-     r_change = 0.0_rk 
+     
+if(angle_c_degree.le.40.0_rk) then
+     r_change = 0.0_rk
      do i = 1, NTE
         if(BCflagE(i,3).eq.1) then  !surface element
            !the element where direction changes
@@ -505,7 +511,7 @@ subroutine variable_cal
                  r_change = r_change + rcoordinate(globalNM(i,3*j))*phii_1d(eta1,j)
               end do
 
-
+              if(1.0_rk-r_change.gt.cut) &
               write(14, '(f9.3,2es15.7,i6)') angle_c_degree, r_change, time, i
               !write(*,*) 'r_change for velocity =', r_change, 'element:', i
               ! exit   !?not strict
@@ -540,6 +546,8 @@ subroutine variable_cal
                     r_change = r_change + rcoordinate(globalNM(i,3*j))*phii_1d(eta1,j)
                  end do
 
+                 
+                 if(1.0_rk-r_change.gt.cut) &
                  write(18, '(f9.3,2es15.7,i4)') angle_c_degree, r_change, time, i
                  !write(*,*) 'r_change for gradT =', r_change, 'element:', i
                  ! exit   !?not strict
@@ -564,6 +572,8 @@ subroutine variable_cal
      !       exit   !?not strict
      !    end if
      ! end do
+     
+end if  !angle < 40.0_rk
 
      !check initial stability for init_stability, could be integrated with direction change calculation
      if(init_stability.eq.0) then

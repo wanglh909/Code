@@ -49,7 +49,7 @@ program main
   solve_cp = 0
   !set terms option
   NStrans = 1 !do not set this to 0, s.s. is not right for evaporation
-  Inert = 0
+  Inert = 1
   Capil = 1
   Viscous = 1
   GravI = 1
