@@ -13,7 +13,7 @@ subroutine initial_condition
        Rtemp, k, R11expand(vlayer+1), d, dmin, dmax, Tper
   real(kind=rk):: x1, x2, y2, x3, y3, x4, x5, y5, x6, y6, theta
 
-  integer(kind=ik):: NELp, NEMp, NEM_algep, NEVp
+  integer(kind=ik):: NELp, NEMp, NEM_algep, NEVp, NESp
   real(kind=rk):: outerp, substratep
 
   x = 0.005_rk  !the length of box region
@@ -43,8 +43,8 @@ subroutine initial_condition
 
   !judge if mesh condition same as 'Sources/elliptic_mesh.dat'
   open(10,file='Sources/elliptic_mesh.dat', Status ='old', action ='read') 
-  read(10,'(4i4,2es13.6)') NELp, NEMp, NEM_algep, NEVp, outerp, substratep
-  if(NEL.eq.NELp .and. NEM.eq.NEMp .and. NEM_alge.eq.NEM_algep .and. NEV.eq.NEVp .and. &
+  read(10,'(5i4,2es13.6)') NELp, NEMp, NEM_algep, NEVp, NESp, outerp, substratep
+  if(NEL.eq.NELp .and. NEM.eq.NEMp .and. NEM_alge.eq.NEM_algep .and. NEV.eq.NEVp .and. NES.eq.NESp .and. &
        outer.eq.outerp .and. substrate.eq.substratep ) then
      print *, 'mesh parameter same'
      read_coordinate_value = 1

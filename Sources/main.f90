@@ -25,7 +25,7 @@ program main
   NEL = 8    ! 15   ! input   
   NEM = 200  !input     !decide in data_folder
   NEV = 50 !200!     1000!  !input
-  NES = 5   !10!  30  !input
+  NES = 8!5   !10!  30  !input
   NEM_alge = int(real(NEM,rk)/20.0_rk*9.0_rk,ik)!90!450!90   !  135!NEM/3*2    !decide in data_folder
   
 !----------------------------------front settings-------------------------------------

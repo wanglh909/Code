@@ -35,7 +35,7 @@ write(*,*) 'write mesh'
         !store coordinate values to a file for future elliptic mesh
         if(read_coordinate_value.eq.0) then
            open(unit = 20, file = 'Sources/elliptic_mesh.dat', status = 'replace')
-           write(20,'(4i4,2es13.6)') NEL, NEM, NEM_alge, NEV, outer, substrate
+           write(20,'(5i4,2es13.6)') NEL, NEM, NEM_alge, NEV, NES, outer, substrate
            do i = 1, NTN
               write(20,'(2es15.7)') rcoordinate(i), zcoordinate(i)
            end do
