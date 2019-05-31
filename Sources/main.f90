@@ -44,7 +44,7 @@ program main
   
   ! no_Maran = 0  !1: no Marangoni stress
   Maran_flow = 1
-  fixed_Ma = 0  !does not matter if Maran_flow = 0
+  fixed_Ma = 1  !does not matter if Maran_flow = 0
   !option to solve cp
   solve_cp = 0
   !set terms option

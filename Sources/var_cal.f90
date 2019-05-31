@@ -6,6 +6,7 @@ subroutine variable_cal
   use Ldata, only: dcdsi, dcdeta, rsi_right, zsi_right, reta_right, zeta_right, rintfac_right, rlocal, zlocal, cplocal
   use basis_f!, only: phii_1d, phiix_1d
   use NOP_mod, only: gaussian_quadrature
+  use special_points
   implicit none
 
 
@@ -18,7 +19,7 @@ subroutine variable_cal
   real(kind=rk):: Rp, angle_c_sphe, err_sphe, z_sphe
   real(kind=rk):: MaranD, gradP, peta, Teta(3), gradT(3)
   real(kind=rk):: p0, Pe_change
-  real(kind=rk):: t, cut
+  real(kind=rk):: t, cut = 1.0e-4_rk
   real(kind=rk):: v_surf_p(3), h_surf, dPdr(3), zsolp
   
   real(kind=rk):: particle_m, intMass(3,3), intVol(3,3), cpintfac, rintfac, Jp
@@ -380,12 +381,12 @@ subroutine variable_cal
 ! !   close(24)
 ! !   close(25)
 
-
+  call turning_points(cut)
+  
   !--------velocity direction change location on free surface & grad(T) direction------
   !we only care about stagnation points and extremum points:
   !1. after initial chaos are passed. viz. angle<40
   !2. not too close to CL. viz. 1.0-r>cut
-  cut = 1.0e-4_rk
   if(timestep.gt.0) then
    
      if(solve_T.eq.1) then
