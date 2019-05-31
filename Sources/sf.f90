@@ -329,8 +329,16 @@ end if
 
 !KBC1
 intRsi_S(k) = intRsi_S(k) + KBCgroup* ( phi_1d(k,ipp)* &
-     ( -zeta_right(k,id)*( uintfac_right(k,id) - rdotintfac_right(k,id) ) + &
-     reta_right(k,id)*( vintfac_right(k,id) - zdotintfac_right(k,id) ) )*rintfac_right(k,id) )
+     ( -zeta_right(k,id)* uintfac_right(k,id) + &
+     reta_right(k,id)* vintfac_right(k,id)  )*rintfac_right(k,id) )
+if(NStrans.eq.1) &
+intRsi_S(k) = intRsi_S(k) + KBCgroup* ( phi_1d(k,ipp)* &
+     ( zeta_right(k,id)* rdotintfac_right(k,id) - &
+     reta_right(k,id)* zdotintfac_right(k,id) )*rintfac_right(k,id) )
+
+! intRsi_S(k) = intRsi_S(k) + KBCgroup* ( phi_1d(k,ipp)* &
+!      ( -zeta_right(k,id)*( uintfac_right(k,id) - rdotintfac_right(k,id) ) + &
+!      reta_right(k,id)*( vintfac_right(k,id) - zdotintfac_right(k,id) ) )*rintfac_right(k,id) )
 
 
 !traction BC

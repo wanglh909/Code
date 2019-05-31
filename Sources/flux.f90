@@ -19,7 +19,7 @@ if(m.eq.1) then  !flux
    else if (r.gt.1.0_rk) then
       write(*,*) '!error of r value for flux, larger than 1.0, r =', r
       flux_f = 1.0e5_rk
-      pause
+      ! pause
    else
       flux_f = J0 *( 1.0_rk - r**2 ) **(-lambda)
    end if
@@ -28,9 +28,9 @@ else if(m.eq.2) then  !d flux/ dr
    if(r.eq.1.0_rk) then
       flux_f = 1.0e5_rk
    else if (r.gt.1.0_rk) then
-      write(*,*) '!error of r value for flux, larger than 1.0, r =', r
+      write(*,*) '!error of r value for flux_r, larger than 1.0, r =', r
       flux_f = 1.0e5_rk
-      pause
+      ! pause
    else
       flux_f = 2.0_rk *J0 *lambda* r*( 1.0_rk - r**2 ) **(-lambda-1.0_rk)
    end if

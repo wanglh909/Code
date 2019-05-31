@@ -54,7 +54,8 @@ subroutine newton_raphson
      
      !bug exsistance, (stop program) or ( diverge=1 and redo this timestep to record )
      !if ( ( step.gt.20 .and. (timestep.ne.0 .and. timestep.ne.1) ) .or. error2.gt.1.0e8_rk  )  then 
-     if ( ( step.gt.10 .and. (timestep.ne.0) ) .or. error2.gt.1.0e8_rk  )  then
+     if ( ( step.gt.10 .and. (timestep.ne.0) ) .or. &
+          (step.gt.1 .and. error2.gt.1.0e8_rk ) .or. error2.ne.error2 )  then
         write(*,*) 'did not converge, diverge number', diverge, 's_mode', s_mode
         if(diverge.eq.1 .or. s_mode.eq.1) then
            write(*,*) 'data wrote in', folder

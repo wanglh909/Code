@@ -270,15 +270,37 @@ end if   !no_vapor=1
 
 
 !KBC1
-intRsi_r_S(k) = intRsi_r_S(k) + KBCgroup* ( phi_1d(k,ipp)*( zeta_right(k,id)*CTJ/dt*phi_1d(k,jpp) + &
-     phix_1d(k,jpp)*( vintfac_right(k,id) - zdotintfac_right(k,id) ) )*rintfac_right(k,id) + &
+intRsi_r_S(k) = intRsi_r_S(k) + KBCgroup* ( phi_1d(k,ipp)* &
+     phix_1d(k,jpp)* vintfac_right(k,id) *rintfac_right(k,id) + &
      
-     phi_1d(k,ipp)*( -zeta_right(k,id)*( uintfac_right(k,id) - rdotintfac_right(k,id) ) + &
-     reta_right(k,id)*( vintfac_right(k,id) - zdotintfac_right(k,id) ) )*phi_1d(k,jpp) )
+     phi_1d(k,ipp)*( -zeta_right(k,id)* uintfac_right(k,id) + &
+     reta_right(k,id)* vintfac_right(k,id) )*phi_1d(k,jpp) )
+
+if(NStrans.eq.1) &
+intRsi_r_S(k) = intRsi_r_S(k) + KBCgroup* ( phi_1d(k,ipp)*( zeta_right(k,id)*CTJ/dt*phi_1d(k,jpp) - &
+     phix_1d(k,jpp)* zdotintfac_right(k,id) ) *rintfac_right(k,id) + &
+     
+     phi_1d(k,ipp)*( zeta_right(k,id)* rdotintfac_right(k,id)  - &
+     reta_right(k,id)* zdotintfac_right(k,id) )*phi_1d(k,jpp) )
+
+! intRsi_r_S(k) = intRsi_r_S(k) + KBCgroup* ( phi_1d(k,ipp)*( zeta_right(k,id)*CTJ/dt*phi_1d(k,jpp) + &
+!      phix_1d(k,jpp)*( vintfac_right(k,id) - zdotintfac_right(k,id) ) )*rintfac_right(k,id) + &
+     
+!      phi_1d(k,ipp)*( -zeta_right(k,id)*( uintfac_right(k,id) - rdotintfac_right(k,id) ) + &
+!      reta_right(k,id)*( vintfac_right(k,id) - zdotintfac_right(k,id) ) )*phi_1d(k,jpp) )
+
 
 intRsi_z_S(k) = intRsi_z_S(k) + KBCgroup* ( phi_1d(k,ipp)*( -phix_1d(k,jpp)*&
-     ( uintfac_right(k,id) - rdotintfac_right(k,id) ) - &
-     reta_right(k,id)*CTJ/dt*phi_1d(k,jpp) )*rintfac_right(k,id) )
+      uintfac_right(k,id) )*rintfac_right(k,id) )
+
+if(NStrans.eq.1) &
+intRsi_z_S(k) = intRsi_z_S(k) + KBCgroup* ( phi_1d(k,ipp)* &
+     ( phix_1d(k,jpp)*rdotintfac_right(k,id) - reta_right(k,id)*CTJ/dt*phi_1d(k,jpp) )*rintfac_right(k,id) )
+
+! intRsi_z_S(k) = intRsi_z_S(k) + KBCgroup* ( phi_1d(k,ipp)*( -phix_1d(k,jpp)*&
+!      ( uintfac_right(k,id) - rdotintfac_right(k,id) ) - &
+!      reta_right(k,id)*CTJ/dt*phi_1d(k,jpp) )*rintfac_right(k,id) )
+
 
 intRsi_u_S(k) = intRsi_u_S(k) + KBCgroup* ( -phi_1d(k,jpp)*phi_1d(k,ipp)*zeta_right(k,id)*rintfac_right(k,id) )
 
