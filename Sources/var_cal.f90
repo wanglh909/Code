@@ -511,7 +511,7 @@ if(angle_c_degree.le.40.0_rk) then
                  r_change = r_change + rcoordinate(globalNM(i,3*j))*phii_1d(eta1,j)
               end do
 
-              if(1.0_rk-r_change.gt.cut) &
+              if( (1.0_rk-r_change)*tan(angle_c) .gt. cut ) &
               write(14, '(f9.3,2es15.7,i6)') angle_c_degree, r_change, time, i
               !write(*,*) 'r_change for velocity =', r_change, 'element:', i
               ! exit   !?not strict
@@ -547,7 +547,7 @@ if(angle_c_degree.le.40.0_rk) then
                  end do
 
                  
-                 if(1.0_rk-r_change.gt.cut) &
+                 if( (1.0_rk-r_change)*tan(angle_c) .gt. cut ) &
                  write(18, '(f9.3,2es15.7,i4)') angle_c_degree, r_change, time, i
                  !write(*,*) 'r_change for gradT =', r_change, 'element:', i
                  ! exit   !?not strict
