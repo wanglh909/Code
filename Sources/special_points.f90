@@ -66,12 +66,12 @@ if(angle_c_degree.le.40.0_rk) then
                          dudn(3) = dudn(3) + usol(globalNM(i,j))*phiisi(0.0_rk,eta3,j)
                       end if
                    end do
-!debug
-! if(angle_c_degree.lt.12.2_rk .and. angle_c_degree.gt.12.1_rk) then
-   print *, eta1, eta2, eta3
-   print *, dudn(1), dudn(2), dudn(3)
-   pause
-! end if
+! !debug
+! ! if(angle_c_degree.lt.12.2_rk .and. angle_c_degree.gt.12.1_rk) then
+!    print *, eta1, eta2, eta3
+!    print *, dudn(1), dudn(2), dudn(3)
+!    pause
+! ! end if
                    if( dudn(3) * dudn(1) .lt. 0.0_rk ) then
                       eta2 = eta3
                    else  !dudn(3) * dudn(2) .le. 0.0_rk
@@ -152,7 +152,7 @@ subroutine stagnation_and_extremum(cut, delta)
      end if
 
      
-! if(angle_c_degree.le.40.0_rk) then
+if(angle_c_degree.le.40.0_rk) then
      r_change = 0.0_rk
      do i = 1, NTE
         if(BCflagE(i,3).eq.1) then  !surface element
@@ -314,7 +314,7 @@ subroutine stagnation_and_extremum(cut, delta)
      !    end if
      ! end do
      
-! end if  !angle < 40.0_rk
+end if  !angle < 40.0_rk
 
      !check initial stability for init_stability, could be integrated with direction change calculation
      if(init_stability.eq.0) then
