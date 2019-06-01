@@ -15,15 +15,15 @@ subroutine variable_cal
   real(kind=rk), allocatable:: flux(:), flux1(:), Dflux(:), flux_gp(:)
   real(kind=rk):: J0, volume1, volume2
   ! real(kind=rk):: a, b, c, eta0, eta01, eta02, r_change
-  real(kind=rk):: retap(3), zetap(3), v_surf(3), eta1, eta2, eta3, usolp, vsolp, r_change
+  real(kind=rk):: retap(3), zetap(3)
   real(kind=rk):: Rp, angle_c_sphe, err_sphe, z_sphe
   real(kind=rk):: MaranD, gradP, peta, Teta(3), gradT(3)
   real(kind=rk):: p0, Pe_change
-  real(kind=rk):: t, cut = 1.0e-4_rk
-  real(kind=rk):: v_surf_p(3), h_surf, dPdr(3), zsolp
+  real(kind=rk):: t, cut = 1.0e-4_rk, delta_eta = 5e-2_rk
+  real(kind=rk):: v_surf_p(3), h_surf, dPdr(3)
   
   real(kind=rk):: particle_m, intMass(3,3), intVol(3,3), cpintfac, rintfac, Jp
-  integer(kind=ik):: l, n, flag
+  integer(kind=ik):: l, n
 
   t = REAL(omp_get_wtime(),rk)
 
@@ -144,6 +144,12 @@ subroutine variable_cal
 
 
 
+  !in special_points module
+  call turning_points(cut, delta_eta)
+  call stagnation_and_extremum(cut, delta_eta)
+  
+
+  
   ! radial particle mass
   if(solve_cp.eq.1) then
      if(timestep.ge.10 .and. mod(timestep,graph_step).eq.0) then
@@ -163,57 +169,15 @@ subroutine variable_cal
   end if
            
 
-
-
-  
-
-!   !--------------------------------------max value-----------------------------------
-!   if(timestep.eq.1) then
-!      open(unit = 19, file = trim(folder)//'max_v.dat', status = 'replace')
-!      write(19,'(A)') 'variables = "contact angle", "umax", "vmax"'
-!   else
-!      open(unit = 19, file = trim(folder)//'max_v.dat', status = 'old', access = 'append')
-!   end if
-
-!   write(19,'(f9.3, 2es13.6)')  angle_c_degree, umax, vmax
-
-!   close(19)
-
-
-! !-------------------------------------peclet number---------------------------------
-!   if(Maran_flow.eq.1) then
-!      Pe_change = Pe*vmax*ztop
-
-!      if(timestep.eq.1) then
-!         open(unit = 22, file = trim(folder)//'Pe.dat', status = 'replace')
-!         write(22,'(A)') 'variables = "contact angle", "Pe"'
-!      else
-!         open(unit = 22, file = trim(folder)//'Pe.dat', status = 'old', access = 'append')
-!      end if
-!      write(22,'(f6.3, es13.6)') angle_c_degree, Pe_change
-
-!      close(22)
-!   end if
-
-
-!   !-----------------------------pressure of free surface-----------------------------
-!   if(timestep.eq.1) then
-!      open(unit = 20, file = trim(folder)//'pressure.dat', status = 'replace')
-!   else
-!      open(unit = 20, file = trim(folder)//'pressure.dat', status = 'old', access = 'append')
-!   end if
-
-!   if(timestep.le.5 .or. mod(timestep,graph_step).eq.0) then   !write data every several timestep
-!      write(20, '(A)') 'variables = "r", "p"'
-!      write(20, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
-!      p0 = 2.0_rk*sin(angle_c_degree/180.0_rk*pi)
-!      do i = 1, NTN
-!         if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) )  &
-!              write(20,'(2es15.7)')  rcoordinate(i), psol(i)-p0
-!      end do
-!   end if
-
-!   close(20)
+  if(solve_cp.eq.1) then
+     !flag to judge if maximum packing everywhere
+     pack_condition = 1.0_rk
+     do i = 1, NTN
+        if(pack_flag(i).eq.2) cycle
+        pack_condition = pack_condition * real(pack_flag(i),rk)
+        if(pack_condition.eq.0.0_rk) exit
+     end do
+  end if
 
 
 
@@ -284,6 +248,59 @@ subroutine variable_cal
 
   end if  !timestep.ne.0
 
+
+
+!   !--------------------------------------max value-----------------------------------
+!   if(timestep.eq.1) then
+!      open(unit = 19, file = trim(folder)//'max_v.dat', status = 'replace')
+!      write(19,'(A)') 'variables = "contact angle", "umax", "vmax"'
+!   else
+!      open(unit = 19, file = trim(folder)//'max_v.dat', status = 'old', access = 'append')
+!   end if
+
+!   write(19,'(f9.3, 2es13.6)')  angle_c_degree, umax, vmax
+
+!   close(19)
+
+
+! !-------------------------------------peclet number---------------------------------
+!   if(Maran_flow.eq.1) then
+!      Pe_change = Pe*vmax*ztop
+
+!      if(timestep.eq.1) then
+!         open(unit = 22, file = trim(folder)//'Pe.dat', status = 'replace')
+!         write(22,'(A)') 'variables = "contact angle", "Pe"'
+!      else
+!         open(unit = 22, file = trim(folder)//'Pe.dat', status = 'old', access = 'append')
+!      end if
+!      write(22,'(f6.3, es13.6)') angle_c_degree, Pe_change
+
+!      close(22)
+!   end if
+
+
+!   !-----------------------------pressure of free surface-----------------------------
+!   if(timestep.eq.1) then
+!      open(unit = 20, file = trim(folder)//'pressure.dat', status = 'replace')
+!   else
+!      open(unit = 20, file = trim(folder)//'pressure.dat', status = 'old', access = 'append')
+!   end if
+
+!   if(timestep.le.5 .or. mod(timestep,graph_step).eq.0) then   !write data every several timestep
+!      write(20, '(A)') 'variables = "r", "p"'
+!      write(20, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
+!      p0 = 2.0_rk*sin(angle_c_degree/180.0_rk*pi)
+!      do i = 1, NTN
+!         if( ( ( BCflagN(i,3).eq.1 .or. BCflagN(i,3).eq.3 ) .and. PN(i).eq.1) )  &
+!              write(20,'(2es15.7)')  rcoordinate(i), psol(i)-p0
+!      end do
+!   end if
+
+!   close(20)
+
+
+
+  
 !   !-------------------------------graph spherical cap--------------------------------
 !   if(timestep.eq.1) then
 !      open(unit = 15, file = trim(folder)//'sphe_cap.dat', status = 'replace')
@@ -381,229 +398,7 @@ subroutine variable_cal
 ! !   close(24)
 ! !   close(25)
 
-  call turning_points(cut)
   
-  !--------velocity direction change location on free surface & grad(T) direction------
-  !we only care about stagnation points and extremum points:
-  !1. after initial chaos are passed. viz. angle<40
-  !2. not too close to CL. viz. 1.0-r>cut
-  if(timestep.gt.0) then
-   
-     if(solve_T.eq.1) then
-        if(timestep.eq.1) then
-           open(unit = 18, file = trim(folder)//'extremum.dat', status = 'replace')
-           write(18, '(A)') 'variables = "contact angle", "r", "time", "element" '
-        else
-           open(unit = 18, file = trim(folder)//'extremum.dat', status = 'old', access = 'append')
-        end if
-     end if
-     
-     ! if(timestep.eq.1) then
-     !    open(unit = 30, file = trim(folder)//'v0_lubrication.dat', status = 'replace')
-     !    write(30, '(A)') 'variables = "contact angle", "r", "time", "element" '
-     ! else
-     !    open(unit = 30, file = trim(folder)//'v0_lubrication.dat', status = 'old', access = 'append')
-     ! end if
-
-
-     if(timestep.eq.1) then
-        open(unit = 14, file = trim(folder)//'stagnation.dat', status = 'replace')
-        write(14, '(A)') 'variables = "contact angle", "r", "time", "element" '
-     else
-        open(unit = 14, file = trim(folder)//'stagnation.dat', status = 'old', access = 'append')
-     end if
-
-     
-if(angle_c_degree.le.40.0_rk) then
-     r_change = 0.0_rk
-     do i = 1, NTE
-        if(BCflagE(i,3).eq.1) then  !surface element
-           !the element where direction changes
-
-           !at eta = 0
-           retap(1) = -3.0_rk*rcoordinate(globalNM(i,3)) + 4.0_rk*rcoordinate(globalNM(i,6)) - rcoordinate(globalNM(i,9))
-           zetap(1) = -3.0_rk*zcoordinate(globalNM(i,3)) + 4.0_rk*zcoordinate(globalNM(i,6)) - zcoordinate(globalNM(i,9))
-           v_surf(1) = ( usol(globalNM(i,3))*retap(1) + vsol(globalNM(i,3))*zetap(1) ) /sqrt( retap(1)**2+zetap(1)**2 )
-           if(solve_T.eq.1) then
-              Teta(1) = -3.0_rk*Tsol(globalNM(i,3)) + 4.0_rk*Tsol(globalNM(i,6)) - Tsol(globalNM(i,9))
-              gradT(1) = -Teta(1)/sqrt( retap(1)**2+zetap(1)**2 )
-           end if
-           dPdr(1) = ( psol(globalNM(i,9)) - psol(globalNM(i,3)) ) /retap(1)
-           v_surf_p(1) = -0.5_rk*dPdr(1)*zcoordinate(globalNM(i,3)) + beta*gradT(1)
-
-           !at eta = 1
-           retap(2) = rcoordinate(globalNM(i,3)) - 4.0_rk*rcoordinate(globalNM(i,6)) + 3.0_rk*rcoordinate(globalNM(i,9))
-           zetap(2) = zcoordinate(globalNM(i,3)) - 4.0_rk*zcoordinate(globalNM(i,6)) + 3.0_rk*zcoordinate(globalNM(i,9))
-           v_surf(2) = ( usol(globalNM(i,9))*retap(2) + vsol(globalNM(i,9))*zetap(2) ) /sqrt( retap(2)**2+zetap(2)**2 )
-           if(solve_T.eq.1) then
-              Teta(2) = Tsol(globalNM(i,3)) - 4.0_rk*Tsol(globalNM(i,6)) + 3.0_rk*Tsol(globalNM(i,9))
-              gradT(2) = -Teta(2)/sqrt( retap(2)**2+zetap(2)**2 )
-           end if
-           dPdr(2) = ( psol(globalNM(i,9)) - psol(globalNM(i,3)) ) /retap(2)
-           v_surf_p(2) = -0.5_rk*dPdr(2)*zcoordinate(globalNM(i,9)) + beta*gradT(2)
-
-           ! !lubrication velocity direction change
-           ! if( angle_c_degree.lt.15.0_rk .and. &
-           !      v_surf_p(1) * v_surf_p(2) .lt. 0.0_rk .and. &
-           !      (i.ne.top_element .and. i.ne.CL_element) ) then 
- 
-           !    eta1 = 0.0_rk
-           !    eta2 = 1.0_rk
-           !    do while ( abs(eta1-eta2).gt.0.5e-1_rk )
-           !       eta3 = (eta1+eta2)/2.0_rk
-           !       retap(3) = 0.0_rk
-           !       zetap(3) = 0.0_rk
-           !       if(solve_T.eq.1) Teta(3) = 0.0_rk
-           !       zsolp = 0.0_rk
-           !       do j = 1, 3
-           !          retap(3) = retap(3) + rcoordinate(globalNM(i,3*j))*phiix_1d(eta3,j)
-           !          zetap(3) = zetap(3) + zcoordinate(globalNM(i,3*j))*phiix_1d(eta3,j)
-           !          if(solve_T.eq.1) Teta(3) = Teta(3) + Tsol(globalNM(i,3*j))*phiix_1d(eta3,j)
-           !          zsolp = zsolp + zcoordinate(globalNM(i,3*j))*phii_1d(eta3,j)
-           !       end do
-           !       if(solve_T.eq.1) gradT(3) = -Teta(3)/sqrt( retap(3)**2+zetap(3)**2 )
-           !       dPdr(3) = ( psol(globalNM(i,9)) - psol(globalNM(i,3)) ) /retap(3)
-           !       v_surf_p(3) = -0.5_rk*dPdr(3)*zsolp + beta*gradT(3)
-           !       if( v_surf_p(3) * v_surf_p(1) .lt. 0.0_rk ) then
-           !          eta2 = eta3
-           !       else  !v_surf(3) * v_surf(2) .le. 0.0_rk
-           !          eta1 = eta3
-           !       end if
-           !    end do
-           !    r_change = 0.0_rk
-           !    do j = 1, 3
-           !       r_change = r_change + rcoordinate(globalNM(i,3*j))*phii_1d(eta1,j)
-           !    end do
-
-           !    write(30, '(f9.3,2es15.7, i6)') angle_c_degree, r_change, time, i
-           !    !write(*,*) 'r_change for lubrication velocity =', r_change, 'element:', i
-           !    ! exit   !?not strict
-
-           ! end if   !u change element
-
-
-
-           !surface flow direction change
-           if( v_surf(1) * v_surf(2) .lt. 0.0_rk .and. (i.ne.top_element .and. i.ne.CL_element) ) then
-! write(*,*)  v_surf(1), v_surf(2)
-              eta1 = 0.0_rk
-              eta2 = 1.0_rk
-              do while ( abs(eta1-eta2).gt.0.5e-1_rk )
-                 eta3 = (eta1+eta2)/2.0_rk
-                 retap(3) = 0.0_rk
-                 zetap(3) = 0.0_rk
-                 usolp = 0.0_rk
-                 vsolp = 0.0_rk
-                 do j = 1, 3
-                    retap(3) = retap(3) + rcoordinate(globalNM(i,3*j))*phiix_1d(eta3,j)
-                    zetap(3) = zetap(3) + zcoordinate(globalNM(i,3*j))*phiix_1d(eta3,j)
-                    usolp = usolp + usol(globalNM(i,3*j))*phii_1d(eta3,j)
-                    vsolp = vsolp + vsol(globalNM(i,3*j))*phii_1d(eta3,j)
-                 end do
-                 v_surf(3) = ( usolp*retap(3) + vsolp*zetap(3) ) /sqrt( retap(3)**2+zetap(3)**2 )
-                 if( v_surf(3) * v_surf(1) .lt. 0.0_rk ) then
-                    eta2 = eta3
-                 else  !v_surf(3) * v_surf(2) .le. 0.0_rk
-                    eta1 = eta3
-                 end if
-              end do
-              r_change = 0.0_rk
-              do j = 1, 3
-                 r_change = r_change + rcoordinate(globalNM(i,3*j))*phii_1d(eta1,j)
-              end do
-
-              if( (1.0_rk-r_change)*tan(angle_c) .gt. cut ) &
-              write(14, '(f9.3,2es15.7,i6)') angle_c_degree, r_change, time, i
-              !write(*,*) 'r_change for velocity =', r_change, 'element:', i
-              ! exit   !?not strict
-
-           end if   !u change element
-
-
-           !grad(T) direction change
-           if(solve_T.eq.1) then
-              if( gradT(1) * gradT(2) .lt. 0.0_rk .and. (i.ne.top_element .and. i.ne.CL_element) ) then  
-                 eta1 = 0.0_rk
-                 eta2 = 1.0_rk
-                 do while ( abs(eta1-eta2).gt.0.5e-1_rk )
-                    eta3 = (eta1+eta2)/2.0_rk
-                    retap(3) = 0.0_rk
-                    zetap(3) = 0.0_rk
-                    Teta(3) = 0.0_rk
-                    do j = 1, 3
-                       retap(3) = retap(3) + rcoordinate(globalNM(i,3*j))*phiix_1d(eta3,j)
-                       zetap(3) = zetap(3) + zcoordinate(globalNM(i,3*j))*phiix_1d(eta3,j)
-                       Teta(3) = Teta(3) + Tsol(globalNM(i,3*j))*phiix_1d(eta3,j)
-                    end do
-                    gradT(3) = -Teta(3)/sqrt( retap(2)**2+zetap(2)**2 )
-                    if( gradT(3) * gradT(1) .lt. 0.0_rk ) then
-                       eta2 = eta3
-                    else  !v_surf(3) * v_surf(2) .le. 0.0_rk
-                       eta1 = eta3
-                    end if
-                 end do
-                 r_change = 0.0_rk
-                 do j = 1, 3
-                    r_change = r_change + rcoordinate(globalNM(i,3*j))*phii_1d(eta1,j)
-                 end do
-
-                 
-                 if( (1.0_rk-r_change)*tan(angle_c) .gt. cut ) &
-                 write(18, '(f9.3,2es15.7,i4)') angle_c_degree, r_change, time, i
-                 !write(*,*) 'r_change for gradT =', r_change, 'element:', i
-                 ! exit   !?not strict
-
-              end if   !gradT change element
-           end if
-
-
-
-        end if   !surface element
-     end do  !element loop
-
-     ! do i = 1, NTN
-     !    if(BCflagN(i,3).ne.1) cycle
-     !    do j = i+1, NTN
-     !       if(BCflagN(j,3).eq.1) exit
-     !    end do
-     !    if( usol(i)*usol(j).lt.0.0_rk ) then
-     !       r_change = ( rcoordinate(i) + rcoordinate(j) )/2.0_rk 
-     !       write(14, '(3es15.7)') time, angle_c_degree, r_change
-     !       write(*,*) 'r_change =', r_change
-     !       exit   !?not strict
-     !    end if
-     ! end do
-     
-end if  !angle < 40.0_rk
-
-     !check initial stability for init_stability, could be integrated with direction change calculation
-     if(init_stability.eq.0) then
-        flag = 0
-        do i = 1, NTN
-           if(BCflagN(i,3).ne.1) cycle
-           do j = i+1, NTN
-              if(BCflagN(j,3).eq.1) exit
-           end do
-           if( usol(i)*usol(j).lt.0.0_rk .and. &
-                (1.0_rk-rcoordinate(i))*(1.0_rk-rcoordinate(j)).gt.1.0e-6_rk ) then
-              write(*,*) 'stag exist', rcoordinate(i), rcoordinate(j)
-              flag = 1
-              exit   !?not strict
-           end if
-        end do
-        if(flag.eq.0) then
-           init_stability = 1
-           dt = 1.0e-7_rk
-           timestep_stable = 1
-           !graph_mode = 1
-        end if
-     end if
-     
-     ! close(30)
-     close(14)
-     close(18)
-  
-  end if !timestep>0
 
 
 !   !---------------------------flux on nodes of free surface---------------------------
@@ -721,19 +516,6 @@ end if  !angle < 40.0_rk
 
 
   
-  if(solve_cp.eq.1) then
-     !flag to judge if maximum packing everywhere
-     pack_condition = 1.0_rk
-     do i = 1, NTN
-        if(pack_flag(i).eq.2) cycle
-        pack_condition = pack_condition * real(pack_flag(i),rk)
-        if(pack_condition.eq.0.0_rk) exit
-     end do
-  end if
-
-
-  
-
 
   t = REAL(omp_get_wtime(),rk) - t
   open(unit = 200, file = trim(folder)//'cal_time.dat', status = 'old', access = 'append')

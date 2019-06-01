@@ -108,7 +108,7 @@ subroutine parameter_values
      !beta = 0.0_rk
      substrate = 0.0_rk
   end if
-  MaN = beta0*Tc/(mu*vc)
+  MaN = - beta0*Tc/(mu*vc)
 
   !change for equations
   Re = Re*Ca
