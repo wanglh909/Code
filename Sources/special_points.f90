@@ -74,7 +74,11 @@ contains
                 end do
                 r_change = 0.0_rk
                 do j = 1, 3
-                   r_change = r_change + rcoordinate(globalNM(i,3*j))*phii_1d(eta1,j)
+                   if(BCflagE(i,2).eq.1) then  !region 1 interface element
+                      r_change= r_change + rcoordinate(globalNM(i,3*j-2))*phii_1d(eta1,j)
+                   else  !region 3 interface element
+                      r_change = r_change + rcoordinate(globalNM(i,j))*phii_1d(eta1,j)
+                   end if
                 end do
 
                 ! if( (1.0_rk-r_change)*tan(angle_c) .gt. cut ) &
