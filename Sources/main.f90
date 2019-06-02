@@ -25,7 +25,7 @@ program main
   NEL = 8    ! 15   ! input   
   NEM = 200  !input     !decide in data_folder
   NEV = 50 !200!     1000!  !input
-  NES = 8!5   !10!  30  !input
+  NES = 5!5   !10!  30  !input
   NEM_alge = int(real(NEM,rk)/20.0_rk*9.0_rk,ik)!90!450!90   !  135!NEM/3*2    !decide in data_folder
   
 !----------------------------------front settings-------------------------------------
@@ -43,10 +43,12 @@ program main
 !-----------------------------------done settings------------------------------------
   
   ! no_Maran = 0  !1: no Marangoni stress
-  Maran_flow = 1
+  Maran_flow = 0
   fixed_Ma = 1  !does not matter if Maran_flow = 0
   !option to solve cp
-  solve_cp = 0
+  solve_cp = 1
+  surf_adsp = 0  !free surface adsorption
+  sub_adsp = 1   !substrate adsorption
   !set terms option
   NStrans = 1 !do not set this to 0, s.s. is not right for evaporation
   Inert = 1
@@ -70,7 +72,7 @@ program main
   
   angle_int = 33.0_rk  !from what angle start to calculate radial accumulation
 
-  alge_corner = 1
+  alge_corner = 1  !algebraic mesh at the corner
 
 
   graph_step = 10  !graph every 'graph_step' steps

@@ -29,7 +29,7 @@ subroutine initialization
   
   allocate( sol(NVar), dsol(NVar) )
   allocate( solp(NVar), soldot(NVar), soldotp(NVar), soldotpp(NVar), solpred(NVar) )
-  allocate( rcoordinate(NTN), zcoordinate(NTN), usol(NTN), vsol(NTN), Tsol(NTN), psol(NTN), csol(NTN), cpsol(NTN) )
+  allocate( rcoordinate(NTN), zcoordinate(NTN), usol(NTN), vsol(NTN), Tsol(NTN), psol(NTN), csol(NTN), cpsol(NTN), gammasol(NTN) )
      allocate( fsi_size(NTE), geta_size(NTE) )
   sol = 0.0_rk
   dsol = 0.0_rk
@@ -46,6 +46,7 @@ subroutine initialization
   psol = 0.0_rk
   csol = 0.0_rk
   cpsol = 1.0_rk
+  gammasol = 0.0_rk
   cp_average = 1.0_rk
 
   if(check_0_in_Jac.eq.1)  then
@@ -101,6 +102,7 @@ subroutine initialization
   allocate( rsi_down(3,ths),  zsi_down(3,ths), rsi_left(3,ths), zsi_left(3,ths), &
        reta_left(3,ths), zeta_left(3,ths), &
        reta_right(3,ths), zeta_right(3,ths), rsi_right(3,ths), zsi_right(3,ths), Teta_right(3,ths), cpeta_right(3,ths) )
+  allocate( cpintfac_left(3,ths), rintfac_left(3,ths) )
   allocate( rintfac_right(3,ths), uintfac_right(3,ths), vintfac_right(3,ths), cpintfac_right(3,ths), &
        rdotintfac_right(3,ths), zdotintfac_right(3,ths), &
        Jp_r_right(3,ths), Jp_z_right(3,ths), Jp_right(3,ths) )

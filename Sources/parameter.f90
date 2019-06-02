@@ -1,6 +1,7 @@
 subroutine parameter_values
   use kind
-  use data, only: Re, Ca, Kdi, Pe, KBCgroup, REH, beta, Oh, Grav, MaN, R, Hum, F0, kR, folder, substrate, outer, &
+  use data, only: Re, Ca, Kdi, Pe, KBCgroup, REH, beta, Oh, Grav, MaN, Da_sub, &
+       R, Hum, F0, kR, folder, substrate, outer, &
        NStrans, Inert, Capil, Viscous, GravI, Ttime, Tconv, Tdiff, TtimeS, TdiffS, NEM, NEL, NES, NEV, NEM_alge, T_sub, uniflux, &
        diameterp, Pep, kboltz, pi, solve_T, Maran_flow, fixed_Ma, cp_pack, Dp, no_vapor, solve_cp
   implicit none
@@ -8,7 +9,7 @@ subroutine parameter_values
   integer(kind=ik):: Ltype !, water, octane, hexanol
   real(kind=rk):: rho, mu, kT, cpl, alpha, beta0, Diff, csat, Hv, sigmac, lc, vc, Tc, ks, rhos, cpS, alphaS, Mmolar
 
-  substrate = 1.0_rk!0.15_rk!   0.0_rk!    3.0_rk! !1.0_rk  !0.15_rk   
+  substrate = 0.5_rk!0.15_rk!   0.0_rk!    3.0_rk! !1.0_rk  !0.15_rk   
   outer = 1.3_rk    !10.0_rk!   20.0_rk, 1.3_rk
 
   Ltype = 1
@@ -86,6 +87,7 @@ subroutine parameter_values
   Dp = kboltz*(25.0_rk+273.15_rk)/(6.0_rk*pi*mu*diameterp)   !2.45e-12 (m^2/s)
   !cp0 = 2.5e-4  !(kg/m^3)  !??not used yet
   cp_pack = 5.0_rk
+  ! kad_sub = 
   
 
   !characteristic
@@ -108,7 +110,9 @@ subroutine parameter_values
      !beta = 0.0_rk
      substrate = 0.0_rk
   end if
-  MaN = 100.0_rk ! beta0*Tc/(mu*vc)
+  MaN = beta0*Tc/(mu*vc)
+  Da_sub = 10.0_rk !kad_sub*lc/Dp
+  !Da_surf
 
   !change for equations
   Re = Re*Ca

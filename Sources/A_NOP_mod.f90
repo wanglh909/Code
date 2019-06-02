@@ -34,6 +34,7 @@ contains
     top_node = NTN   !if vapor exists, top_node needs to be changed
     top_element = NTE
     CL_element = NES*(NEV+1) + 1
+    CL_node = (NES*2+1)*(NEV*2+1)
 
     NND = (2*NEL+1)**2 + 2*NEM*NNX34
     !NNV = (2*NEV+1) * (2*(NEL+NEM)+1)
@@ -629,7 +630,7 @@ end do
 subroutine variableN
   implicit none
 
-integer(kind=ik):: i, j,k,l
+  integer(kind=ik):: i, j,k,l
 
 
   allocate( MDF(NTN), NOPP(NTN), MDFd(NTN), PN(NTN) )
@@ -671,6 +672,10 @@ integer(kind=ik):: i, j,k,l
        !substrate
        ! if(BCflagN(i,2).eq.1 .and. VN(i).eq.1) MDF(i) = MDF(i) + 1 !T
        if(VN(i).eq.5 .or. VN(i).eq.1) MDF(i) = NNVar3 !r,T
+       
+       if(surf_adsp.eq.1 .and. BCflagN(i,3).ne.0 .and. VN(i).eq.0) MDF(i) = MDF(i) + 1!gamm2
+       ! if(sub_adsp.eq.1 .and. BCflagN(i,2).ne.0 .and. VN(i).eq.0) MDF(i) = MDF(i) + 1!gamma1 substrate surface concentration has no equation, no need to add a variable to the node.
+       ! if(sub_adsp.eq.1 .and. surf_adsp.eq.1 .and. i.eq.CL_node) MDF(i) = MDF(i) - 1!repetition of gamma1 & gamma2
     end do
 
 

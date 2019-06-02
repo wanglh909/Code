@@ -5,7 +5,7 @@ subroutine variable_cal
   use data
   use Ldata, only: dcdsi, dcdeta, rsi_right, zsi_right, reta_right, zeta_right, rintfac_right, rlocal, zlocal, cplocal
   use basis_f!, only: phii_1d, phiix_1d
-  use NOP_mod, only: gaussian_quadrature
+  use NOP_mod, only: gaussian_quadrature, gaussian_quadrature_1d
   use special_points
   implicit none
 
@@ -23,7 +23,9 @@ subroutine variable_cal
   real(kind=rk):: v_surf_p(3), h_surf, dPdr(3)
   
   real(kind=rk):: particle_m, intMass(3,3), intVol(3,3), cpintfac, rintfac, Jp
-  integer(kind=ik):: l, n
+  real(kind=rk):: particle_s, intsurfMass(3), gammalocal(3), gammaintfac
+  integer(kind=ik):: l, n, jpp
+  real(kind=rk), allocatable:: cpsolp(:)
 
   t = REAL(omp_get_wtime(),rk)
 
@@ -60,21 +62,66 @@ subroutine variable_cal
   write(11,'(es15.7,f9.3,es15.7)') time, angle_c_degree, dt
   close(11)
 
-!   !-------------------------------------drop volume------------------------------------
-!   if(timestep.eq.1) then
-!      open(unit = 12, file = trim(folder)//'volume.dat', status = 'replace')
-!      write(12, '(A)') 'variables = time, EvapSpeed, volume'!1, volume1+VolEvap1, volume1+VolEvap2, volume1+VolEvap3'
-!   else
-!      open(unit = 12, file = trim(folder)//'volume.dat', status = 'old', access = 'append')
-!   end if
+  
+  !----------------substrate surface concentration---------------------------------
+  if(timestep.gt.0 .and. solve_cp.eq.1 .and. sub_adsp.eq.1) then
+     allocate( cpsolp(NTN) )
+     if(timestep.eq.1) then
+        open(unit = 32, file = trim(folder)//'sub_surf_concen.dat', status = 'replace')
+     else
+        open(unit = 32, file = trim(folder)//'sub_surf_concen.dat', status = 'old', access = 'append')
+     end if
+     write(13, '(A)') 'variables = "r", "<greek>Gamma</greek>"'
+     write(13, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
+     
+     do i = 1, NTN
+        if(BCflagN(i,2).ne.0 .and. VN(i).eq.0) then
+           cpsolp(i) = solp( NOPP(i) + Ncp ) 
+           gammasol(i) = gammasol(i) + Da_sub/Pep*( cpsol(i)+cpsolp(i) )/2.0_rk*dt
+           write(13,'(2es15.7)')  rcoordinate(i), gammasol(i)
+        end if
+     end do
+     
+     close(32)
+  end if
+  !--------------------------------------------------------------------------------
 
-!   call drop_volume(volume1, volume2)
-!   write(12,'(es13.6, f9.3, 2es13.6)') time, angle_c_degree, EvapSpeed, volume1!, volume1+VolEvap1, volume1+VolEvap2, volume1+VolEvap3
-
-!   close(12)
+  
 
 
   !--------------------------total particle mass & drop volume-------------------------
+  !surface particle
+  if(final_size.eq.1 .and. solve_cp.eq.1) then
+     particle_s = 0.0_rk
+     do i = 1, NTE
+        if(BCflagE(i,2).eq.0 .or. VE(i).ne.0) cycle
+        do j = 1, 3
+           if(BCflagE(i,2).eq.1) then
+              jpp = j
+           else! BCflagE=2
+              jpp = j*3-2
+           end if
+           rlocal(j,1) = rcoordinate( globalNM(i,jpp) )
+           gammalocal(j) = gammasol( globalNM(i,jpp) )
+        end do
+        do k = 1, Ng, 1
+           rintfac = 0.0_rk
+           rsi = 0.0_rk
+           gammaintfac = 0.0_rk
+           do n = 1, 3
+              rintfac = rintfac + rlocal(n,1)*phi_1d(k,n)
+              rsi = rsi + rlocal(n,1)*phix_1d(k,n)
+              gammaintfac = gammaintfac + gammalocal(n)*phi_1d(k,n)
+           end do
+           intsurfMass(k) = gammaintfac * rintfac * rsi
+        end do
+        particle_s = particle_s + gaussian_quadrature_1d(intsurfMass)
+     end do !NTE
+     ! write(*,*) 'particle mass', particle_m
+  end if
+
+
+  !bulk phase particle & drop volume
   if(final_size.eq.1) then
      particle_m = 0.0_rk
      volume1 = 0.0_rk
@@ -120,11 +167,11 @@ subroutine variable_cal
      if(solve_cp.eq.1) then
         if(timestep.eq.0) then
            open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'replace')
-           write(31, '(A)') 'variables = "contact angle", "m", "time" '
+           write(31, '(A)') 'variables = "contact angle", "m_bulk", "m_sub", "m_total", "time" '
         else
            open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'old', access = 'append')
         end if
-        write(31, '(3es15.7)') angle_c_degree, particle_m, time
+        write(31, '(5es15.7)') angle_c_degree, particle_m, particle_s, particle_m+particle_s, time
         close(31)
      end if
 
@@ -141,7 +188,6 @@ subroutine variable_cal
   end if
   
   !---------------------------------------------------------------------------------------
-
 
 
   !in special_points module
@@ -168,7 +214,7 @@ subroutine variable_cal
      end if
   end if
            
-
+  ! packing
   if(solve_cp.eq.1) then
      !flag to judge if maximum packing everywhere
      pack_condition = 1.0_rk
@@ -249,6 +295,19 @@ subroutine variable_cal
   end if  !timestep.ne.0
 
 
+!   !-------------------------------------drop volume------------------------------------
+!   if(timestep.eq.1) then
+!      open(unit = 12, file = trim(folder)//'volume.dat', status = 'replace')
+!      write(12, '(A)') 'variables = time, EvapSpeed, volume'!1, volume1+VolEvap1, volume1+VolEvap2, volume1+VolEvap3'
+!   else
+!      open(unit = 12, file = trim(folder)//'volume.dat', status = 'old', access = 'append')
+!   end if
+
+!   call drop_volume(volume1, volume2)
+!   write(12,'(es13.6, f9.3, 2es13.6)') time, angle_c_degree, EvapSpeed, volume1!, volume1+VolEvap1, volume1+VolEvap2, volume1+VolEvap3
+
+  !   close(12)
+  
 
 !   !--------------------------------------max value-----------------------------------
 !   if(timestep.eq.1) then

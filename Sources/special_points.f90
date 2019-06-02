@@ -90,7 +90,7 @@ if(angle_c_degree.le.40.0_rk) then
 
                 if( (1.0_rk-r_change)*tan(angle_c) .gt. cut ) &
                      write(30, '(f9.3,2es15.7,i6,es15.7)') angle_c_degree, r_change, time, i, eta1
-                print *, 'r_change for dudn =', r_change, 'element:', i, 'eta:', eta1
+                ! print *, 'r_change for dudn =', r_change, 'element:', i, 'eta:', eta1
              end if   !dudn change element
 
           end if   !interface element

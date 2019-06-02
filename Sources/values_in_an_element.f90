@@ -197,6 +197,8 @@ subroutine values_in_an_element(m,id)
   zsi_left(:,id) = 0.0_rk
   reta_left(:,id) = 0.0_rk
   zeta_left(:,id) = 0.0_rk
+  cpintfac_left(:,id) = 0.0_rk
+  rintfac_left(:,id) = 0.0_rk
   reta_right(:,id) = 0.0_rk
   zeta_right(:,id) = 0.0_rk
   Teta_right(:,id) = 0.0_rk
@@ -229,6 +231,11 @@ subroutine values_in_an_element(m,id)
            npp = n  !only need r1, r2, r3 -->r(npp)
            rsi_left(k,id) = rsi_left(k,id) + rlocal(npp,id) * phix_1d(k,n)
            zsi_left(k,id) = zsi_left(k,id) + zlocal(npp,id) * phix_1d(k,n)
+           if(s_mode.eq.0 .and. solve_cp.eq.1 .and. sub_adsp.eq.1 &
+                .and. VE(m).eq.0) then
+           cpintfac_left(k,id) = cpintfac_left(k,id) + cplocal(npp,id) * phi_1d(k,n)
+           rintfac_left(k,id) = rintfac_left(k,id) + rlocal(npp,id) * phi_1d(k,n)
+           end if
         end do  !end for n
      end do    !end for k
   end if
@@ -248,6 +255,10 @@ subroutine values_in_an_element(m,id)
            npp = 3*n - 2  !only need r1, r4, r7 -->r(npp)
            reta_left(k,id) = reta_left(k,id) + rlocal(npp,id) * phix_1d(k,n)
            zeta_left(k,id) = zeta_left(k,id) + zlocal(npp,id) * phix_1d(k,n)
+           if(s_mode.eq.0 .and. solve_cp.eq.1 .and. sub_adsp.eq.1) then
+           cpintfac_left(k,id) = cpintfac_left(k,id) + cplocal(npp,id) * phi_1d(k,n)
+           rintfac_left(k,id) = rintfac_left(k,id) + rlocal(npp,id) * phi_1d(k,n)
+           end if
         end do  !end for n
      end do    !end for k
   end if
@@ -412,6 +423,8 @@ go to 122
   zsi_left(:,id) = 0.0_rk
   reta_left(:,id) = 0.0_rk
   zeta_left(:,id) = 0.0_rk
+  cpintfac_left(:,id) = 0.0_rk
+  rintfac_left(:,id) = 0.0_rk
   reta_right(:,id) = 0.0_rk
   zeta_right(:,id) = 0.0_rk
   Teta_right(:,id) = 0.0_rk

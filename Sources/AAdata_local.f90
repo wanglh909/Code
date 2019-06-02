@@ -23,6 +23,7 @@ module Ldata
        reta_right(:,:), zeta_right(:,:), rsi_right(:,:), zsi_right(:,:), Teta_right(:,:), cpeta_right(:,:)
   real(kind=rk), allocatable:: rintfac_right(:,:), uintfac_right(:,:), vintfac_right(:,:), cpintfac_right(:,:), &
        rdotintfac_right(:,:), zdotintfac_right(:,:), Jp_r_right(:,:), Jp_z_right(:,:), Jp_right(:,:)
+  real(kind=rk), allocatable:: cpintfac_left(:,:), rintfac_left(:,:)
 
   real(kind=rk), allocatable:: dcdsi(:,:), dcdeta(:,:) ,dTdsi(:,:) ,dcpdsi(:,:) !,dTdeta(:,:)
   real(kind=rk), allocatable:: flux(:,:), flux_r(:,:)

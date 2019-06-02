@@ -13,7 +13,7 @@ module data
 
   
   real(kind=rk):: R, outer, substrate
-  real(kind=rk):: Re, Ca, Oh, Grav, Kdi, KBCgroup, Pe, REH, beta, F0, kR, MaN !Marangoni number (MaN)
+  real(kind=rk):: Re, Ca, Oh, Grav, Kdi, KBCgroup, Pe, REH, beta, F0, kR, MaN, Da_sub !Marangoni number (MaN)
 
   integer(kind=ik):: NEL, NEM, NEV, NES, NNX34, NNX3456, NNXV, NNR1278, NNR1278p, iBW,iBW1,iBW2
   !NVar: Number of Variables   !NNX: number of nodes in r (abscissa)   
@@ -25,7 +25,7 @@ module data
   !NNVar2: r,z,c; Nnvar3: r,z,T
 
   !integer(kind=ik), parameter:: Nr = 0, Nz = 1, Nu = 3, Nv = 4, NT = 2, Ncp = 5, Np = 6, NTs = 2 !Nc = MDF(i)-1
-  integer(kind=ik):: Nr = 0, Nz = 1, NT = 2, Nu, Nv, Ncp, Np, NTs = 2 !Nc = MDF(i)-1
+  integer(kind=ik):: Nr = 0, Nz = 1, NT = 2, Nu, Nv, Ncp, Np, Ngamma, NTs = 2 !Nc = MDF(i)-1
 
   integer(kind=ik):: timestep, step
 
@@ -40,7 +40,7 @@ module data
 
 
   real(kind=rk):: time
-  real(kind=rk), allocatable:: rcoordinate(:), zcoordinate(:), usol(:), vsol(:), Tsol(:), psol(:), csol(:), cpsol(:)
+  real(kind=rk), allocatable:: rcoordinate(:), zcoordinate(:), usol(:), vsol(:), Tsol(:), psol(:), csol(:), cpsol(:), gammasol(:)
   !solp & dtp means previous solution & dt, solpred means the predicted solution
   real(kind=rk), allocatable:: sol(:), solp(:), soldot(:), soldotp(:), soldotpp(:), solpred(:)
 
@@ -118,7 +118,6 @@ module data
   integer(kind=ik):: NEM_alge
   integer(kind=ik), allocatable:: algeN(:), algeS(:)
 
-  integer(kind=ik):: top_node
   !substrate phase
   ! integer(kind=ik):: SN
 
@@ -136,7 +135,7 @@ module data
 
   real(kind=rk):: ztop
 
-  integer(kind=ik):: top_element, CL_element
+  integer(kind=ik):: top_node, top_element, CL_element, CL_node
   integer(kind=ik):: read_coordinate_value
 
   real(kind=rk):: T_sub
@@ -145,7 +144,7 @@ module data
   real(kind=rk):: diameterp, Dp, Pep, kboltz = 1.3806485279e-23 !(J/K)    
 
 
-  integer(kind=ik):: Maran_flow, solve_T, fixed_Ma, solve_cp
+  integer(kind=ik):: Maran_flow, solve_T, fixed_Ma, solve_cp, surf_adsp, sub_adsp
 
   integer(kind=ik):: init_stability, timestep_stable, radial_cal_time
   

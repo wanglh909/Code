@@ -147,6 +147,46 @@ subroutine SI_in_sj(m,i,j, sj, LNVar, LNOPP, id)                     !adding SI 
   end if   !base of region 3
 
 
+  
+  !base, substrate adsorption
+  if(s_mode.eq.0 .and. solve_cp.eq.1 .and. sub_adsp.eq.1) then
+     
+     if( ( BCflagE(m,2).eq.1 .and. VE(m).eq.0 ) &
+          .and. (BCflagN(globalNM(m,i),2).eq.1 .or. BCflagN(globalNM(m,i),2).eq.3) ) then
+        ipp = i  !phix_1d(k,ipp)
+        if( BCflagN( globalNM(m,j),2 ).eq.1 .or. BCflagN( globalNM(m,j),2 ).eq.3 ) then
+           jpp = j  !phix_1d(k,jpp)
+           do k = 1, Ng, 1    !three gausspoints
+              intRm_r_S(k) = phi_1d(k,ipp) *cpintfac_left(k,id) * &
+                   ( phi_1d(k,jpp)*rsi_left(k,id) + rintfac_left(k,id)*phix_1d(k,jpp) )
+              intRm_cp_S(k) = phi_1d(k,ipp) * phi_1d(k,jpp) * rintfac_left(k,id) * rsi_left(k,id)
+           end do
+           sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) + &
+                Da_sub *gaussian_quadrature_1d(intRm_r_S)
+           sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp) = sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp) + &
+                Da_sub *gaussian_quadrature_1d(intRm_cp_S)
+        end if !j
+     end if ! m element on base, i node on base
+
+     if( BCflagE(m,2).eq.2  &
+          .and. (BCflagN(globalNM(m,i),2).eq.2 .or. BCflagN(globalNM(m,i),2) .eq.3) ) then
+        ipp = i/3 + 1  !phix_1d(k,ipp)
+        if( BCflagN( globalNM(m,j),2 ).eq.2 .or. BCflagN( globalNM(m,j),2 ).eq.3 ) then
+           jpp = j/3 + 1  !phix_1d(k,ipp)
+           do k = 1, Ng, 1    !three gausspoints
+              intRm_r_S(k) = phi_1d(k,ipp) *cpintfac_left(k,id) * &
+                   ( phi_1d(k,jpp)*reta_left(k,id) + rintfac_left(k,id)*phix_1d(k,jpp) )
+              intRm_cp_S(k) = phi_1d(k,ipp) * phi_1d(k,jpp) * rintfac_left(k,id) * reta_left(k,id)
+           end do
+           sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) + &
+                Da_sub *gaussian_quadrature_1d(intRm_r_S)
+           sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp) = sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp) + &
+                Da_sub *gaussian_quadrature_1d(intRm_cp_S)
+        end if!j
+     end if !m & i
+
+  end if  !s_mode=0 and solve_cp=1 and sub_adsp=1
+
 
   !outer surface
   if( BCflagN( globalNM(m,i),4 ).ne.0 .and. BCflagN( globalNM(m,j),4 ).ne.0 ) then
