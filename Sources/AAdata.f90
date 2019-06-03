@@ -13,7 +13,7 @@ module data
 
   
   real(kind=rk):: R, outer, substrate
-  real(kind=rk):: Re, Ca, Oh, Grav, Kdi, KBCgroup, Pe, REH, beta, F0, kR, MaN, Da_sub !Marangoni number (MaN)
+  real(kind=rk):: Re, Ca, Oh, Grav, Kdi, KBCgroup, Pe, REH, beta, F0, kR, MaN, Da_sub, Da_surf1, Da_surf2 !Marangoni number (MaN)
 
   integer(kind=ik):: NEL, NEM, NEV, NES, NNX34, NNX3456, NNXV, NNR1278, NNR1278p, iBW,iBW1,iBW2
   !NVar: Number of Variables   !NNX: number of nodes in r (abscissa)   

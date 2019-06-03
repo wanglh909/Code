@@ -6,7 +6,7 @@ module Ldata
 
   !for subroutine values_in_an_element
   real(kind=rk), allocatable:: rlocal(:,:), zlocal(:,:), &
-       ulocal(:,:), vlocal(:,:), Tlocal(:,:), plocal(:,:), clocal(:,:), cplocal(:,:)
+       ulocal(:,:), vlocal(:,:), Tlocal(:,:), plocal(:,:), clocal(:,:), cplocal(:,:), gammalocal(:,:)
   integer(kind=ik), parameter:: NNr = 1, NNz = 2, NNu = 3, NNv = 4, NNp = 6
   real(kind=rk), allocatable:: rintfac(:,:,:), rsi(:,:,:), reta(:,:,:), zsi(:,:,:), zeta(:,:,:)
   real(kind=rk), allocatable:: Jp(:,:,:), Jpsign(:,:,:), s_orth(:,:,:)
@@ -21,7 +21,8 @@ module Ldata
   real(kind=rk), allocatable:: rsi_down(:,:),  zsi_down(:,:), &
        rsi_left(:,:), zsi_left(:,:), reta_left(:,:), zeta_left(:,:), &
        reta_right(:,:), zeta_right(:,:), rsi_right(:,:), zsi_right(:,:), Teta_right(:,:), cpeta_right(:,:)
-  real(kind=rk), allocatable:: rintfac_right(:,:), uintfac_right(:,:), vintfac_right(:,:), cpintfac_right(:,:), &
+  real(kind=rk), allocatable:: rintfac_right(:,:), uintfac_right(:,:), vintfac_right(:,:), &
+       cpintfac_right(:,:), gammaintfac_right(:,:), &
        rdotintfac_right(:,:), zdotintfac_right(:,:), Jp_r_right(:,:), Jp_z_right(:,:), Jp_right(:,:)
   real(kind=rk), allocatable:: cpintfac_left(:,:), rintfac_left(:,:)
 

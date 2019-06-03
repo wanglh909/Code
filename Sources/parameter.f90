@@ -1,6 +1,6 @@
 subroutine parameter_values
   use kind
-  use data, only: Re, Ca, Kdi, Pe, KBCgroup, REH, beta, Oh, Grav, MaN, Da_sub, &
+  use data, only: Re, Ca, Kdi, Pe, KBCgroup, REH, beta, Oh, Grav, MaN, Da_sub, Da_surf1, Da_surf2, &
        R, Hum, F0, kR, folder, substrate, outer, &
        NStrans, Inert, Capil, Viscous, GravI, Ttime, Tconv, Tdiff, TtimeS, TdiffS, NEM, NEL, NES, NEV, NEM_alge, T_sub, uniflux, &
        diameterp, Pep, kboltz, pi, solve_T, Maran_flow, fixed_Ma, cp_pack, Dp, no_vapor, solve_cp, sub_adsp, surf_adsp

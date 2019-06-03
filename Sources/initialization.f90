@@ -88,7 +88,7 @@ subroutine initialization
 
   !-------------------------------------allocate local data-------------------------------------
   allocate( rlocal(9,ths), zlocal(9,ths), ulocal(9,ths), vlocal(9,ths), &
-       Tlocal(9,ths), plocal(9,ths), clocal(9,ths), cplocal(9,ths) )
+       Tlocal(9,ths), plocal(9,ths), clocal(9,ths), cplocal(9,ths), gammalocal(9,ths) )
   allocate( rintfac(3,3,ths), rsi(3,3,ths), reta(3,3,ths), zsi(3,3,ths), zeta(3,3,ths) )
   allocate( Jp(3,3,ths), Jpsign(3,3,ths), s_orth(3,3,ths) )
   allocate( phir(3,3,9,ths), phiz(3,3,9,ths) )
@@ -103,7 +103,7 @@ subroutine initialization
        reta_left(3,ths), zeta_left(3,ths), &
        reta_right(3,ths), zeta_right(3,ths), rsi_right(3,ths), zsi_right(3,ths), Teta_right(3,ths), cpeta_right(3,ths) )
   allocate( cpintfac_left(3,ths), rintfac_left(3,ths) )
-  allocate( rintfac_right(3,ths), uintfac_right(3,ths), vintfac_right(3,ths), cpintfac_right(3,ths), &
+  allocate( rintfac_right(3,ths), uintfac_right(3,ths), vintfac_right(3,ths), cpintfac_right(3,ths), gammaintfac_right(3,ths), &
        rdotintfac_right(3,ths), zdotintfac_right(3,ths), &
        Jp_r_right(3,ths), Jp_z_right(3,ths), Jp_right(3,ths) )
   allocate( dcdsi(3,ths), dcdeta(3,ths), dTdsi(3,ths), dcpdsi(3,ths) )!,dTdeta(3,ths) )

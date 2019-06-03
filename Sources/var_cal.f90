@@ -3,7 +3,7 @@ subroutine variable_cal
   use kind
   use omp_lib
   use data
-  use Ldata, only: dcdsi, dcdeta, rsi_right, zsi_right, reta_right, zeta_right, rintfac_right, rlocal, zlocal, cplocal
+  use Ldata, only: dcdsi, dcdeta, rsi_right, zsi_right, reta_right, zeta_right, rintfac_right, rlocal, zlocal, cplocal, gammalocal
   use basis_f!, only: phii_1d, phiix_1d
   use NOP_mod, only: gaussian_quadrature, gaussian_quadrature_1d
   use special_points
@@ -23,7 +23,7 @@ subroutine variable_cal
   real(kind=rk):: v_surf_p(3), h_surf, dPdr(3)
   
   real(kind=rk):: particle_m, intMass(3,3), intVol(3,3), cpintfac, rintfac, Jp
-  real(kind=rk):: particle_s, intsurfMass(3), gammalocal(3), gammaintfac
+  real(kind=rk):: particle_s, intsurfMass(3), gammaintfac
   integer(kind=ik):: l, n, jpp
   real(kind=rk), allocatable:: cpsolp(:)
 
@@ -102,7 +102,7 @@ subroutine variable_cal
               jpp = j*3-2
            end if
            rlocal(j,1) = rcoordinate( globalNM(i,jpp) )
-           gammalocal(j) = gammasol( globalNM(i,jpp) )
+           gammalocal(j,1) = gammasol( globalNM(i,jpp) )
         end do
         do k = 1, Ng, 1
            rintfac = 0.0_rk
@@ -111,7 +111,7 @@ subroutine variable_cal
            do n = 1, 3
               rintfac = rintfac + rlocal(n,1)*phi_1d(k,n)
               rsi = rsi + rlocal(n,1)*phix_1d(k,n)
-              gammaintfac = gammaintfac + gammalocal(n)*phi_1d(k,n)
+              gammaintfac = gammaintfac + gammalocal(n,1)*phi_1d(k,n)
            end do
            intsurfMass(k) = gammaintfac * rintfac * abs(rsi)
         end do

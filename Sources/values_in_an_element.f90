@@ -23,8 +23,12 @@ subroutine values_in_an_element(m,id)
         if( VE(m).eq.0 ) then
            ulocal(j,id) = sol( NOPP( globalNM(m,j) ) + Nu )
            vlocal(j,id) = sol( NOPP( globalNM(m,j) ) + Nv )  
-           if(solve_T.eq.1) Tlocal(j,id) = sol( NOPP( globalNM(m,j) ) + NT ) 
-           if(solve_cp.eq.1) cplocal(j,id) = sol( NOPP( globalNM(m,j) ) + Ncp )
+           if(solve_T.eq.1) Tlocal(j,id) = sol( NOPP( globalNM(m,j) ) + NT )
+           if(solve_cp.eq.1) then
+              cplocal(j,id) = sol( NOPP( globalNM(m,j) ) + Ncp )
+              if(surf_adsp.eq.1 .and. BCflagE(m,3).eq.1 .and. BCflagN(globalNM(m,j),3).ne.0) &
+                   gammalocal(j,id) = sol( NOPP( globalNM(m,j) ) + MDF( globalNM(m,j) ) - 1 )
+           end if !solve_cp
            if( PN( globalNM(m,j) ) .eq. 1 )  plocal(j,id) = sol( NOPP( globalNM(m,j) ) + Np )   ! plocal(2, 4, 5, 6, 8) remain unchanged
 
            rdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Nr )
@@ -204,6 +208,7 @@ subroutine values_in_an_element(m,id)
   Teta_right(:,id) = 0.0_rk
   cpeta_right(:,id) = 0.0_rk
   cpintfac_right(:,id) = 0.0_rk
+  gammaintfac_right(:,id) = 0.0_rk
 
   rintfac_right(:,id) = 0.0_rk
   uintfac_right(:,id) = 0.0_rk
@@ -312,9 +317,12 @@ subroutine values_in_an_element(m,id)
               zdotintfac_right(k,id) = zdotintfac_right(k,id) + zdotlocal(npp,id) * phi_1d(k,n)
 
               if(solve_T.eq.1) Teta_right(k,id) = Teta_right(k,id) + Tlocal(npp,id) * phix_1d(k,n)
-              cpeta_right(k,id) = cpeta_right(k,id) + cplocal(npp,id) * phix_1d(k,n)
+              if(solve_cp.eq.1) then
+                 cpeta_right(k,id) = cpeta_right(k,id) + cplocal(npp,id) * phix_1d(k,n)
 
-              cpintfac_right(k,id) = cpintfac_right(k,id) + cplocal(npp,id)*phi_1d(k,n)
+                 cpintfac_right(k,id) = cpintfac_right(k,id) + cplocal(npp,id)*phi_1d(k,n)
+                 if(surf_adsp.eq.1) gammaintfac_right(k,id) = gammaintfac_right(k,id) + gammalocal(npp,id)*phi_1d(k,n)
+              end if
 
            end if  !for s_mode=0
         end do  !end for n
@@ -438,6 +446,7 @@ go to 122
   uintfac_right(:,id) = 0.0_rk
   vintfac_right(:,id) = 0.0_rk
   cpintfac_right(:,id) = 0.0_rk
+  gammaintfac_right(:,id) = 0.0_rk
   rdotintfac_right(:,id) = 0.0_rk
   zdotintfac_right(:,id) = 0.0_rk
   dTdsi(:,id) = 0.0_rk
