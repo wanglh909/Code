@@ -16,7 +16,7 @@ subroutine SI_in_sj(m,i,j, sj, LNVar, LNOPP, id)                     !adding SI 
        intRu_r_S(Ng), intRu_z_S(Ng), intRv_r_S(Ng), intRv_z_S(Ng), &
        intRu_T_S(Ng), intRv_T_S(Ng)
   real(kind=rk):: intRt_r_S(Ng), intRt_z_S(Ng), intRt_c_S(Ng), intRt_T_S(Ng)
-  real(kind=rk):: intRm_r_S(Ng), intRm_z_S(Ng), intRm_cp_S(Ng), intRm_c_S(Ng)
+  real(kind=rk):: intRm_r_S(Ng), intRm_z_S(Ng), intRm_cp_S(Ng), intRm_gamma_S(Ng), intRm_c_S(Ng)
   intRsi_r_S(:) = 0.0_rk
   intRsi_z_S(:) = 0.0_rk
   intReta_r_S(:) = 0.0_rk
@@ -37,6 +37,7 @@ subroutine SI_in_sj(m,i,j, sj, LNVar, LNOPP, id)                     !adding SI 
   intRm_r_S(:) = 0.0_rk
   intRm_z_S(:) = 0.0_rk
   intRm_cp_S(:) = 0.0_rk
+  intRm_gamma_S(:) = 0.0_rk
   intRm_c_S(:) = 0.0_rk
 
 
@@ -308,7 +309,27 @@ if(no_vapor.eq.1) then  !flux: flux( angle_c,rintfac_right(k,id) )
       intRm_cp_S(k) = phi_1d(k,ipp)* flux(k,id) *phi_1d(k,jpp)*&
            rintfac_right(k,id)* ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(0.5_rk)
       if(uniflux.eq.1) intRm_cp_S(k) = intRm_cp_S(k) / flux(k,id)
-   end if
+
+      if(surf_adsp.eq.1) then
+intRm_r_S(k) = intRm_r_S(k) - KBCgroup* phi_1d(k,ipp)* &
+     ( Da_surf1*gammaintfac_right(k,id) + Da_surf2*cpintfac_right(k,id) ) * &
+     ( phi_1d(k,jpp)*( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk + &
+     rintfac_right(k,id)* ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) *&
+     reta_right(k,id) *phix_1d(k,jpp) )
+
+intRm_z_S(k) = intRm_z_S(k) - KBCgroup* phi_1d(k,ipp)* &
+     ( Da_surf1*gammaintfac_right(k,id) + Da_surf2*cpintfac_right(k,id) ) *&
+     rintfac_right(k,id)* ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) * &
+     zeta_right(k,id) *phix_1d(k,jpp)
+
+intRm_cp_S(k) = intRm_cp_S(k) - KBCgroup* phi_1d(k,ipp)* Da_surf2* phi_1d(k,jpp) *&
+     rintfac_right(k,id)* ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk
+
+intRm_gamma_S(k) = -KBCgroup* phi_1d(k,ipp)* Da_surf1* phi_1d(k,jpp) *&
+     rintfac_right(k,id)* ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk
+end if  !surf_adsp
+
+   end if  !solve_cp
    
 end if   !no_vapor=1
 
@@ -499,6 +520,8 @@ intRm_cp_S(k) = intRm_cp_S(k) + KBCgroup/Pep* phi_1d(k,ipp)*( -phisi1_1d(k,j)*( 
       sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRm_r_S)
       sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRm_z_S)
       sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) = sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) + gaussian_quadrature_1d(intRm_cp_S)
+      if(surf_adsp.eq.1) sj( LNOPP(i) + Ncp, LNOPP(j) + MDF(globalNM(m,j)) -1 ) = &
+           sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) + gaussian_quadrature_1d(intRm_gamma_S)
 
       end if   !solve_cp.eq.1
 

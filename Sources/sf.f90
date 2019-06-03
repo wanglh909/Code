@@ -348,7 +348,13 @@ if(no_vapor.eq.1) then  !flux:  flux(k,id)
 
    
    !particle accumulation 2
-   if(solve_cp.eq.1) intRm_S(k) = intRsi_S(k) * cpintfac_right(k,id) 
+   if(solve_cp.eq.1) then
+      intRm_S(k) = intRsi_S(k) * cpintfac_right(k,id)
+      if(surf_adsp.eq.1) intRm_S(k) = intRm_S(k) - KBCgroup* &
+           phi_1d(k,ipp)* ( Da_surf1*gammaintfac_right(k,id) + Da_surf2*cpintfac_right(k,id) ) * &
+           rintfac_right(k,id)* ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk 
+   end if
+   
 end if
 
 !KBC1

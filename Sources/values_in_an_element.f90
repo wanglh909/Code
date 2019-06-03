@@ -333,7 +333,7 @@ subroutine values_in_an_element(m,id)
            end do  !end for n
 
            Jp_right(k,id) = rsi_right(k,id)*zeta_right(k,id) - reta_right(k,id)*zsi_right(k,id)
-
+           
         end if  !for s_mode=0
 
      end do    !end for k
