@@ -673,7 +673,7 @@ subroutine variableN
        ! if(BCflagN(i,2).eq.1 .and. VN(i).eq.1) MDF(i) = MDF(i) + 1 !T
        if(VN(i).eq.5 .or. VN(i).eq.1) MDF(i) = NNVar3 !r,T
        
-       if(surf_adsp.eq.1 .and. BCflagN(i,3).ne.0 .and. VN(i).eq.0) MDF(i) = MDF(i) + 1!gamm2
+       if(surf_adsp.eq.1 .and. BCflagN(i,3).ne.0 .and. VN(i).eq.0) MDF(i) = MDF(i) + 1!gamma
        ! if(sub_adsp.eq.1 .and. BCflagN(i,2).ne.0 .and. VN(i).eq.0) MDF(i) = MDF(i) + 1!gamma1 substrate surface concentration has no equation, no need to add a variable to the node.
        ! if(sub_adsp.eq.1 .and. surf_adsp.eq.1 .and. i.eq.CL_node) MDF(i) = MDF(i) - 1!repetition of gamma1 & gamma2
     end do
