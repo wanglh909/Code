@@ -3,7 +3,7 @@ subroutine parameter_values
   use data, only: Re, Ca, Kdi, Pe, KBCgroup, REH, beta, Oh, Grav, MaN, Da_sub, &
        R, Hum, F0, kR, folder, substrate, outer, &
        NStrans, Inert, Capil, Viscous, GravI, Ttime, Tconv, Tdiff, TtimeS, TdiffS, NEM, NEL, NES, NEV, NEM_alge, T_sub, uniflux, &
-       diameterp, Pep, kboltz, pi, solve_T, Maran_flow, fixed_Ma, cp_pack, Dp, no_vapor, solve_cp
+       diameterp, Pep, kboltz, pi, solve_T, Maran_flow, fixed_Ma, cp_pack, Dp, no_vapor, solve_cp, sub_adsp, surf_adsp
   implicit none
 
   integer(kind=ik):: Ltype !, water, octane, hexanol
@@ -111,7 +111,7 @@ subroutine parameter_values
      substrate = 0.0_rk
   end if
   MaN = beta0*Tc/(mu*vc)
-  Da_sub = 100.0_rk !kad_sub*lc/Dp
+  Da_sub = 1.0_rk !kad_sub*lc/Dp
   !Da_surf
 
   !change for equations
@@ -134,6 +134,7 @@ subroutine parameter_values
   write(10,'(A, es14.7)') 'kR =', kR
   write(10,'(A, es14.7)') 'Grav =', Grav
   write(10,'(A, es14.7)') 'Ma =', MaN
+  write(10,'(A, es14.7)') 'Da_sub =', Da_sub
   write(10,'(A, es14.7)') 'substrate =', substrate
   write(10,'(A, es14.7)') 'outer =', outer
   write(10,'(A, es14.7)') 'T_sub =', T_sub
@@ -159,7 +160,10 @@ subroutine parameter_values
   write(10,'(A, i8)') 'uniflux =', uniflux
   write(10,'(A, i8)') 'solve_T =', solve_T
   write(10,'(A, i8)') 'Maran_flow =', Maran_flow
+  write(10,'(A, i8)') 'fixed_Ma =', fixed_Ma
   write(10,'(A, i8)') 'solve_cp =', solve_cp
+  write(10,'(A, i8)') 'surf_adsp =', surf_adsp
+  write(10,'(A, i8)') 'sub_adsp =', sub_adsp
 
   write(10,'(A)') ' '
 

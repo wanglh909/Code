@@ -159,7 +159,7 @@ subroutine variable_cal
         if(solve_cp.eq.1) &
              particle_m = particle_m + gaussian_quadrature(intMass)
         volume1 = volume1 + gaussian_quadrature(intVol)
-        if(timestep.eq.1) volume0 = volume1
+        ! if(timestep.eq.1) volume0 = volume1
      end do !NTE
      ! write(*,*) 'particle mass', particle_m
 
@@ -273,7 +273,7 @@ subroutine variable_cal
                    write(113,'(2es15.7)')  rcoordinate(i), cpsol(i)
            end do
 
-           cp_average = volume0/volume1
+           cp_average = particle_m/volume1
            print *, 'cp_average', cp_average
            write(114, '(A)') 'variables = "r", "cp"'
            write(114, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
