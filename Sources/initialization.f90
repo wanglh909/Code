@@ -118,6 +118,7 @@ subroutine initialization
        Trintfac_r(3,3,ths), Trintfac_z(3,3,ths), Tzintfac_r(3,3,ths), Tzintfac_z(3,3,ths), &
        cprintfac_r(3,3,ths), cprintfac_z(3,3,ths), cpzintfac_r(3,3,ths), cpzintfac_z(3,3,ths) )
   allocate( flux(3,ths), flux_r(3,ths) )
+  allocate( SQr2z2(3,ths), dS(3,ths), dSQdr(3,ths), dSQdz(3,ths) )
 
 
 

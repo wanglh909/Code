@@ -318,6 +318,7 @@ subroutine values_in_an_element(m,id)
 
            end if  !for s_mode=0
         end do  !end for n
+        SQr2z2(k,id) = reta_right(k,id)**2 + zeta_right(k,id)**2
         
         if(no_vapor.eq.1 .and. s_mode.eq.0) then
            flux(k,id) = flux_f( angle_c, rintfac_right(k,id), 1 )
@@ -333,7 +334,11 @@ subroutine values_in_an_element(m,id)
            end do  !end for n
 
            Jp_right(k,id) = rsi_right(k,id)*zeta_right(k,id) - reta_right(k,id)*zsi_right(k,id)
-           
+
+           dS(k,id) = SQr2z2(k,id)**0.5_rk *rintfac_right(k,id)
+           dSQdr(k,id) = SQr2z2(k,id)**(-0.5_rk) *reta_right(k,id)  ! *phix_1d(k,jpp)
+           dSQdz(k,id) = SQr2z2(k,id)**(-0.5_rk) *zeta_right(k,id)  ! *phix_1d(k,jpp)
+              
         end if  !for s_mode=0
 
      end do    !end for k

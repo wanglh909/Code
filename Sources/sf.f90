@@ -338,8 +338,7 @@ if( (BCflagN( globalNM(m,i), 3 ).eq.1 .or. BCflagN( globalNM(m,i), 3 ).eq.3) .an
 !KBC2 & cooling2 & accmulation2 added here if impose the flux with no vapor phase solving
 if(no_vapor.eq.1) then  !flux:  flux(k,id) 
    !KBC2
-   intRsi_S(k) = phi_1d(k,ipp)* flux(k,id) * &
-        ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk *rintfac_right(k,id)
+   intRsi_S(k) = phi_1d(k,ipp)* flux(k,id) * dS(k,id)
    !evaporation cooling 2
    if(solve_T.eq.1) intRt_S(k) = REH * intRsi_S(k)
 
@@ -351,8 +350,7 @@ if(no_vapor.eq.1) then  !flux:  flux(k,id)
    if(solve_cp.eq.1) then
       intRm_S(k) = intRsi_S(k) * cpintfac_right(k,id)
       if(surf_adsp.eq.1) intRm_S(k) = intRm_S(k) - KBCgroup* &
-           phi_1d(k,ipp)* ( Da_surf1*gammaintfac_right(k,id) + Da_surf2*cpintfac_right(k,id) ) * &
-           rintfac_right(k,id)* ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk 
+           phi_1d(k,ipp)* ( Da_surf1*gammaintfac_right(k,id) + Da_surf2*cpintfac_right(k,id) ) * dS(k,id) 
    end if
    
 end if
@@ -372,25 +370,23 @@ intRsi_S(k) = intRsi_S(k) + KBCgroup* ( phi_1d(k,ipp)* &
 
 
 !traction BC
-intRu_S(k) = ( reta_right(k,id)*phix_1d(k,ipp) / ( reta_right(k,id)**2 + zeta_right(k,id)**2 ) &
-     + phi_1d(k,ipp)/rintfac_right(k,id) )*rintfac_right(k,id)* &
-     ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk
+intRu_S(k) = ( reta_right(k,id)*phix_1d(k,ipp) / SQr2z2(k,id) &
+     + phi_1d(k,ipp)/rintfac_right(k,id) )*dS(k,id)
 if(Maran_flow.eq.1) then
    if(fixed_Ma.eq.0) then
       intRu_S(k) = intRu_S(k) - phi_1d(k,ipp) *beta *Teta_right(k,id)* &
-           ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) *reta_right(k,id)*rintfac_right(k,id)
+           SQr2z2(k,id)**(-0.5_rk) *reta_right(k,id)*rintfac_right(k,id)
    else !fixed_Ma.eq.1
       intRu_S(k) = intRu_S(k) + Ca*MaN*phi_1d(k,ipp)*reta_right(k,id)*rintfac_right(k,id)
    end if  !fixed_Ma
 end if  !Maran_flow
 
 
-intRv_S(k) = zeta_right(k,id)*phix_1d(k,ipp) / &
-     ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**0.5_rk *rintfac_right(k,id)
+intRv_S(k) = zeta_right(k,id)*phix_1d(k,ipp) / SQr2z2(k,id)**0.5_rk *rintfac_right(k,id)
 if(Maran_flow.eq.1) then
    if(fixed_Ma.eq.0) then
       intRv_S(k) = intRv_S(k) - phi_1d(k,ipp) *beta *Teta_right(k,id)* &
-           ( reta_right(k,id)**2 + zeta_right(k,id)**2 )**(-0.5_rk) *zeta_right(k,id)*rintfac_right(k,id)
+           SQr2z2(k,id)**(-0.5_rk) *zeta_right(k,id)*rintfac_right(k,id)
    else !fixed_Ma.eq.1
       intRu_S(k) = intRu_S(k) + Ca*MaN*phi_1d(k,ipp)*zeta_right(k,id)*rintfac_right(k,id)
    end if  !fixed_Ma
@@ -398,14 +394,14 @@ end if  !Maran_flow
 
 !evaporative cooling 1
 if(solve_T.eq.1) intRt_S(k) = intRt_S(k) - phi_1d(k,ipp) * ( &
-     -dTdsi(k,id)* ( reta_right(k,id)**2 + zeta_right(k,id)**2 ) + &
+     -dTdsi(k,id)* SQr2z2(k,id) + &
      Teta_right(k,id)* ( rsi_right(k,id)*reta_right(k,id) + zsi_right(k,id)*zeta_right(k,id) ) &
       ) *rintfac_right(k,id) /Jp_right(k,id)
 
 !particle accumulation 1
 if(solve_cp.eq.1) &
 intRm_S(k) = intRm_S(k) + KBCgroup/Pep* ( phi_1d(k,ipp) * ( &
-     -dcpdsi(k,id)* ( reta_right(k,id)**2 + zeta_right(k,id)**2 ) + &
+     -dcpdsi(k,id)* SQr2z2(k,id) + &
      cpeta_right(k,id)* ( rsi_right(k,id)*reta_right(k,id) + zsi_right(k,id)*zeta_right(k,id) ) &
       ) *rintfac_right(k,id) /Jp_right(k,id) )
 
