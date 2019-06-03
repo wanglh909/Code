@@ -71,14 +71,14 @@ subroutine variable_cal
      else
         open(unit = 32, file = trim(folder)//'sub_surf_concen.dat', status = 'old', access = 'append')
      end if
-     write(13, '(A)') 'variables = "r", "<greek>Gamma</greek>"'
-     write(13, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
+     write(32, '(A)') 'variables = "r", "<greek>Gamma</greek>"'
+     write(32, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
      
      do i = 1, NTN
         if(BCflagN(i,2).ne.0 .and. VN(i).eq.0) then
            cpsolp(i) = solp( NOPP(i) + Ncp ) 
            gammasol(i) = gammasol(i) + Da_sub/Pep*( cpsol(i)+cpsolp(i) )/2.0_rk*dt
-           write(13,'(2es15.7)')  rcoordinate(i), gammasol(i)
+           write(32,'(2es15.7)')  rcoordinate(i), gammasol(i)
         end if
      end do
      
@@ -113,7 +113,7 @@ subroutine variable_cal
               rsi = rsi + rlocal(n,1)*phix_1d(k,n)
               gammaintfac = gammaintfac + gammalocal(n)*phi_1d(k,n)
            end do
-           intsurfMass(k) = gammaintfac * rintfac * rsi
+           intsurfMass(k) = gammaintfac * rintfac * abs(rsi)
         end do
         particle_s = particle_s + gaussian_quadrature_1d(intsurfMass)
      end do !NTE

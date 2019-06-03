@@ -275,7 +275,7 @@ if( ( BCflagE(m,2).eq.1 .and. VE(m).eq.0 ) &
      .and. (BCflagN(globalNM(m,i),2).eq.1 .or. BCflagN(globalNM(m,i),2).eq.3) ) then
         ipp = i  !phix_1d(k,ipp)
         do k = 1, Ng, 1    !three gausspoints
-           intRm_S(k) = phi_1d(k,ipp) * cpintfac_left(k,id) * rintfac_left(k,id) * rsi_left(k,id)
+           intRm_S(k) = phi_1d(k,ipp) * cpintfac_left(k,id) * rintfac_left(k,id) * abs(rsi_left(k,id))
         end do
         sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + Da_sub *gaussian_quadrature_1d(intRm_S)
 end if
@@ -284,9 +284,9 @@ if( BCflagE(m,2).eq.2  &
      .and. (BCflagN(globalNM(m,i),2).eq.2 .or. BCflagN(globalNM(m,i),2) .eq.3) ) then
         ipp = i/3 + 1  !phix_1d(k,ipp)
         do k = 1, Ng, 1    !three gausspoints
-           intRm_S(k) = phi_1d(k,ipp) * cpintfac_left(k,id) * rintfac_left(k,id) * reta_left(k,id)
+           intRm_S(k) = phi_1d(k,ipp) * cpintfac_left(k,id) * rintfac_left(k,id) * abs(reta_left(k,id))
         end do
-        sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + Da_sub *gaussian_quadrature_1d(intReta_S)
+        sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + Da_sub *gaussian_quadrature_1d(intRm_S)
 end if
 
   end if  !s_mode=0 and solve_cp=1 and sub_adsp=1

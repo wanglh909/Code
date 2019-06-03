@@ -111,7 +111,7 @@ subroutine parameter_values
      substrate = 0.0_rk
   end if
   MaN = beta0*Tc/(mu*vc)
-  Da_sub = 10.0_rk !kad_sub*lc/Dp
+  Da_sub = 100.0_rk !kad_sub*lc/Dp
   !Da_surf
 
   !change for equations

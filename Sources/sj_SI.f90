@@ -158,8 +158,10 @@ subroutine SI_in_sj(m,i,j, sj, LNVar, LNOPP, id)                     !adding SI 
            jpp = j  !phix_1d(k,jpp)
            do k = 1, Ng, 1    !three gausspoints
               intRm_r_S(k) = phi_1d(k,ipp) *cpintfac_left(k,id) * &
-                   ( phi_1d(k,jpp)*rsi_left(k,id) + rintfac_left(k,id)*phix_1d(k,jpp) )
-              intRm_cp_S(k) = phi_1d(k,ipp) * phi_1d(k,jpp) * rintfac_left(k,id) * rsi_left(k,id)
+                   ( phi_1d(k,jpp)*rsi_left(k,id) + rintfac_left(k,id)*phix_1d(k,jpp) ) &
+                   *abs(rsi_left(k,id))/rsi_left(k,id)
+              intRm_cp_S(k) = phi_1d(k,ipp)*phi_1d(k,jpp)*rintfac_left(k,id)*rsi_left(k,id)&
+                   *abs(rsi_left(k,id))/rsi_left(k,id)
            end do
            sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) + &
                 Da_sub *gaussian_quadrature_1d(intRm_r_S)
@@ -175,8 +177,10 @@ subroutine SI_in_sj(m,i,j, sj, LNVar, LNOPP, id)                     !adding SI 
            jpp = j/3 + 1  !phix_1d(k,ipp)
            do k = 1, Ng, 1    !three gausspoints
               intRm_r_S(k) = phi_1d(k,ipp) *cpintfac_left(k,id) * &
-                   ( phi_1d(k,jpp)*reta_left(k,id) + rintfac_left(k,id)*phix_1d(k,jpp) )
-              intRm_cp_S(k) = phi_1d(k,ipp) * phi_1d(k,jpp) * rintfac_left(k,id) * reta_left(k,id)
+                   ( phi_1d(k,jpp)*reta_left(k,id) + rintfac_left(k,id)*phix_1d(k,jpp) )&
+                   *abs(reta_left(k,id))/reta_left(k,id)
+              intRm_cp_S(k) = phi_1d(k,ipp)*phi_1d(k,jpp)*rintfac_left(k,id)*reta_left(k,id)&
+                   *abs(reta_left(k,id))/reta_left(k,id)
            end do
            sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) + &
                 Da_sub *gaussian_quadrature_1d(intRm_r_S)
