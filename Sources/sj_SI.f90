@@ -17,6 +17,8 @@ subroutine SI_in_sj(m,i,j, sj, LNVar, LNOPP, id)                     !adding SI 
        intRu_T_S(Ng), intRv_T_S(Ng)
   real(kind=rk):: intRt_r_S(Ng), intRt_z_S(Ng), intRt_c_S(Ng), intRt_T_S(Ng)
   real(kind=rk):: intRm_r_S(Ng), intRm_z_S(Ng), intRm_cp_S(Ng), intRm_gamma_S(Ng), intRm_c_S(Ng)
+  real(kind=rk):: intRms_r_S(Ng), intRms_z_S(Ng), intRms_u_S(Ng), intRms_v_S(Ng), intRms_cp_S(Ng), intRms_gamma_S(Ng)
+  real(kind=rk):: Rms1r, Rms2r, Rms3r, Rms4r, Rms1z, Rms2z, Rms3z, Rms4z, Rms1gamma, Rms2gamma, Rms3gamma, Rms4gamma
   intRsi_r_S(:) = 0.0_rk
   intRsi_z_S(:) = 0.0_rk
   intReta_r_S(:) = 0.0_rk
@@ -39,6 +41,13 @@ subroutine SI_in_sj(m,i,j, sj, LNVar, LNOPP, id)                     !adding SI 
   intRm_cp_S(:) = 0.0_rk
   intRm_gamma_S(:) = 0.0_rk
   intRm_c_S(:) = 0.0_rk
+  intRms_r_S(:) = 0.0_rk
+  intRms_z_S(:) = 0.0_rk
+  intRms_u_S(:) = 0.0_rk
+  intRms_v_S(:) = 0.0_rk
+  intRms_cp_S(:) = 0.0_rk
+  intRms_gamma_S(:) = 0.0_rk
+  
 
 
   !axis
@@ -307,18 +316,18 @@ if(no_vapor.eq.1) then  !flux: flux( angle_c,rintfac_right(k,id) )
 
       if(surf_adsp.eq.1) then
 intRm_r_S(k) = intRm_r_S(k) - KBCgroup* phi_1d(k,ipp)* &
-     ( Da_surf1*gammaintfac_right(k,id) + Da_surf2*cpintfac_right(k,id) ) * &
+     ( Da_surf1*gammaintfac(k,id) + Da_surf2*cpintfac_right(k,id) ) * &
      ( phi_1d(k,jpp)*SQr2z2(k,id)**0.5_rk + &
      rintfac_right(k,id)* dSQdr(k,id) *phix_1d(k,jpp) )
 
 intRm_z_S(k) = intRm_z_S(k) - KBCgroup* phi_1d(k,ipp)* &
-     ( Da_surf1*gammaintfac_right(k,id) + Da_surf2*cpintfac_right(k,id) ) *&
+     ( Da_surf1*gammaintfac(k,id) + Da_surf2*cpintfac_right(k,id) ) *&
      rintfac_right(k,id)* dSQdz(k,id) *phix_1d(k,jpp)
 
 intRm_cp_S(k) = intRm_cp_S(k) - KBCgroup* phi_1d(k,ipp)*Da_surf2*phi_1d(k,jpp)*dS(k,id)
 
 intRm_gamma_S(k) = -KBCgroup* phi_1d(k,ipp)* Da_surf1* phi_1d(k,jpp) *dS(k,id)
-end if  !surf_adsp
+      end if  !surf_adsp
 
    end if  !solve_cp
    
@@ -410,7 +419,7 @@ intRv_r_S(k) = zeta_right(k,id)*phix_1d(k,ipp)*&
    intRv_r_S(k) = intRv_r_S(k) - phi_1d(k,ipp)*beta*Teta_right(k,id)*zeta_right(k,id)* ( &
       -SQr2z2(k,id)**(-1.5_rk) *reta_right(k,id) *phix_1d(k,jpp) *rintfac_right(k,id) + &
       SQr2z2(k,id)**(-0.5_rk) * phi_1d(k,jpp) )
-   else
+   else 
    intRv_r_S(k) = intRv_r_S(k) + Ca*MaN*phi_1d(k,ipp)*zeta_right(k,id)*phi_1d(k,jpp)
    end if !fixed_Ma
 end if  !Maran_flow
@@ -434,7 +443,86 @@ intRv_z_S(k) = phix_1d(k,ipp)*phix_1d(k,jpp) / sqrt( SQr2z2(k,id) ) *rintfac_rig
  end if !Maran_flow
        
 
-         end do
+!adsorbed particle
+ if(solve_cp.eq.1 .and. surf_adsp.eq.1) then
+    Rms1r = phi_1d(k,ipp)*gammadot(k,id)*( phi_1d(k,jpp)*SQr2z2(k,id)**0.5_rk + rintfac_right(k,id)*dSQdr(k,id)*phix_1d(k,jpp) ) - &
+         phi_1d(k,ipp)*gammaeta(k,id)*( &
+         (CTJ/dt*phi_1d(k,jpp)*reta_right(k,id) )*rintfac_right(k,id)*SQr2z2(k,id)**(-0.5_rk) + &
+         Rms1term(k,id)*phi_1d(k,jpp)*SQr2z2(k,id)**(-0.5_rk) - &
+         Rms1term(k,id)*rintfac_right(k,id)*SQr2z2(k,id)**(-1.5_rk)*reta_right(k,id)*phix_1d(k,jpp) )
+
+    Rms2r = -phi_1d(k,ipp)*adsp_rate(k,id)*( phi_1d(k,jpp)*sqrt(SQr2z2(k,id)) + dSQdr(k,id)*phix_1d(k,jpp) )
+
+    Rms3r = phi_1d(k,ipp)* ( &
+         phi_1d(k,jpp)*Rms3_1(k,id)*SQr2z2(k,id) + &
+         
+         rintfac_right(k,id)*( gammaeta(k,id)*uintfac_right(k,id)*phix_1d(k,jpp) + &
+         gammaintfac(k,id)*( ueta(k,id)*phix_1d(k,jpp) + uintfac_right(k,id)*phixx_1d(jpp) ) )/SQr2z2(k,id) + &
+         
+         rintfac_right(k,id)*Rms3_1(k,id)*SQr2z2(k,id)**(-2)*2.0_rk*reta_right(k,id)*phix_1d(k,jpp) - &
+         
+         phi_1d(k,jpp)*gammaintfac(k,id)*Rms3_2(k,id)*SQr2z2(k,id)**(-2) - &
+         
+         rintfac_right(k,id)*gammaintfac(k,id)*( uintfac_right(k,id)*phix_1d(k,jpp)*rereeandzezee(k,id) + &
+         ureandvze(k,id)*( phix_1d(k,jpp)*retaeta(k,id) + reta_right(k,id)*phixx_1d(jpp) ) )*SQr2z2(k,id)**(-2) + &
+         
+         rintfac_right(k,id)*gammaintfac(k,id)*Rms3_2(k,id)*4.0_rk*SQr2z2(k,id)**(-1.5_rk)*reta_right(k,id)*phix_1d(k,jpp)  &
+         )
+
+    Rms4r = -1.0_rk/Pep*phi_1d(k,ipp)*gammaetaeta(k,id)*( &
+         phi_1d(k,jpp)/sqrt(SQr2z2(k,id)) - rintfac_right(k,id)*SQr2z2(k,id)**(-1.5_rk)*reta_right(k,id)*phix_1d(k,jpp) )
+
+    intRms_r_S(k) = Rms1r + Rms2r + Rms3r + Rms4r
+
+    Rms1z = phi_1d(k,ipp)*( &
+         gammadot(k,id)*rintfac_right(k,id)*dSQdz(k,id)*phix_1d(k,jpp) - &
+         gammaeta(k,id)*( CTJ/dt*phi_1d(k,jpp) *zeta_right(k,id) + &
+         zdotintfac_right(k,id)*phix_1d(k,jpp) )*rintfac_right(k,id)/sqrt(SQr2z2(k,id)) + &
+         gammaeta(k,id)*Rms1term(k,id)*rintfac_right(k,id)&
+         *SQr2z2(k,id)**(-1.5_rk)*zeta_right(k,id)*phix_1d(k,jpp)  &         
+         )
+
+    Rms2z = -phi_1d(k,ipp)*adsp_rate(k,id)*rintfac_right(k,id)*dSQdz(k,id)*phix_1d(k,jpp)
+    Rms3z = phi_1d(k,jpp)*rintfac_right(k,id)*( &
+         ( gammaeta(k,id)*vintfac_right(k,id) + gammaintfac(k,id)*&
+         ( veta(k,id)*phix_1d(k,jpp) + vintfac_right(k,id)*phixx_1d(jpp) ) )/SQr2z2(k,id) - &
+         Rms3_1(k,id)/ SQr2z2(k,id)**2 *2.0_rk*zeta_right(k,id)*phix_1d(k,jpp) - &
+         gammaintfac(k,id)*( vintfac_right(k,id)*phix_1d(k,jpp)*rereeandzezee(k,id) + &
+         ureandvze(k,id)*( phix_1d(k,jpp)*zetaeta(k,id) + zeta_right(k,id)*phixx_1d(jpp) ) ) /SQr2z2(k,id)**2 + &
+         gammaintfac(k,id)*Rms3_2(k,id)*4.0_rk*SQr2z2(k,id)**(-3)*zeta_right(k,id)*phix_1d(k,jpp) &         
+         )
+    Rms4z = 1.0_rk/Pep*phi_1d(k,ipp)*gammaetaeta(k,id)*rintfac_right(k,id)*SQr2z2(k,id)**(-1.5_rk)*zeta_right(k,id)*phix_1d(k,jpp)
+
+    intRms_z_S(k) = Rms1z + Rms2z + Rms3z + Rms4z
+
+    intRms_u_S(k) = phi_1d(k,ipp)*rintfac_right(k,id)*( &
+         ( gammaeta(k,id)*phi_1d(k,jpp)*reta_right(k,id) + gammaintfac(k,id)*( phix_1d(k,jpp)*reta_right(k,id) + &
+         phi_1d(k,jpp)*retaeta(k,id) ) ) / SQr2z2(k,id) - &
+         gammaintfac(k,id)*phi_1d(k,jpp)*reta_right(k,id)*rereeandzezee(k,id)/SQr2z2(k,id)**2 &
+         )
+
+    intRms_v_S(k) = phi_1d(k,ipp)*rintfac_right(k,id)*( &
+         ( gammaeta(k,id)*phi_1d(k,jpp)*zeta_right(k,id) + gammaintfac(k,id)*&
+         ( phix_1d(k,jpp)*zeta_right(k,id) + phi_1d(k,jpp)*zetaeta(k,id) ) ) / SQr2z2(k,id) - &
+         gammaintfac(k,id)*phi_1d(k,jpp)*zeta_right(k,id)*rereeandzezee(k,id)/SQr2z2(k,id)**2 &
+         )
+
+    intRms_cp_S(k) = -phi_1d(k,ipp)*Da_surf2*phi_1d(k,jpp)*dS(k,id)
+
+    Rms1gamma = phi_1d(k,ipp)*rintfac_right(k,id)*( &
+         CTJ/dt*phi_1d(k,jpp) *sqrt( SQr2z2(k,id) ) - phix_1d(k,jpp)*Rms1term(k,id)/sqrt( SQr2z2(k,id) ) )
+
+    Rms2gamma = -phi_1d(k,ipp)*Da_surf1*phi_1d(k,jpp)*dS(k,id)
+    Rms3gamma = phi_1d(k,ipp)*rintfac_right(k,id)/SQr2z2(k,id) *( &
+         phix_1d(k,jpp)*ureandvze(k,id) + phi_1d(k,jpp)*fourterms(k,id) - &
+         phi_1d(k,jpp)*ureandvze(k,id)*rereeandzezee(k,id)/SQr2z2(k,id) )
+
+    Rms4gamma = -1.0_rk/Pep*phi_1d(k,ipp)*phixx_1d(jpp)*rintfac_right(k,id)/sqrt(SQr2z2(k,id))
+
+    intRms_gamma_S(k) = Rms1gamma + Rms2gamma + Rms3gamma + Rms4gamma    
+ end if !solve_cp.eq.1 .and. surf_adsp.eq.1
+ 
+         end do ! k: three gausspoints
      
      sj(LNOPP(i)+Nr,LNOPP(j)+Nr) = sj(LNOPP(i)+Nr,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRsi_r_S)
      sj(LNOPP(i)+Nr,LNOPP(j)+Nz) = sj(LNOPP(i)+Nr,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRsi_z_S)
@@ -451,6 +539,16 @@ intRv_z_S(k) = phix_1d(k,ipp)*phix_1d(k,jpp) / sqrt( SQr2z2(k,id) ) *rintfac_rig
      if(solve_T.eq.1) &
        sj(LNOPP(i)+Nv,LNOPP(j)+NT) = sj(LNOPP(i)+Nv,LNOPP(j)+NT) + gaussian_quadrature_1d(intRv_T_S)!/Ca
 
+     if( solve_cp.eq.1 .and. surf_adsp.eq.1 ) then
+     sj(LNOPP(i)+MDF(globalNM(m,i))-1,LNOPP(j)+Nr) = gaussian_quadrature_1d(intRms_r_S)
+     sj(LNOPP(i)+MDF(globalNM(m,i))-1,LNOPP(j)+Nz) = gaussian_quadrature_1d(intRms_z_S)
+     sj(LNOPP(i)+MDF(globalNM(m,i))-1,LNOPP(j)+Nu) = gaussian_quadrature_1d(intRms_u_S)
+     sj(LNOPP(i)+MDF(globalNM(m,i))-1,LNOPP(j)+Nv) = gaussian_quadrature_1d(intRms_v_S)
+     sj(LNOPP(i)+MDF(globalNM(m,i))-1,LNOPP(j)+Ncp) = gaussian_quadrature_1d(intRms_cp_S)
+     sj(LNOPP(i)+MDF(globalNM(m,i))-1,LNOPP(j)+MDF(globalNM(m,j))-1) = gaussian_quadrature_1d(intRms_gamma_S)
+     
+     end if  !solve_cp.eq.1 .and. surf_adsp.eq.1
+     
       end if  !for j = 1,4,7 on the free surface
       
       !evaporation cooling 1
@@ -510,8 +608,8 @@ intRm_cp_S(k) = intRm_cp_S(k) + KBCgroup/Pep* phi_1d(k,ipp)*( -phisi1_1d(k,j)*SQ
       sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nr) + gaussian_quadrature_1d(intRm_r_S)
       sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) = sj(LNOPP(i)+Ncp,LNOPP(j)+Nz) + gaussian_quadrature_1d(intRm_z_S)
       sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) = sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) + gaussian_quadrature_1d(intRm_cp_S)
-      if(surf_adsp.eq.1) sj( LNOPP(i) + Ncp, LNOPP(j) + MDF(globalNM(m,j)) -1 ) = &
-           sj(LNOPP(i)+Ncp,LNOPP(j)+Ncp ) + gaussian_quadrature_1d(intRm_gamma_S)
+      if(surf_adsp.eq.1) sj( LNOPP(i) + Ncp, LNOPP(j)+MDF(globalNM(m,j))-1 ) = &
+           sj(LNOPP(i)+Ncp,LNOPP(j)+MDF(globalNM(m,j))-1 ) + gaussian_quadrature_1d(intRm_gamma_S)
 
       end if   !solve_cp.eq.1
 

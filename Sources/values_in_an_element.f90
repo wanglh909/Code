@@ -26,8 +26,8 @@ subroutine values_in_an_element(m,id)
            if(solve_T.eq.1) Tlocal(j,id) = sol( NOPP( globalNM(m,j) ) + NT )
            if(solve_cp.eq.1) then
               cplocal(j,id) = sol( NOPP( globalNM(m,j) ) + Ncp )
-              if(surf_adsp.eq.1 .and. BCflagE(m,3).eq.1 .and. BCflagN(globalNM(m,j),3).ne.0) &
-                   gammalocal(j,id) = sol( NOPP( globalNM(m,j) ) + MDF( globalNM(m,j) ) - 1 )
+if(surf_adsp.eq.1 .and. BCflagE(m,3).eq.1 .and. BCflagN(globalNM(m,j),3).ne.0) &
+     gammalocal(j,id) = sol( NOPP( globalNM(m,j) ) + MDF( globalNM(m,j) ) - 1 )
            end if !solve_cp
            if( PN( globalNM(m,j) ) .eq. 1 )  plocal(j,id) = sol( NOPP( globalNM(m,j) ) + Np )   ! plocal(2, 4, 5, 6, 8) remain unchanged
 
@@ -36,7 +36,11 @@ subroutine values_in_an_element(m,id)
            udotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Nu )
            vdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Nv )
            if(solve_T.eq.1) Tdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + NT )
-           if(solve_cp.eq.1) cpdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Ncp )
+           if(solve_cp.eq.1) then
+              cpdotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + Ncp )
+if(surf_adsp.eq.1 .and. BCflagE(m,3).eq.1 .and. BCflagN(globalNM(m,j),3).ne.0) &
+     gammadotlocal(j,id) = soldot( NOPP( globalNM(m,j) ) + MDF( globalNM(m,j) ) - 1 )
+           end if !solve_cp=1
         else if( VE(m).eq.1 ) then
            clocal(j,id) = sol( NOPP( globalNM(m,j) ) + MDF( globalNM(m,j) ) - 1 )
         else  !VE = 5
@@ -207,14 +211,24 @@ subroutine values_in_an_element(m,id)
   zeta_right(:,id) = 0.0_rk
   Teta_right(:,id) = 0.0_rk
   cpeta_right(:,id) = 0.0_rk
-  cpintfac_right(:,id) = 0.0_rk
-  gammaintfac_right(:,id) = 0.0_rk
 
   rintfac_right(:,id) = 0.0_rk
   uintfac_right(:,id) = 0.0_rk
   vintfac_right(:,id) = 0.0_rk
   rdotintfac_right(:,id) = 0.0_rk
   zdotintfac_right(:,id) = 0.0_rk
+  cpintfac_right(:,id) = 0.0_rk
+
+  
+  gammaintfac(:,id) = 0.0_rk
+  gammadot(:,id) = 0.0_rk
+  gammaeta(:,id) = 0.0_rk
+  ueta(:,id) = 0.0_rk
+  veta(:,id) = 0.0_rk
+  retaeta(:,id) = 0.0_rk
+  zetaeta(:,id) = 0.0_rk
+  gammaetaeta(:,id) = 0.0_rk
+
   
   dTdsi(:,id) = 0.0_rk
   dcpdsi(:,id) = 0.0_rk
@@ -321,12 +335,41 @@ subroutine values_in_an_element(m,id)
                  cpeta_right(k,id) = cpeta_right(k,id) + cplocal(npp,id) * phix_1d(k,n)
 
                  cpintfac_right(k,id) = cpintfac_right(k,id) + cplocal(npp,id)*phi_1d(k,n)
-                 if(surf_adsp.eq.1) gammaintfac_right(k,id) = gammaintfac_right(k,id) + gammalocal(npp,id)*phi_1d(k,n)
-              end if
+                 if(surf_adsp.eq.1) then
+                    gammaintfac(k,id) = gammaintfac(k,id) + gammalocal(npp,id)*phi_1d(k,n)
+                    gammadot(k,id) = gammadot(k,id) + gammadotlocal(npp,id)*phi_1d(k,n)
+                    gammaeta(k,id) = gammaeta(k,id) + gammalocal(npp,id) * phix_1d(k,n)
+                    ueta(k,id) = ueta(k,id) + ulocal(npp,id) * phix_1d(k,n)
+                    veta(k,id) = veta(k,id) + vlocal(npp,id) * phix_1d(k,n)
+                    retaeta(k,id) = retaeta(k,id) + rlocal(npp,id) * phixx_1d(n)
+                    zetaeta(k,id) = zetaeta(k,id) + zlocal(npp,id) * phixx_1d(n)
+                    gammaetaeta(k,id) = gammaetaeta(k,id) + gammalocal(npp,id) * phixx_1d(n)
+                 end if !sirf_adsp=1
+              end if  !solve_cp=1
 
            end if  !for s_mode=0
         end do  !end for n
+
+        !to simplify formulations
         SQr2z2(k,id) = reta_right(k,id)**2 + zeta_right(k,id)**2
+        if(s_mode.eq.0) then
+           dS(k,id) =  rintfac_right(k,id) * sqrt( SQr2z2(k,id) )
+           dSQdr(k,id) = SQr2z2(k,id)**(-0.5_rk) *reta_right(k,id)  ! *phix_1d(k,jpp)
+           dSQdz(k,id) = SQr2z2(k,id)**(-0.5_rk) *zeta_right(k,id)  ! *phix_1d(k,jpp)
+
+           !to simplify formulations of Rms_S
+           if( solve_cp.eq.1 .and. surf_adsp.eq.1 ) then
+              adsp_rate(k,id) = Da_surf1*gammaintfac(k,id) + Da_surf2*cpintfac_right(k,id)
+              Rms1term(k,id) = rdotintfac_right(k,id)*reta_right(k,id)+zdotintfac_right(k,id)*zeta_right(k,id)
+
+              ureandvze(k,id) = uintfac_right(k,id)*reta_right(k,id)+vintfac_right(k,id)*zeta_right(k,id)
+              fourterms(k,id) = ueta(k,id)*reta_right(k,id) + uintfac_right(k,id)*retaeta(k,id) + &
+                   veta(k,id)*zeta_right(k,id) + vintfac_right(k,id)*zetaeta(k,id)
+              Rms3_1(k,id) = gammaeta(k,id)*ureandvze(k,id) + gammaintfac(k,id)*fourterms(k,id)
+              rereeandzezee(k,id) = reta_right(k,id)*retaeta(k,id) + zeta_right(k,id)*zetaeta(k,id)
+              Rms3_2(k,id) =ureandvze(k,id) * rereeandzezee(k,id)
+           end if  !solve_cp.eq.1 .and. surf_adsp.eq.1
+        end if  !s_mode.eq.0 
         
         if(no_vapor.eq.1 .and. s_mode.eq.0) then
            flux(k,id) = flux_f( angle_c, rintfac_right(k,id), 1 )
@@ -342,10 +385,6 @@ subroutine values_in_an_element(m,id)
            end do  !end for n
 
            Jp_right(k,id) = rsi_right(k,id)*zeta_right(k,id) - reta_right(k,id)*zsi_right(k,id)
-
-           dS(k,id) = SQr2z2(k,id)**0.5_rk *rintfac_right(k,id)
-           dSQdr(k,id) = SQr2z2(k,id)**(-0.5_rk) *reta_right(k,id)  ! *phix_1d(k,jpp)
-           dSQdz(k,id) = SQr2z2(k,id)**(-0.5_rk) *zeta_right(k,id)  ! *phix_1d(k,jpp)
               
         end if  !for s_mode=0
 
@@ -400,6 +439,8 @@ go to 122
   udotlocal(:,id) = 0.0_rk
   vdotlocal(:,id) = 0.0_rk
   Tdotlocal(:,id) = 0.0_rk
+  cpdotlocal(:,id) = 0.0_rk
+  gammadotlocal(:,id) = 0.0_rk
   clocal(:,id) = 0.0_rk
   rintfac(:,:,id) = 0.0_rk
   rsi(:,:,id) = 0.0_rk
@@ -446,7 +487,14 @@ go to 122
   uintfac_right(:,id) = 0.0_rk
   vintfac_right(:,id) = 0.0_rk
   cpintfac_right(:,id) = 0.0_rk
-  gammaintfac_right(:,id) = 0.0_rk
+  gammaintfac(:,id) = 0.0_rk
+  gammadot(:,id) = 0.0_rk
+  gammaeta(:,id) = 0.0_rk
+  ueta(:,id) = 0.0_rk
+  veta(:,id) = 0.0_rk
+  retaeta(:,id) = 0.0_rk
+  zetaeta(:,id) = 0.0_rk
+  gammaetaeta(:,id) = 0.0_rk
   rdotintfac_right(:,id) = 0.0_rk
   zdotintfac_right(:,id) = 0.0_rk
   dTdsi(:,id) = 0.0_rk

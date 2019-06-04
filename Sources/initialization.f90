@@ -98,14 +98,18 @@ subroutine initialization
        cprintfac(3,3,ths), cpzintfac(3,3,ths) )
   allocate( rdotintfac(3,3,ths), zdotintfac(3,3,ths), &
        udotintfac(3,3,ths), vdotintfac(3,3,ths), Tdotintfac(3,3,ths), cpdotintfac(3,3,ths) )
-  allocate( udotlocal(9,ths), vdotlocal(9,ths), rdotlocal(9,ths), zdotlocal(9,ths), Tdotlocal(9,ths), cpdotlocal(9,ths) )
+  allocate( udotlocal(9,ths), vdotlocal(9,ths), rdotlocal(9,ths), zdotlocal(9,ths), &
+       Tdotlocal(9,ths), cpdotlocal(9,ths), gammadotlocal(9,ths) )
   allocate( rsi_down(3,ths),  zsi_down(3,ths), rsi_left(3,ths), zsi_left(3,ths), &
        reta_left(3,ths), zeta_left(3,ths), &
        reta_right(3,ths), zeta_right(3,ths), rsi_right(3,ths), zsi_right(3,ths), Teta_right(3,ths), cpeta_right(3,ths) )
   allocate( cpintfac_left(3,ths), rintfac_left(3,ths) )
-  allocate( rintfac_right(3,ths), uintfac_right(3,ths), vintfac_right(3,ths), cpintfac_right(3,ths), gammaintfac_right(3,ths), &
+  allocate( rintfac_right(3,ths), uintfac_right(3,ths), vintfac_right(3,ths), cpintfac_right(3,ths), &
        rdotintfac_right(3,ths), zdotintfac_right(3,ths), &
        Jp_r_right(3,ths), Jp_z_right(3,ths), Jp_right(3,ths) )
+  allocate( gammaintfac(3,ths), gammadot(3,ths), gammaeta(3,ths), ueta(3,ths), veta(3,ths), &
+       retaeta(3,ths), zetaeta(3,ths), gammaetaeta(3,ths) )
+  
   allocate( dcdsi(3,ths), dcdeta(3,ths), dTdsi(3,ths), dcpdsi(3,ths) )!,dTdeta(3,ths) )
   allocate( Aterm(3,3,ths), Bterm(3,3,ths) )
   allocate( s_orth_r(3,3,ths), s_orth_z(3,3,ths) )
@@ -119,7 +123,8 @@ subroutine initialization
        cprintfac_r(3,3,ths), cprintfac_z(3,3,ths), cpzintfac_r(3,3,ths), cpzintfac_z(3,3,ths) )
   allocate( flux(3,ths), flux_r(3,ths) )
   allocate( SQr2z2(3,ths), dS(3,ths), dSQdr(3,ths), dSQdz(3,ths) )
-
+  allocate( adsp_rate(3,ths), Rms1term(3,ths), ureandvze(3,ths), fourterms(3,ths), &
+       Rms3_1(3,ths), rereeandzezee(3,ths), Rms3_2(3,ths) )
 
 
 !--------------------------------------multifront------------------------------------

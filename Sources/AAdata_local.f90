@@ -17,18 +17,21 @@ module Ldata
   real(kind=rk), allocatable:: rdotintfac(:,:,:), zdotintfac(:,:,:), &
        udotintfac(:,:,:), vdotintfac(:,:,:), Tdotintfac(:,:,:), cpdotintfac(:,:,:)
   real(kind=rk), allocatable:: udotlocal(:,:), vdotlocal(:,:), &
-       rdotlocal(:,:), zdotlocal(:,:), Tdotlocal(:,:), cpdotlocal(:,:)
+       rdotlocal(:,:), zdotlocal(:,:), Tdotlocal(:,:), cpdotlocal(:,:), gammadotlocal(:,:)
   real(kind=rk), allocatable:: rsi_down(:,:),  zsi_down(:,:), &
        rsi_left(:,:), zsi_left(:,:), reta_left(:,:), zeta_left(:,:), &
        reta_right(:,:), zeta_right(:,:), rsi_right(:,:), zsi_right(:,:), Teta_right(:,:), cpeta_right(:,:)
-  real(kind=rk), allocatable:: rintfac_right(:,:), uintfac_right(:,:), vintfac_right(:,:), &
-       cpintfac_right(:,:), gammaintfac_right(:,:), &
+  real(kind=rk), allocatable:: rintfac_right(:,:), uintfac_right(:,:), vintfac_right(:,:), cpintfac_right(:,:), &
        rdotintfac_right(:,:), zdotintfac_right(:,:), Jp_r_right(:,:), Jp_z_right(:,:), Jp_right(:,:)
   real(kind=rk), allocatable:: cpintfac_left(:,:), rintfac_left(:,:)
-
+  real(kind=rk), allocatable:: gammaintfac(:,:), gammadot(:,:), gammaeta(:,:), &
+       ueta(:,:), veta(:,:), retaeta(:,:), zetaeta(:,:), gammaetaeta(:,:)
+  
   real(kind=rk), allocatable:: dcdsi(:,:), dcdeta(:,:) ,dTdsi(:,:) ,dcpdsi(:,:) !,dTdeta(:,:)
   real(kind=rk), allocatable:: flux(:,:), flux_r(:,:)
   real(kind=rk), allocatable:: SQr2z2(:,:), dS(:,:), dSQdr(:,:), dSQdz(:,:)
+  real(kind=rk), allocatable:: adsp_rate(:,:), Rms1term(:,:), ureandvze(:,:), &
+       fourterms(:,:), Rms3_1(:,:), rereeandzezee(:,:), Rms3_2(:,:)
 
   !for subroutine define_sf
   real(kind=rk), allocatable:: Aterm(:,:,:), Bterm(:,:,:)

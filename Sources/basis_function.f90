@@ -3,7 +3,7 @@ use kind
 contains
 
 subroutine basis_function
-  use data, only: phi, phisi, phieta, psi, psisi, psieta, phi_1d, phix_1d, &
+  use data, only: phi, phisi, phieta, psi, psisi, psieta, phi_1d, phix_1d, phixx_1d, &
        phisi0_1d, phisi1_1d, phieta0_1d, phieta1_1d, phi0_1d, phi1_1d, phix_1d_flux, convert49, Ng
 
 
@@ -50,6 +50,9 @@ subroutine basis_function
         phix_1d(k,j) = phiix_1d( gausspoint(k), j )
      end do
   end do
+  phixx_1d(1) = 4.0_rk
+  phixx_1d(2) = -8.0_rk
+  phixx_1d(3) = 4.0_rk
 
   do j = 1, 9
      do k = 1, 3

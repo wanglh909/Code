@@ -77,7 +77,10 @@ subroutine split_sol
            if( VN(i).eq.0 .or. VN(i).eq.2 ) then           
               usol(i) = sol( NOPP(i) + Nu ) 
               vsol(i) = sol( NOPP(i) + Nv ) 
-              if(solve_cp.eq.1) cpsol(i) = sol( NOPP(i) + Ncp ) 
+              if(solve_cp.eq.1) then
+                 cpsol(i) = sol( NOPP(i) + Ncp )
+                 if(surf_adsp.eq.1 .and. BCflagN(i,3).ne.0 .and. VN(i).eq.0) &
+                      gammasol(i) = sol( NOP(i)+MDF(i)-1 )
               if ( PN(i).eq.1 )     psol(i) = sol( NOPP(i) + Np ) 
            end if
         end if

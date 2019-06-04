@@ -53,7 +53,7 @@ module data
 
   !for subroutine basis_function
   real(kind=rk):: phi(3,3,9), phisi(3,3,9), phieta(3,3,9), psi(3,3,9), psisi(3,3,9), psieta(3,3,9), &
-       phi_1d(3,3), phix_1d(3,3), phisi0_1d(3,9), phisi1_1d(3,9), phieta0_1d(3,9), phieta1_1d(3,9), &
+       phi_1d(3,3), phix_1d(3,3), phixx_1d(3), phisi0_1d(3,9), phisi1_1d(3,9), phieta0_1d(3,9), phieta1_1d(3,9), &
        phi0_1d(3,9), phi1_1d(3,9), phix_1d_flux(3)
   !phisi_1d: 3 is for three gausspoints of eta, si = 1.0, 9 is for the number of basis functions
 
