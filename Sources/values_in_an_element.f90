@@ -365,7 +365,7 @@ if(surf_adsp.eq.1 .and. BCflagE(m,3).eq.1 .and. BCflagN(globalNM(m,j),3).ne.0) &
               ureandvze(k,id) = uintfac_right(k,id)*reta_right(k,id)+vintfac_right(k,id)*zeta_right(k,id)
               fourterms(k,id) = ueta(k,id)*reta_right(k,id) + uintfac_right(k,id)*retaeta(k,id) + &
                    veta(k,id)*zeta_right(k,id) + vintfac_right(k,id)*zetaeta(k,id)
-              Rms3_1(k,id) = gammaeta(k,id)*ureandvze(k,id) + gammaintfac(k,id)*fourterms(k,id)
+              !Rms3_1(k,id) = gammaeta(k,id)*ureandvze(k,id) + gammaintfac(k,id)*fourterms(k,id)
               rereeandzezee(k,id) = reta_right(k,id)*retaeta(k,id) + zeta_right(k,id)*zetaeta(k,id)
               Rms3_2(k,id) =ureandvze(k,id) * rereeandzezee(k,id)
               reueandzeve(k,id) = reta_right(k,id)*ueta(k,id) + zeta_right(k,id)*veta(k,id)

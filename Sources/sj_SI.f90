@@ -18,8 +18,8 @@ subroutine SI_in_sj(m,i,j, sj, LNVar, LNOPP, id)                     !adding SI 
   real(kind=rk):: intRt_r_S(Ng), intRt_z_S(Ng), intRt_c_S(Ng), intRt_T_S(Ng)
   real(kind=rk):: intRm_r_S(Ng), intRm_z_S(Ng), intRm_cp_S(Ng), intRm_gamma_S(Ng), intRm_c_S(Ng)
   real(kind=rk):: intRms_r_S(Ng), intRms_z_S(Ng), intRms_u_S(Ng), intRms_v_S(Ng), intRms_cp_S(Ng), intRms_gamma_S(Ng)
-  real(kind=rk):: Rms1r, Rms2r, Rms3r, Rms4r, Rms5r, Rms1z, Rms2z, Rms3z, Rms4z, Rms5z, &
-       Rms3u, Rms5u, Rms3v, Rms5v, Rms1gamma, Rms2gamma, Rms3gamma, Rms4gamma, Rms5gamma
+  real(kind=rk):: Rms1r, Rms2r, Rms31r, Rms32r, Rms4r, Rms5r, Rms1z, Rms2z, Rms31z, Rms32z, Rms4z, Rms5z, &
+       Rms31u, Rms32u, Rms5u, Rms31v, Rms32v, Rms5v, Rms1gamma, Rms2gamma, Rms31gamma, Rms32gamma, Rms4gamma, Rms5gamma
   intRsi_r_S(:) = 0.0_rk
   intRsi_z_S(:) = 0.0_rk
   intReta_r_S(:) = 0.0_rk
@@ -472,13 +472,17 @@ intRv_z_S(k) = phix_1d(k,ipp)*phix_1d(k,jpp) / sqrt( SQr2z2(k,id) ) *rintfac_rig
     Rms2r = -phi_1d(k,ipp)*adsp_rate(k,id)*&
          ( phi_1d(k,jpp)*sqrt(SQr2z2(k,id)) + rintfac_right(k,id)*dSQdr(k,id)*phix_1d(k,jpp) )
 
-    Rms3r = phi_1d(k,ipp)* ( &
-         phi_1d(k,jpp)*Rms3_1(k,id)/SQr2z2(k,id) + &
+    Rms31r = phi_1d(k,ipp)* ( &
+         phi_1d(k,jpp)* gammaeta(k,id)*ureandvze(k,id) /SQr2z2(k,id) + &
+         rintfac_right(k,id)* gammaeta(k,id)*uintfac_right(k,id)*phix_1d(k,jpp) /SQr2z2(k,id) - &
+         rintfac_right(k,id)* gammaeta(k,id)*ureandvze(k,id) *SQr2z2(k,id)**(-2)*2.0_rk*reta_right(k,id)*phix_1d(k,jpp)  )
+    
+    Rms32r = phi_1d(k,ipp)* ( &
+         phi_1d(k,jpp)*gammaintfac(k,id)*fourterms(k,id) /SQr2z2(k,id) + &
          
-         rintfac_right(k,id)*( gammaeta(k,id)*uintfac_right(k,id)*phix_1d(k,jpp) + &
-         gammaintfac(k,id)*( ueta(k,id)*phix_1d(k,jpp) + uintfac_right(k,id)*phixx_1d(jpp) ) )/SQr2z2(k,id) - &
+         rintfac_right(k,id)*gammaintfac(k,id)*( ueta(k,id)*phix_1d(k,jpp) + uintfac_right(k,id)*phixx_1d(jpp) )/SQr2z2(k,id) - &
          
-         rintfac_right(k,id)*Rms3_1(k,id)*SQr2z2(k,id)**(-2)*2.0_rk*reta_right(k,id)*phix_1d(k,jpp)  &
+         rintfac_right(k,id)*gammaintfac(k,id)*fourterms(k,id) *SQr2z2(k,id)**(-2)*2.0_rk*reta_right(k,id)*phix_1d(k,jpp)  &
          
          - phi_1d(k,jpp)*gammaintfac(k,id)*Rms3_2(k,id)*SQr2z2(k,id)**(-2) - &
          
@@ -487,6 +491,7 @@ intRv_z_S(k) = phix_1d(k,ipp)*phix_1d(k,jpp) / sqrt( SQr2z2(k,id) ) *rintfac_rig
          
          rintfac_right(k,id)*gammaintfac(k,id)*Rms3_2(k,id)*4.0_rk*SQr2z2(k,id)**(-1.5_rk)*reta_right(k,id)*phix_1d(k,jpp)  &
          )
+    
 
     Rms4r = -1.0_rk/Pep*phi_1d(k,ipp)*gammaetaeta(k,id)*( &
          phi_1d(k,jpp)/sqrt(SQr2z2(k,id)) - rintfac_right(k,id)*SQr2z2(k,id)**(-1.5_rk)*reta_right(k,id)*phix_1d(k,jpp) )
@@ -500,7 +505,7 @@ intRv_z_S(k) = phix_1d(k,ipp)*phix_1d(k,jpp) / sqrt( SQr2z2(k,id) ) *rintfac_rig
          
          +dilatationterm(k,id)* dSdr(k,id)
     
-    intRms_r_S(k) = Rms1r + Rms2r + Rms3r + Rms4r + Rms5r   !
+    intRms_r_S(k) = Rms1r + Rms2r + Rms32r !+ Rms31r + Rms4r + Rms5r   !
 
      
     Rms1z = phi_1d(k,ipp)*( &
@@ -513,11 +518,15 @@ intRv_z_S(k) = phix_1d(k,ipp)*phix_1d(k,jpp) / sqrt( SQr2z2(k,id) ) *rintfac_rig
 
     Rms2z = -phi_1d(k,ipp)*adsp_rate(k,id)*rintfac_right(k,id)*dSQdz(k,id)*phix_1d(k,jpp)
     
-    Rms3z = phi_1d(k,ipp)*rintfac_right(k,id)*( &
-         ( gammaeta(k,id)*vintfac_right(k,id)*phix_1d(k,jpp) + gammaintfac(k,id)*&
-         ( veta(k,id)*phix_1d(k,jpp) + vintfac_right(k,id)*phixx_1d(jpp) ) )/SQr2z2(k,id) - &
+    Rms31z = phi_1d(k,ipp)*rintfac_right(k,id)*( &
+         gammaeta(k,id)*vintfac_right(k,id)*phix_1d(k,jpp)/SQr2z2(k,id) -&
          
-         Rms3_1(k,id)/ SQr2z2(k,id)**2 *2.0_rk*zeta_right(k,id)*phix_1d(k,jpp) &
+         gammaeta(k,id)*ureandvze(k,id) / SQr2z2(k,id)**2 *2.0_rk*zeta_right(k,id)*phix_1d(k,jpp)  )
+    
+    Rms32z = phi_1d(k,ipp)*rintfac_right(k,id)*( &
+         gammaintfac(k,id)*( veta(k,id)*phix_1d(k,jpp) + vintfac_right(k,id)*phixx_1d(jpp) ) /SQr2z2(k,id) - &
+         
+         gammaintfac(k,id)*fourterms(k,id)/ SQr2z2(k,id)**2 *2.0_rk*zeta_right(k,id)*phix_1d(k,jpp) &
          
          - gammaintfac(k,id)*( vintfac_right(k,id)*phix_1d(k,jpp)*rereeandzezee(k,id) + &
          ureandvze(k,id)*( phix_1d(k,jpp)*zetaeta(k,id) + zeta_right(k,id)*phixx_1d(jpp) ) ) /SQr2z2(k,id)**2 + &
@@ -535,26 +544,31 @@ intRv_z_S(k) = phix_1d(k,ipp)*phix_1d(k,jpp) / sqrt( SQr2z2(k,id) ) *rintfac_rig
          
          + dilatationterm(k,id)* dSdz(k,id)
 
-    intRms_z_S(k) = Rms1z + Rms2z + Rms3z + Rms4z + Rms5z  !
+    intRms_z_S(k) = Rms1z + Rms2z + Rms32z !+ Rms31z + Rms4z + Rms5z  !
     
     !only Rms3u & Rms5u
-    Rms3u = phi_1d(k,ipp)*rintfac_right(k,id)*( &
-         ( gammaeta(k,id)*phi_1d(k,jpp)*reta_right(k,id) + gammaintfac(k,id)*( phix_1d(k,jpp)*reta_right(k,id) + &
-         phi_1d(k,jpp)*retaeta(k,id) ) ) / SQr2z2(k,id)  &
+    Rms31u = phi_1d(k,ipp)*rintfac_right(k,id)*( &
+         gammaeta(k,id)*phi_1d(k,jpp)*reta_right(k,id) / SQr2z2(k,id)  )
+    
+    Rms32u = phi_1d(k,ipp)*rintfac_right(k,id)*( &
+         gammaintfac(k,id)*( phix_1d(k,jpp)*reta_right(k,id) + &
+         phi_1d(k,jpp)*retaeta(k,id) ) / SQr2z2(k,id)  &
          - gammaintfac(k,id)*phi_1d(k,jpp)*reta_right(k,id)*rereeandzezee(k,id)/SQr2z2(k,id)**2 &
          )
+    
     Rms5u = ( phi_1d(k,jpp)*reta_right(k,id)*phxgandphge(k,id)/SQr2z2(k,id) &
          + reta_right(k,id)*phix_1d(k,jpp)*phi_1d(k,ipp)*gammaintfac(k,id)/SQr2z2(k,id)  ) *dS(k,id)
     if(SQu2v2(k,id).ne.0.0_rk) &
          Rms5u = Rms5u + phi_1d(k,ipp)/rintfac_right(k,id)*&
          gammaintfac(k,id)/sqrt(SQu2v2(k,id))*uintfac_right(k,id)*phi_1d(k,jpp) *dS(k,id)
     
-    intRms_u_S(k) = Rms3u + Rms5u
+    intRms_u_S(k) = Rms32u !+ Rms31u + Rms5u
 
     !only Rms3v & Rms5v
-    Rms3v = phi_1d(k,ipp)*rintfac_right(k,id)*( &
-         ( gammaeta(k,id)*phi_1d(k,jpp)*zeta_right(k,id) + gammaintfac(k,id)*&
-         ( phix_1d(k,jpp)*zeta_right(k,id) + phi_1d(k,jpp)*zetaeta(k,id) ) ) / SQr2z2(k,id)  &
+    Rms31v = phi_1d(k,ipp)*rintfac_right(k,id)*(gammaeta(k,id)*phi_1d(k,jpp)*zeta_right(k,id) / SQr2z2(k,id) )
+    
+    Rms32v = phi_1d(k,ipp)*rintfac_right(k,id)*( &
+         gammaintfac(k,id)*( phix_1d(k,jpp)*zeta_right(k,id) + phi_1d(k,jpp)*zetaeta(k,id) )  / SQr2z2(k,id)  &
          - gammaintfac(k,id)*phi_1d(k,jpp)*zeta_right(k,id)*rereeandzezee(k,id)/SQr2z2(k,id)**2 &
          )
 
@@ -564,7 +578,7 @@ intRv_z_S(k) = phix_1d(k,ipp)*phix_1d(k,jpp) / sqrt( SQr2z2(k,id) ) *rintfac_rig
          Rms5v = Rms5v + phi_1d(k,ipp)/rintfac_right(k,id)*&
          gammaintfac(k,id)/sqrt(SQu2v2(k,id))*vintfac_right(k,id)*phi_1d(k,jpp) *dS(k,id)
     
-    intRms_v_S(k) = Rms3v + Rms5v
+    intRms_v_S(k) = Rms32v !+ Rms31v + Rms5v
 
     !only Rms2cp
     intRms_cp_S(k) = -phi_1d(k,ipp)*Da_surf2*phi_1d(k,jpp)*dS(k,id)
@@ -573,9 +587,11 @@ intRv_z_S(k) = phix_1d(k,ipp)*phix_1d(k,jpp) / sqrt( SQr2z2(k,id) ) *rintfac_rig
          CTJ/dt*phi_1d(k,jpp) *sqrt( SQr2z2(k,id) ) - phix_1d(k,jpp)*Rms1term(k,id)/sqrt( SQr2z2(k,id) ) )
 
     Rms2gamma = -phi_1d(k,ipp)*Da_surf1*phi_1d(k,jpp)*dS(k,id)
-    Rms3gamma = phi_1d(k,ipp)*rintfac_right(k,id)/SQr2z2(k,id) *( &
-         phix_1d(k,jpp)*ureandvze(k,id) + phi_1d(k,jpp)*fourterms(k,id)  &
-         - phi_1d(k,jpp)*ureandvze(k,id)*rereeandzezee(k,id)/SQr2z2(k,id) )
+    
+    Rms31gamma = phi_1d(k,ipp)*rintfac_right(k,id)/SQr2z2(k,id) *phix_1d(k,jpp)*ureandvze(k,id) 
+    
+    Rms32gamma = phi_1d(k,ipp)*rintfac_right(k,id)/SQr2z2(k,id) *( &
+         phi_1d(k,jpp)*fourterms(k,id) - phi_1d(k,jpp)*ureandvze(k,id)*rereeandzezee(k,id)/SQr2z2(k,id) )
 
     Rms4gamma = -1.0_rk/Pep*phi_1d(k,ipp)*phixx_1d(jpp)*rintfac_right(k,id)/sqrt(SQr2z2(k,id))
 
@@ -584,7 +600,7 @@ intRv_z_S(k) = phix_1d(k,ipp)*phix_1d(k,jpp) / sqrt( SQr2z2(k,id) ) *rintfac_rig
          + reueandzeve(k,id)*phi_1d(k,ipp)*phi_1d(k,jpp)/SQr2z2(k,id) &
          + sqrt(SQu2v2(k,id))/rintfac_right(k,id)*phi_1d(k,ipp)*phi_1d(k,jpp) ) *dS(k,id)
 
-    intRms_gamma_S(k) = Rms1gamma + Rms2gamma + Rms3gamma + Rms4gamma + Rms5gamma   !
+    intRms_gamma_S(k) = Rms1gamma + Rms2gamma + Rms32gamma !+ Rms31gamma + Rms4gamma + Rms5gamma   !
 
     ! !debug
     ! if(Rms5r.ne.Rms5r) print *, 'Rms5r', Rms5r
