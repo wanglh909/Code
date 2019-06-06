@@ -408,10 +408,10 @@ if(solve_cp.eq.1 .and. surf_adsp.eq.1) then
    !adsorption
    Rms2 = -phi_1d(k,ipp)* adsp_rate(k,id) *dS(k,id)
    !convection
-   Rms31 = phi_1d(k,ipp)*rintfac_right(k,id) * gammaeta(k,id)*ureandvze(k,id)  /SQr2z2(k,id)
+   Rms31 = phi_1d(k,ipp)*rintfac_right(k,id) * gammaeta(k,id)*ureandvze(k,id)  /sqrt(SQr2z2(k,id))
    !tangential strectching
-   Rms32 = phi_1d(k,ipp)*rintfac_right(k,id) * gammaintfac(k,id)*fourterms(k,id)  /SQr2z2(k,id) &
-        - phi_1d(k,ipp)*rintfac_right(k,id)*gammaintfac(k,id)*Rms3_2(k,id)*SQr2z2(k,id)**(-2)
+   Rms32 = phi_1d(k,ipp)*rintfac_right(k,id) * gammaintfac(k,id)*fourterms(k,id)  /sqrt(SQr2z2(k,id)) &
+        - phi_1d(k,ipp)*rintfac_right(k,id)*gammaintfac(k,id)*Rms3_2(k,id)*SQr2z2(k,id)**(-1.5_rk)
    !diffusion
    Rms4 = -Pep**(-1)* phi_1d(k,ipp)* gammaetaeta(k,id) * rintfac_right(k,id) *SQr2z2(k,id)**(-0.5_rk)
    !dilatation
@@ -422,7 +422,7 @@ if(solve_cp.eq.1 .and. surf_adsp.eq.1) then
    
    Rms5 = dilatationterm(k,id) * dS(k,id)
    
-   intRms_S(k) = Rms1 + Rms2 + Rms32 !+ Rms31 + Rms4 + Rms5  !
+   intRms_S(k) = Rms1 + Rms2 + Rms32 + Rms31 + Rms4 + Rms5  !
 end if  !solve_cp=1 and surf_adsp=1
 
    

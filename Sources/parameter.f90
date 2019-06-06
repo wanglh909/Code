@@ -112,8 +112,8 @@ subroutine parameter_values
   end if
   MaN = -100.0_rk !beta0*Tc/(mu*vc)
   Da_sub = 10.0_rk !kad_sub*lc/Dp
-  Da_surf1 = 100.0_rk
-  Da_surf2 = 100.0_rk
+  Da_surf1 = 0.0_rk!100.0_rk
+  Da_surf2 = 0.0_rk!100.0_rk
 
   !change for equations
   Re = Re*Ca

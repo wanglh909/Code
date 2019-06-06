@@ -359,7 +359,7 @@ if(surf_adsp.eq.1 .and. BCflagE(m,3).eq.1 .and. BCflagN(globalNM(m,j),3).ne.0) &
 
            !to simplify formulations of Rms_S
            if( solve_cp.eq.1 .and. surf_adsp.eq.1 ) then
-              adsp_rate(k,id) = Da_surf1*gammaintfac(k,id) + Da_surf2*cpintfac_right(k,id)
+              adsp_rate(k,id) = Da_surf1*gammaintfac(k,id)*cpintfac_right(k,id) + Da_surf2*cpintfac_right(k,id)
               Rms1term(k,id) = rdotintfac_right(k,id)*reta_right(k,id)+zdotintfac_right(k,id)*zeta_right(k,id)
 
               ureandvze(k,id) = uintfac_right(k,id)*reta_right(k,id)+vintfac_right(k,id)*zeta_right(k,id)
