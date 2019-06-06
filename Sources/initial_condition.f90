@@ -357,7 +357,11 @@ close(10)
         sol( NOPP(i) + Nu ) = usol(i)
         sol( NOPP(i) + Nv ) = vsol(i)
         if(solve_T.eq.1) sol( NOPP(i) + NT ) = Tsol(i)
-        if(solve_cp.eq.1) sol( NOPP(i) + Ncp ) = cpsol(i)
+        if(solve_cp.eq.1) then
+           sol( NOPP(i) + Ncp ) = cpsol(i)
+           if(surf_adsp.eq.1 .and. BCflagN(i,3).ne.0 .and. VN(i).eq.0) &
+                sol( NOPP(i)+MDF(i)-1 ) = gammasol(i)
+        end if
         if ( PN(i).eq.1 )  then
            sol( NOPP(i) + Np ) = psol(i)
         end if

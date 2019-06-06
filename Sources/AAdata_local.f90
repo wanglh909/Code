@@ -32,6 +32,7 @@ module Ldata
   real(kind=rk), allocatable:: SQr2z2(:,:), dS(:,:), dSQdr(:,:), dSQdz(:,:)
   real(kind=rk), allocatable:: adsp_rate(:,:), Rms1term(:,:), ureandvze(:,:), &
        fourterms(:,:), Rms3_1(:,:), rereeandzezee(:,:), Rms3_2(:,:)
+  real(kind=rk), allocatable:: reueandzeve(:,:), SQu2v2(:,:)
 
   !for subroutine define_sf
   real(kind=rk), allocatable:: Aterm(:,:,:), Bterm(:,:,:)
@@ -39,7 +40,7 @@ module Ldata
   real(kind=rk):: M1 = 0.0_rk, M2 = 0.0_rk
   real(kind=rk), parameter:: eps1 = 1.0_rk, eps2 = 1.0_rk, epss = 0.1_rk
   !real(kind=rk), parameter:: eps1 = 0.1_rk, eps2 = 0.1_rk, epss = 1.0_rk
-  
+  real(kind=rk), allocatable:: phxgandphge(:,:), dilatationterm(:,:)
 
 
   !for subroutine values_in_sj
@@ -52,6 +53,7 @@ module Ldata
        crintfac_r(:,:,:), crintfac_z(:,:,:), czintfac_r(:,:,:), czintfac_z(:,:,:), &
        Trintfac_r(:,:,:), Trintfac_z(:,:,:), Tzintfac_r(:,:,:), Tzintfac_z(:,:,:), &
        cprintfac_r(:,:,:), cprintfac_z(:,:,:), cpzintfac_r(:,:,:), cpzintfac_z(:,:,:)
+  real(kind=rk), allocatable:: dSdr(:,:), dSdz(:,:)
 
 
   ! !for subroutine values_in_an_element

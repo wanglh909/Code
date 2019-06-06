@@ -112,8 +112,8 @@ subroutine parameter_values
   end if
   MaN = -100.0_rk !beta0*Tc/(mu*vc)
   Da_sub = 10.0_rk !kad_sub*lc/Dp
-  Da_surf1 = 1.0_rk
-  Da_surf2 = 1.0_rk
+  Da_surf1 = 100.0_rk
+  Da_surf2 = 100.0_rk
 
   !change for equations
   Re = Re*Ca
@@ -136,6 +136,8 @@ subroutine parameter_values
   write(10,'(A, es14.7)') 'Grav =', Grav
   write(10,'(A, es14.7)') 'Ma =', MaN
   write(10,'(A, es14.7)') 'Da_sub =', Da_sub
+  write(10,'(A, es14.7)') 'Da_surf1 =', Da_surf1
+  write(10,'(A, es14.7)') 'Da_surf2 =', Da_surf2
   write(10,'(A, es14.7)') 'substrate =', substrate
   write(10,'(A, es14.7)') 'outer =', outer
   write(10,'(A, es14.7)') 'T_sub =', T_sub

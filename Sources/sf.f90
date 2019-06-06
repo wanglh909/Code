@@ -15,7 +15,7 @@ subroutine define_sf(m,i, sf, LNVar, LNOPP,id)
   real(kind=rk):: intRsi_V(Ng,Ng), intReta_V(Ng,Ng), &
        intRu_V(Ng,Ng), intRv_V(Ng,Ng), intRt_V(Ng,Ng), intRm_V(Ng,Ng), intRp(Ng,Ng), intRc(Ng,Ng)
   real(kind=rk):: intRsi_S(Ng), intReta_S(Ng), intRu_S(Ng), intRv_S(Ng), intRt_S(Ng), intRm_S(Ng), intRms_S(Ng)
-  real(kind=rk):: Rms1, Rms2, Rms3, Rms4
+  real(kind=rk):: Rms1, Rms2, Rms3, Rms4, Rms5
   real(kind=rk):: conv, flux_f
   
   intRsi_V(:,:) = 0.0_rk 
@@ -33,6 +33,11 @@ subroutine define_sf(m,i, sf, LNVar, LNOPP,id)
   intRt_S(:) = 0.0_rk
   intRm_S(:) = 0.0_rk
   intRms_S(:) = 0.0_rk
+
+  ! Rms1 = 0.0_rk
+  ! Rms2 = 0.0_rk
+  ! Rms3 = 0.0_rk
+  ! Rms4 = 0.0_rk
 
   do k = 1, MDF( globalNM(m,i) )
      sf(LNOPP(i) + k-1) = 0.0_rk
@@ -400,11 +405,18 @@ if(solve_cp.eq.1 .and. surf_adsp.eq.1) then
    Rms1 = phi_1d(k,ipp)* gammadot(k,id) * dS(k,id) - phi_1d(k,ipp)*gammaeta(k,id) &
         *Rms1term(k,id) * rintfac_right(k,id) *SQr2z2(k,id)**(-0.5_rk)
    Rms2 = -phi_1d(k,ipp)* adsp_rate(k,id) *dS(k,id)
-   Rms3 = phi_1d(k,ipp)*rintfac_right(k,id) *Rms3_1(k,id) /SQr2z2(k,id) - &
-        phi_1d(k,ipp)*rintfac_right(k,id)*gammaintfac(k,id)*Rms3_2(k,id)*SQr2z2(k,id)**(-2)
-   Rms4 = -Pep**(-1)* phi_1d(k,ipp)* gammaetaeta(k,id) * rintfac_right(k,id) *SQr2z2(k,id)*(-0.5_rk)
+   Rms3 = phi_1d(k,ipp)*rintfac_right(k,id) *Rms3_1(k,id) /SQr2z2(k,id)  &
+        - phi_1d(k,ipp)*rintfac_right(k,id)*gammaintfac(k,id)*Rms3_2(k,id)*SQr2z2(k,id)**(-2)
+   Rms4 = -Pep**(-1)* phi_1d(k,ipp)* gammaetaeta(k,id) * rintfac_right(k,id) *SQr2z2(k,id)**(-0.5_rk)
+   !dilatation
+   phxgandphge(k,id) = phix_1d(k,ipp)*gammaintfac(k,id) + phi_1d(k,ipp)*gammaeta(k,id)
+   dilatationterm(k,id) = ureandvze(k,id)*phxgandphge(k,id)/SQr2z2(k,id) &
+        + reueandzeve(k,id)*phi_1d(k,ipp)*gammaintfac(k,id)/SQr2z2(k,id) &
+        + sqrt(SQu2v2(k,id))/rintfac_right(k,id)*phi_1d(k,ipp)*gammaintfac(k,id)
    
-   intRms_S(k) = Rms1 + Rms2 + Rms3 + Rms4
+   Rms5 = dilatationterm(k,id) * dS(k,id)
+   
+   intRms_S(k) = Rms1 + Rms2 + Rms3 + Rms4 + Rms5  !
 end if  !solve_cp=1 and surf_adsp=1
 
    

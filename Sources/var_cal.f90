@@ -23,7 +23,7 @@ subroutine variable_cal
   real(kind=rk):: v_surf_p(3), h_surf, dPdr(3)
   
   real(kind=rk):: particle_m, intMass(3,3), intVol(3,3), cpintfac, rintfac, Jp
-  real(kind=rk):: particle_s, intsurfMass(3), gammaintfac
+  real(kind=rk):: particle_sub, particle_free, intsurfMass(3), gammaintfac
   integer(kind=ik):: l, n, jpp
   real(kind=rk), allocatable:: cpsolp(:)
 
@@ -63,7 +63,8 @@ subroutine variable_cal
   close(11)
 
   
-  !----------------substrate surface concentration---------------------------------
+  !----------------substrate & surface , surface concentration---------------------------------
+  !substrate
   if(timestep.gt.0 .and. solve_cp.eq.1 .and. sub_adsp.eq.1) then
      allocate( cpsolp(NTN) )
      if(timestep.eq.1) then
@@ -84,15 +85,37 @@ subroutine variable_cal
      
      close(32)
   end if
+
+  !free surface
+  if(timestep.gt.0 .and. solve_cp.eq.1 .and. surf_adsp.eq.1) then
+     if(timestep.eq.1) then
+        open(unit = 32, file = trim(folder)//'surf_surf_concen.dat', status = 'replace')
+     else
+        open(unit = 32, file = trim(folder)//'surf_surf_concen.dat', status = 'old', access = 'append')
+     end if
+     write(32, '(A)') 'variables = "r", "<greek>Gamma</greek>"'
+     write(32, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
+     
+     do i = 1, NTN
+        if(BCflagN(i,3).ne.0 .and. VN(i).eq.0) then
+           write(32,'(2es15.7)')  rcoordinate(i), gammasol(i)
+        end if
+     end do
+     
+     close(32)
+  end if
   !--------------------------------------------------------------------------------
 
   
 
 
   !--------------------------total particle mass & drop volume-------------------------
-  !surface particle
-  if(final_size.eq.1 .and. solve_cp.eq.1) then
-     particle_s = 0.0_rk
+  particle_sub = 0.0_rk
+  particle_free = 0.0_rk
+  particle_m = 0.0_rk
+  !substrtae particle
+  if(final_size.eq.1 .and. solve_cp.eq.1 .and. sub_adsp.eq.1) then
+     particle_sub = 0.0_rk
      do i = 1, NTE
         if(BCflagE(i,2).eq.0 .or. VE(i).ne.0) cycle
         do j = 1, 3
@@ -115,7 +138,36 @@ subroutine variable_cal
            end do
            intsurfMass(k) = gammaintfac * rintfac * abs(rsi)
         end do
-        particle_s = particle_s + gaussian_quadrature_1d(intsurfMass)
+        particle_sub = particle_sub + gaussian_quadrature_1d(intsurfMass)
+     end do !NTE
+     ! write(*,*) 'particle mass', particle_m
+  end if
+
+  !free surface particle
+  if(final_size.eq.1 .and. solve_cp.eq.1 .and. surf_adsp.eq.1) then
+     particle_free = 0.0_rk
+     do i = 1, NTE
+        if(BCflagE(i,3).ne.1 .or. VE(i).ne.0) cycle
+        do j = 1, 3
+           jpp = j*3
+           rlocal(j,1) = rcoordinate( globalNM(i,jpp) )
+           zlocal(j,1) = zcoordinate( globalNM(i,jpp) )
+           gammalocal(j,1) = gammasol( globalNM(i,jpp) )
+        end do
+        do k = 1, Ng, 1
+           rintfac = 0.0_rk
+           reta = 0.0_rk
+           zeta = 0.0_rk
+           gammaintfac = 0.0_rk
+           do n = 1, 3
+              rintfac = rintfac + rlocal(n,1)*phi_1d(k,n)
+              reta = reta + rlocal(n,1)*phix_1d(k,n)
+              zeta = zeta + zlocal(n,1)*phix_1d(k,n)
+              gammaintfac = gammaintfac + gammalocal(n,1)*phi_1d(k,n)
+           end do
+           intsurfMass(k) = gammaintfac * rintfac * sqrt(reta**2+zeta**2)
+        end do
+        particle_free = particle_free + gaussian_quadrature_1d(intsurfMass)
      end do !NTE
      ! write(*,*) 'particle mass', particle_m
   end if
@@ -167,11 +219,12 @@ subroutine variable_cal
      if(solve_cp.eq.1) then
         if(timestep.eq.0) then
            open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'replace')
-           write(31, '(A)') 'variables = "contact angle", "m_bulk", "m_sub", "m_total", "time" '
+           write(31, '(A)') 'variables = "contact angle", "m_bulk", "m_sub", "m_free", "m_total", "time" '
         else
            open(unit = 31, file = trim(folder)//'particle_mass.dat', status = 'old', access = 'append')
         end if
-        write(31, '(5es15.7)') angle_c_degree, particle_m, particle_s, particle_m+particle_s, time
+        write(31, '(6es15.7)') angle_c_degree, particle_m, particle_sub, particle_free, &
+             particle_m+particle_sub+particle_free, time
         close(31)
      end if
 
