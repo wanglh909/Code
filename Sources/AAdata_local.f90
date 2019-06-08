@@ -32,7 +32,7 @@ module Ldata
   real(kind=rk), allocatable:: SQr2z2(:,:), dS(:,:), dSQdr(:,:), dSQdz(:,:)
   real(kind=rk), allocatable:: adsp_rate(:,:), Rms1term(:,:), ureandvze(:,:), &
        fourterms(:,:), Rms3_1(:,:), rereeandzezee(:,:), Rms3_2(:,:)
-  real(kind=rk), allocatable:: reueandzeve(:,:), rdreandzdze(:,:), Rms6term(:,:) !SQu2v2(:,:), 
+  real(kind=rk), allocatable:: rdreandzdze(:,:), Rms5term(:,:), twoHterm(:,:), rdzeandzdre(:,:)
 
   !for subroutine define_sf
   real(kind=rk), allocatable:: Aterm(:,:,:), Bterm(:,:,:)
@@ -40,7 +40,6 @@ module Ldata
   real(kind=rk):: M1 = 0.0_rk, M2 = 0.0_rk
   real(kind=rk), parameter:: eps1 = 1.0_rk, eps2 = 1.0_rk, epss = 0.1_rk
   !real(kind=rk), parameter:: eps1 = 0.1_rk, eps2 = 0.1_rk, epss = 1.0_rk
-  real(kind=rk), allocatable:: phxgandphge(:,:), dilatationterm(:,:)
   real(kind=rk), allocatable:: rdoteta(:,:), zdoteta(:,:)
 
 

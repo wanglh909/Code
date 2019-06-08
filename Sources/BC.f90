@@ -105,13 +105,13 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
 
      end if
 
-     ! !pinned contact line      !when s_mode=1, this also applies
-     ! if( BCflagN( globalNM(m,i), 3) .eq. 3 ) then
-     !    j = LNOPP(i) + Nr
-     !    locJac(j,:) = 0.0_rk
-     !    locJac(j,j) = 1.0_rk
-     !    locRes(j) = 0.0_rk
-     ! end if
+     !pinned contact line      !when s_mode=1, this also applies
+     if( BCflagN( globalNM(m,i), 3) .eq. 3 ) then
+        j = LNOPP(i) + Nr
+        locJac(j,:) = 0.0_rk
+        locJac(j,j) = 1.0_rk
+        locRes(j) = 0.0_rk
+     end if
      
      ! !maximum packing
      ! if( solve_cp.eq.1 .and. pack_flag( globalNM(m,i) ).eq.1 ) then  
@@ -379,22 +379,22 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
      end if
         
 
-     !make u,v,p not change
-     if( VE(m).eq.0 ) then
-        do i = 1, 9    
-           do j = LNOPP(i) + Nu, LNOPP(i) + Nv     !The location of Rc(i) in locRes
-              locJac(j,:) = 0.0_rk
-              locJac(j,j) = 1.0_rk               !dRc/dci
-              locRes(j) = 0.0_rk
-           end do
-           if(i.eq.1 .or. i.eq.3 .or. i.eq.7 .or. i.eq.9) then
-              j = LNOPP(i) + Np     !The location of Rc(i) in locRes
-              locJac(j,:) = 0.0_rk
-              locJac(j,j) = 1.0_rk               !dRc/dci
-              locRes(j) = 0.0_rk
-           end if               !
-        end do
-     end if
+     ! !make u,v,p not change
+     ! if( VE(m).eq.0 ) then
+     !    do i = 1, 9    
+     !       do j = LNOPP(i) + Nu, LNOPP(i) + Nv     !The location of Rc(i) in locRes
+     !          locJac(j,:) = 0.0_rk
+     !          locJac(j,j) = 1.0_rk               !dRc/dci
+     !          locRes(j) = 0.0_rk
+     !       end do
+     !       if(i.eq.1 .or. i.eq.3 .or. i.eq.7 .or. i.eq.9) then
+     !          j = LNOPP(i) + Np     !The location of Rc(i) in locRes
+     !          locJac(j,:) = 0.0_rk
+     !          locJac(j,j) = 1.0_rk               !dRc/dci
+     !          locRes(j) = 0.0_rk
+     !       end if               !
+     !    end do
+     ! end if
 
 
      ! !make variable c not change

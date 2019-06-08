@@ -89,7 +89,7 @@ module data
   !BCflag(:,1) is for axis, (:,2) for base, (:,3) for free surface, (:,4) for outer circle, (:,4) for substrate base; 
   !BCflag(1,2) = 0 means node1 is not on base
 
-  integer(kind=ik):: mesh_decouple = 0, base_mesh = 0
+  integer(kind=ik):: mesh_decouple = 1, base_mesh = 1
 
   !vapor_mesh_size 
   integer(kind=ik):: vlayer

@@ -414,17 +414,10 @@ if(solve_cp.eq.1 .and. surf_adsp.eq.1) then
         - phi_1d(k,ipp)*rintfac_right(k,id)*gammaintfac(k,id)*Rms3_2(k,id)*SQr2z2(k,id)**(-1.5_rk)
    !diffusion
    Rms4 = -Pep**(-1)* phi_1d(k,ipp)* gammaetaeta(k,id) * rintfac_right(k,id) *SQr2z2(k,id)**(-0.5_rk)
-   ! !dilatation(wrong)
-   ! phxgandphge(k,id) = phix_1d(k,ipp)*gammaintfac(k,id) + phi_1d(k,ipp)*gammaeta(k,id)
-   ! dilatationterm(k,id) = rdreandzdze(k,id)*phxgandphge(k,id)/SQr2z2(k,id) &
-   !      + reueandzeve(k,id)*phi_1d(k,ipp)*gammaintfac(k,id)/SQr2z2(k,id) &
-   !      + sqrt(SQu2v2(k,id))/rintfac_right(k,id)*phi_1d(k,ipp)*gammaintfac(k,id)
-   ! Rms5 = dilatationterm(k,id) * dS(k,id)
-
-   !dilatation & stretching
-   Rms6 = phi_1d(k,ipp)*gammaintfac(k,id)*Rms6term(k,id)*dS(k,id)
+   !dilatation
+   Rms5 = phi_1d(k,ipp)*gammaintfac(k,id)*Rms5term(k,id)*dS(k,id)
    
-   intRms_S(k) = Rms1 + Rms2 + Rms31 + Rms4+ Rms6 !+ Rms5 + Rms32 
+   intRms_S(k) = Rms1 + Rms2 + Rms31 + Rms4 + Rms5 + Rms32 
 end if  !solve_cp=1 and surf_adsp=1
 
    

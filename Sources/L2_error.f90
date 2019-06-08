@@ -81,7 +81,11 @@ subroutine L2_error(cal_time)
               if( VN(i).eq.0 .or. VN(i).eq.2 ) then
                  error2 = error2 + ( dsol(NOPP(i)+Nu)/umax )**2
                  error2 = error2 + ( dsol(NOPP(i)+Nv)/vmax )**2
-                 if(solve_cp.eq.1) error2 = error2 + ( dsol(NOPP(i)+Ncp) )**2   !/cpmax
+                 if(solve_cp.eq.1) then
+                    error2 = error2 + ( dsol(NOPP(i)+Ncp) )**2   !/cpmax
+                    if(surf_adsp.eq.1 .and. BCflagN(i,3).ne.0) &
+                         error2 = error2 + ( dsol(NOPP(i)+MDF(i)-1) )**2
+                 end if
                  if(PN(i).eq.1) error2 = error2 + ( dsol(NOPP(i)+Np)/pmax )**2
               end if
            end if
