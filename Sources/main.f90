@@ -13,7 +13,7 @@ program main
   t1 = REAL(omp_get_wtime(),rk)
 
   !initial droplet shape
-  angle_c_degree = 50.0_rk   !90.0_rk!
+  angle_c_degree = 90.0_rk!50.0_rk   !90.0_rk!
   angle_c = angle_c_degree /180.0_rk*pi
   no_vapor = 1       !no_vapor = 1: do not solve for vapor phase, impose function flux
   uniflux = 0  !determine if the imposed flux is uniform. Notice: If flux is uniform, still use divergent heat flux.
@@ -23,7 +23,7 @@ program main
   !set mesh parameters
   !2 6 4 2 2 simple mesh
   NEL = 8    ! 15   ! input   
-  NEM = 200  !input     !decide in data_folder
+  NEM = 8!20!0  !input     !decide in data_folder
   NEV = 50 !200!     1000!  !input
   NES = 5!5   !10!  30  !input
   NEM_alge = int(real(NEM,rk)/20.0_rk*9.0_rk,ik)!90!450!90   !  135!NEM/3*2    !decide in data_folder
@@ -31,7 +31,7 @@ program main
 !----------------------------------front settings-------------------------------------
   SWAP_LOCAL_IJ = .FALSE.             !This determines if your local is transposed
   load_balance_flag = .TRUE.        !True for load balancing, good to have on generally
-  ths = 4
+  ths = 1!4
   THREADS_FRONT = ths                       !THREADS for front, must be <= ths
   SOLVER_MODE = DOMAINS
   !Call init_front( .... ) with argument of SINGLE, DUAL, or DOMAINS (Those are module vars) (ex: call init_front(DOMAINS) )
@@ -72,7 +72,7 @@ program main
   
   angle_int = 33.0_rk  !from what angle start to calculate radial accumulation
 
-  alge_corner = 1  !algebraic mesh at the corner
+  alge_corner = 0  !algebraic mesh at the corner
 
 
   graph_step = 10  !graph every 'graph_step' steps

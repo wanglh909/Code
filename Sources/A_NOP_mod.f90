@@ -689,12 +689,12 @@ subroutine variableN
     iBW = iBW1 !max(iBW1, iBW2)
 
 
-open(unit = 10, file = trim(folder)//'MDF.dat', status = 'replace')
-do i = 1, NTN
-   write(10, '(3i8)') i, MDF(i), PN(i)
-end do
-close(10)
-! pause
+! open(unit = 10, file = trim(folder)//'MDF.dat', status = 'replace')
+! do i = 1, NTN
+!    write(10, '(3i8)') i, MDF(i), PN(i)
+! end do
+! close(10)
+! ! pause
 
 
 ! open(unit = 10, file = trim(folder)//'NOPP.dat', status = 'replace')

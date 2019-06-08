@@ -30,8 +30,8 @@ subroutine split_sol
         end if
      end if
      
-     !the contact line
-     if( BCflagN(i,3).eq.3 )  sol( NOPP(i) + Nr ) = R!1.0_rk
+     ! !the contact line
+     ! if( BCflagN(i,3).eq.3 )  sol( NOPP(i) + Nr ) = R!1.0_rk
 
      if(solve_cp.eq.1) then
      ! !maximum packing

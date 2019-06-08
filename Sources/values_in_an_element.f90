@@ -228,6 +228,8 @@ if(surf_adsp.eq.1 .and. BCflagE(m,3).eq.1 .and. BCflagN(globalNM(m,j),3).ne.0) &
   retaeta(:,id) = 0.0_rk
   zetaeta(:,id) = 0.0_rk
   gammaetaeta(:,id) = 0.0_rk
+  rdoteta(:,id) = 0.0_rk
+  zdoteta(:,id) = 0.0_rk
 
   
   dTdsi(:,id) = 0.0_rk
@@ -344,6 +346,8 @@ if(surf_adsp.eq.1 .and. BCflagE(m,3).eq.1 .and. BCflagN(globalNM(m,j),3).ne.0) &
                     retaeta(k,id) = retaeta(k,id) + rlocal(npp,id) * phixx_1d(n)
                     zetaeta(k,id) = zetaeta(k,id) + zlocal(npp,id) * phixx_1d(n)
                     gammaetaeta(k,id) = gammaetaeta(k,id) + gammalocal(npp,id) * phixx_1d(n)
+                    rdoteta(k,id) = rdoteta(k,id) + rdotlocal(npp,id) * phix_1d(k,n)
+                    zdoteta(k,id) = zdoteta(k,id) + zdotlocal(npp,id) * phix_1d(k,n)
                  end if !sirf_adsp=1
               end if  !solve_cp=1
 
@@ -361,15 +365,18 @@ if(surf_adsp.eq.1 .and. BCflagE(m,3).eq.1 .and. BCflagN(globalNM(m,j),3).ne.0) &
            if( solve_cp.eq.1 .and. surf_adsp.eq.1 ) then
               adsp_rate(k,id) = Da_surf1*gammaintfac(k,id)*cpintfac_right(k,id) + Da_surf2*cpintfac_right(k,id)
               Rms1term(k,id) = rdotintfac_right(k,id)*reta_right(k,id)+zdotintfac_right(k,id)*zeta_right(k,id)
-
               ureandvze(k,id) = uintfac_right(k,id)*reta_right(k,id)+vintfac_right(k,id)*zeta_right(k,id)
               fourterms(k,id) = ueta(k,id)*reta_right(k,id) + uintfac_right(k,id)*retaeta(k,id) + &
                    veta(k,id)*zeta_right(k,id) + vintfac_right(k,id)*zetaeta(k,id)
               !Rms3_1(k,id) = gammaeta(k,id)*ureandvze(k,id) + gammaintfac(k,id)*fourterms(k,id)
               rereeandzezee(k,id) = reta_right(k,id)*retaeta(k,id) + zeta_right(k,id)*zetaeta(k,id)
               Rms3_2(k,id) =ureandvze(k,id) * rereeandzezee(k,id)
-              reueandzeve(k,id) = reta_right(k,id)*ueta(k,id) + zeta_right(k,id)*veta(k,id)
-              SQu2v2(k,id) = uintfac_right(k,id)**2 + vintfac_right(k,id)**2
+              ! reueandzeve(k,id) = reta_right(k,id)*ueta(k,id) + zeta_right(k,id)*veta(k,id)
+              reueandzeve(k,id) = reta_right(k,id)*rdoteta(k,id) + zeta_right(k,id)*zdoteta(k,id)
+              rdreandzdze(k,id) = rdotintfac_right(k,id)*reta_right(k,id) + zdotintfac_right(k,id)*zeta_right(k,id)
+              ! SQu2v2(k,id) = uintfac_right(k,id)**2 + vintfac_right(k,id)**2
+              ! SQu2v2(k,id) = rdotintfac_right(k,id)**2 + zdotintfac_right(k,id)**2
+              Rms6term(k,id) = reueandzeve(k,id)/SQr2z2(k,id) + rintfac_right(k,id)**(-1)*rdotintfac_right(k,id)
            end if  !solve_cp.eq.1 .and. surf_adsp.eq.1
         end if  !s_mode.eq.0 
         
@@ -499,6 +506,8 @@ go to 122
   gammaetaeta(:,id) = 0.0_rk
   rdotintfac_right(:,id) = 0.0_rk
   zdotintfac_right(:,id) = 0.0_rk
+  rdoteta(:,id) = 0.0_rk
+  zdoteta(:,id) = 0.0_rk
   dTdsi(:,id) = 0.0_rk
   dcpdsi(:,id) = 0.0_rk
   dcdsi(:,id) = 0.0_rk

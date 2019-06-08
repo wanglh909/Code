@@ -15,7 +15,7 @@ subroutine define_sf(m,i, sf, LNVar, LNOPP,id)
   real(kind=rk):: intRsi_V(Ng,Ng), intReta_V(Ng,Ng), &
        intRu_V(Ng,Ng), intRv_V(Ng,Ng), intRt_V(Ng,Ng), intRm_V(Ng,Ng), intRp(Ng,Ng), intRc(Ng,Ng)
   real(kind=rk):: intRsi_S(Ng), intReta_S(Ng), intRu_S(Ng), intRv_S(Ng), intRt_S(Ng), intRm_S(Ng), intRms_S(Ng)
-  real(kind=rk):: Rms1, Rms2, Rms31, Rms32, Rms4, Rms5
+  real(kind=rk):: Rms1, Rms2, Rms31, Rms32, Rms4, Rms5, Rms6
   real(kind=rk):: conv, flux_f
   
   intRsi_V(:,:) = 0.0_rk 
@@ -414,15 +414,17 @@ if(solve_cp.eq.1 .and. surf_adsp.eq.1) then
         - phi_1d(k,ipp)*rintfac_right(k,id)*gammaintfac(k,id)*Rms3_2(k,id)*SQr2z2(k,id)**(-1.5_rk)
    !diffusion
    Rms4 = -Pep**(-1)* phi_1d(k,ipp)* gammaetaeta(k,id) * rintfac_right(k,id) *SQr2z2(k,id)**(-0.5_rk)
-   !dilatation
-   phxgandphge(k,id) = phix_1d(k,ipp)*gammaintfac(k,id) + phi_1d(k,ipp)*gammaeta(k,id)
-   dilatationterm(k,id) = ureandvze(k,id)*phxgandphge(k,id)/SQr2z2(k,id) &
-        + reueandzeve(k,id)*phi_1d(k,ipp)*gammaintfac(k,id)/SQr2z2(k,id) &
-        + sqrt(SQu2v2(k,id))/rintfac_right(k,id)*phi_1d(k,ipp)*gammaintfac(k,id)
+   ! !dilatation(wrong)
+   ! phxgandphge(k,id) = phix_1d(k,ipp)*gammaintfac(k,id) + phi_1d(k,ipp)*gammaeta(k,id)
+   ! dilatationterm(k,id) = rdreandzdze(k,id)*phxgandphge(k,id)/SQr2z2(k,id) &
+   !      + reueandzeve(k,id)*phi_1d(k,ipp)*gammaintfac(k,id)/SQr2z2(k,id) &
+   !      + sqrt(SQu2v2(k,id))/rintfac_right(k,id)*phi_1d(k,ipp)*gammaintfac(k,id)
+   ! Rms5 = dilatationterm(k,id) * dS(k,id)
+
+   !dilatation & stretching
+   Rms6 = phi_1d(k,ipp)*gammaintfac(k,id)*Rms6term(k,id)*dS(k,id)
    
-   Rms5 = dilatationterm(k,id) * dS(k,id)
-   
-   intRms_S(k) = Rms1 + Rms2 + Rms32 + Rms31 + Rms4 + Rms5  !
+   intRms_S(k) = Rms1 + Rms2 + Rms31 + Rms4+ Rms6 !+ Rms5 + Rms32 
 end if  !solve_cp=1 and surf_adsp=1
 
    
@@ -446,15 +448,7 @@ intRm_S(k) = intRm_S(k) + KBCgroup/Pep* ( phi_1d(k,ipp) * ( &
    sf(LNOPP(i)+Nv) = sf(LNOPP(i)+Nv) + gaussian_quadrature_1d(intRv_S)!/Ca
    if(solve_T.eq.1) sf(LNOPP(i)+NT) = sf(LNOPP(i)+NT) + gaussian_quadrature_1d(intRt_S)
    if(solve_cp.eq.1) sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + gaussian_quadrature_1d(intRm_S)
-   if(solve_cp.eq.1 .and. surf_adsp.eq.1) sf(LNOPP(i)+MDF(globalNM(m,i))-1) = &
-        ! sf(LNOPP(i)+MDF(globalNM(m,i))-1) + &
-        gaussian_quadrature_1d(intRms_S)
-
-   ! !debug lines
-   ! if(m.eq.81 .and. gaussian_quadrature_1d(intRm_S) .ne. gaussian_quadrature_1d(intRm_S)) then
-   !    write(*,*) 'Rsi', flux_f( angle_c,rintfac_right(1,id) ) ,angle_c,rintfac_right(1,id)
-   !    pause
-   ! end if
+   if(solve_cp.eq.1 .and. surf_adsp.eq.1) sf(LNOPP(i)+MDF(globalNM(m,i))-1) = gaussian_quadrature_1d(intRms_S)
    
 end if
 
