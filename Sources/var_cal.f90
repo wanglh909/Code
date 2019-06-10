@@ -10,7 +10,7 @@ subroutine variable_cal
   implicit none
 
 
-  integer(kind=ik):: i,j,k,n1, n2, n3, angle_c_node
+  integer(kind=ik):: i,j,k,n1, n2, n3
   real(kind=rk):: rsi, reta, zsi, zeta, csi, ceta, rsi1, reta1, zsi1, zeta1, csi1, ceta1, rdot, zdot
   real(kind=rk), allocatable:: flux(:), flux1(:), Dflux(:), flux_gp(:)
   real(kind=rk):: J0, volume1, volume2
@@ -30,22 +30,8 @@ subroutine variable_cal
   t = REAL(omp_get_wtime(),rk)
 
   !----------------------------------contact angle------------------------------------
-  do i = 1, NTN
-     if( BCflagN(i,3).eq.3 ) then
-        exit
-     end if
-  end do   !i is the contact line node
-
-  if(no_vapor.eq.0) then
-     angle_c_node = i + 2*NEV + 2*(NES+1) + 1
-  else !no_vapor=1
-     angle_c_node = i + 2*(NES+1) + 1
-  end if
-  ! write(*,*) 'angle_c_node', angle_c_node
-  ! write(*,*) 'top_node', top_node
-
   if(final_size.eq.1) then
-  angle_c = atan( zcoordinate(angle_c_node)/ ( rcoordinate(i) - rcoordinate(angle_c_node) ) )
+  angle_c = atan( zcoordinate(angle_c_node)/ ( rcoordinate(CL_node) - rcoordinate(angle_c_node) ) )
   !atan( solp( NOPP(angle_c_node)+Nz ) / ( solp( NOPP(1)+Nr ) - solp( NOPP(angle_c_node)+Nr ) ) )
   angle_c_degree = angle_c /pi*180.0_rk   !degree
   end if

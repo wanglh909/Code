@@ -9,7 +9,7 @@ subroutine parameter_values
   integer(kind=ik):: Ltype !, water, octane, hexanol
   real(kind=rk):: rho, mu, kT, cpl, alpha, beta0, Diff, csat, Hv, sigmac, lc, vc, Tc, ks, rhos, cpS, alphaS, Mmolar
 
-  substrate = 0.5_rk!0.15_rk!   0.0_rk!    3.0_rk! !1.0_rk  !0.15_rk   
+  substrate = 0.15_rk!   0.0_rk!    3.0_rk! !1.0_rk  !0.15_rk   
   outer = 1.3_rk    !10.0_rk!   20.0_rk, 1.3_rk
 
   Ltype = 1
@@ -110,7 +110,7 @@ subroutine parameter_values
      !beta = 0.0_rk
      substrate = 0.0_rk
   end if
-  MaN = -100.0_rk !beta0*Tc/(mu*vc)
+  MaN = beta0*Tc/(mu*vc)  !-100.0_rk !
   Da_sub = 10.0_rk !kad_sub*lc/Dp
   Da_surf1 = 0.0_rk!100.0_rk
   Da_surf2 = 0.0_rk!100.0_rk

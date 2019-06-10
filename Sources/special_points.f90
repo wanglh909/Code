@@ -125,6 +125,8 @@ subroutine stagnation_and_extremum(cut, delta)
   !we only care about stagnation points and extremum points:
   !1. after initial chaos are passed. viz. angle<40
   !2. not too close to CL. viz. 1.0-r>cut
+    
+
   if(timestep.gt.0) then
    
      if(solve_T.eq.1) then
@@ -152,7 +154,15 @@ subroutine stagnation_and_extremum(cut, delta)
      end if
 
      
-if(angle_c_degree.le.40.0_rk) then
+     !to write v_surf
+     if(timestep.eq.1) then
+        open(unit = 10, file = trim(folder)//'v_surf.dat', status = 'replace')
+     else
+        open(unit = 10, file = trim(folder)//'v_surf.dat', status = 'old', access = 'append')
+     end if
+     write(10, '(A)') 'variables = "r", "v_surf", "v_magnitude"'
+     write(10, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
+    
      r_change = 0.0_rk
      do i = 1, NTE
         if(BCflagE(i,3).eq.1) then  !surface element
@@ -166,8 +176,8 @@ if(angle_c_degree.le.40.0_rk) then
               Teta(1) = -3.0_rk*Tsol(globalNM(i,3)) + 4.0_rk*Tsol(globalNM(i,6)) - Tsol(globalNM(i,9))
               gradT(1) = -Teta(1)/sqrt( retap(1)**2+zetap(1)**2 )
            end if
-           dPdr(1) = ( psol(globalNM(i,9)) - psol(globalNM(i,3)) ) /retap(1)
-           v_surf_p(1) = -0.5_rk*dPdr(1)*zcoordinate(globalNM(i,3)) + beta*gradT(1)
+           ! dPdr(1) = ( psol(globalNM(i,9)) - psol(globalNM(i,3)) ) /retap(1)
+           ! v_surf_p(1) = -0.5_rk*dPdr(1)*zcoordinate(globalNM(i,3)) + beta*gradT(1)
 
            !at eta = 1
            retap(2) = rcoordinate(globalNM(i,3)) - 4.0_rk*rcoordinate(globalNM(i,6)) + 3.0_rk*rcoordinate(globalNM(i,9))
@@ -177,8 +187,20 @@ if(angle_c_degree.le.40.0_rk) then
               Teta(2) = Tsol(globalNM(i,3)) - 4.0_rk*Tsol(globalNM(i,6)) + 3.0_rk*Tsol(globalNM(i,9))
               gradT(2) = -Teta(2)/sqrt( retap(2)**2+zetap(2)**2 )
            end if
-           dPdr(2) = ( psol(globalNM(i,9)) - psol(globalNM(i,3)) ) /retap(2)
-           v_surf_p(2) = -0.5_rk*dPdr(2)*zcoordinate(globalNM(i,9)) + beta*gradT(2)
+           ! dPdr(2) = ( psol(globalNM(i,9)) - psol(globalNM(i,3)) ) /retap(2)
+           ! v_surf_p(2) = -0.5_rk*dPdr(2)*zcoordinate(globalNM(i,9)) + beta*gradT(2)
+
+
+           !to write surface velocity
+           !at eta = 0.5
+           retap(3) = -rcoordinate(globalNM(i,3)) + rcoordinate(globalNM(i,9))
+           zetap(3) = -zcoordinate(globalNM(i,3)) + zcoordinate(globalNM(i,9))
+           v_surf(3) = ( usol(globalNM(i,6))*retap(3) + vsol(globalNM(i,6))*zetap(3) ) /sqrt( retap(3)**2+zetap(3)**2 )
+           write(10,'(2es15.7)') rcoordinate(globalNM(i,3)), v_surf(1), sqrt(usol(globalNM(i,3))**2+ vsol(globalNM(i,3))**2)
+           write(10,'(2es15.7)') rcoordinate(globalNM(i,6)), v_surf(3), sqrt(usol(globalNM(i,6))**2+ vsol(globalNM(i,6))**2)
+           write(10,'(2es15.7)') rcoordinate(globalNM(i,9)), v_surf(2), sqrt(usol(globalNM(i,9))**2+ vsol(globalNM(i,9))**2)
+
+           
 
            ! !lubrication velocity direction change
            ! if( angle_c_degree.lt.15.0_rk .and. &
@@ -222,6 +244,7 @@ if(angle_c_degree.le.40.0_rk) then
 
 
            !surface flow direction change
+if(angle_c_degree.le.40.0_rk) then
            if( v_surf(1) * v_surf(2) .lt. 0.0_rk .and. (i.ne.top_element .and. i.ne.CL_element) ) then
 ! write(*,*)  v_surf(1), v_surf(2)
               eta1 = 0.0_rk
@@ -296,7 +319,7 @@ if(angle_c_degree.le.40.0_rk) then
               end if   !gradT change element
            end if
 
-
+end if  !angle < 40.0_rk
 
         end if   !surface element
      end do  !element loop
@@ -314,7 +337,6 @@ if(angle_c_degree.le.40.0_rk) then
      !    end if
      ! end do
      
-end if  !angle < 40.0_rk
 
      !check initial stability for init_stability, could be integrated with direction change calculation
      if(init_stability.eq.0) then
@@ -342,6 +364,7 @@ end if  !angle < 40.0_rk
      ! close(30)
      close(14)
      close(18)
+     close(10)
   
   end if !timestep>0
 

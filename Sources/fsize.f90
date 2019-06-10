@@ -25,7 +25,6 @@ subroutine size_function!(size_function_change)  !? not working with vapor phase
   integer(kind=ik)::i,j, group
   real(kind=rk):: x1, x2, x3, x4, x5, x6, x7, x8, x9, y, x_change  !the value of fsi_size & geta_size at the most dense area
   real(kind=rk):: a  !temperary value
-
   !integer(kind=ik), intent(in):: size_function_change
   
 

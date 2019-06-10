@@ -35,6 +35,13 @@ contains
     top_element = NTE
     CL_element = NES*(NEV+1) + 1
     CL_node = (NES*2+1)*(NEV*2+1)
+    if(no_vapor.eq.0) then
+       angle_c_node = CL_node + 2*NEV + 2*(NES+1) + 1
+    else !no_vapor=1
+       angle_c_node = CL_node + 2*(NES+1) + 1
+    end if
+    ! write(*,*) 'angle_c_node', angle_c_node
+    ! write(*,*) 'top_node', top_node
 
     NND = (2*NEL+1)**2 + 2*NEM*NNX34
     !NNV = (2*NEV+1) * (2*(NEL+NEM)+1)

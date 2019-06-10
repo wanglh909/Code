@@ -43,8 +43,8 @@ program main
 !-----------------------------------done settings------------------------------------
   
   ! no_Maran = 0  !1: no Marangoni stress
-  Maran_flow = 0
-  fixed_Ma = 1  !does not matter if Maran_flow = 0
+  Maran_flow = 1
+  fixed_Ma = 0  !does not matter if Maran_flow = 0
   !option to solve cp
   solve_cp = 1
   surf_adsp = 1  !free surface adsorption
@@ -80,9 +80,9 @@ program main
   FTS = 5 !fixed timesteps
 
   !debug flag
-  simple_mesh = 0     ! !1: use simple mesh for quicker calculation
+  simple_mesh = 1     ! !1: use simple mesh for quicker calculation
   graph_mode = 0    !1: graph each step; 0: graph each timestep
-  check_0_in_Jac = 0   !1: put 'sj's together as Jac, check Jac
+  check_0_in_Jac = 1   !1: put 'sj's together as Jac, check Jac
   debug_NAN = .FALSE.  !.true.!      !True for NaN debugging (HUGE PERFORMANCE PENALTY)
   if(debug_NAN) then
      open(unit = 10, file = trim(folder)//'NaN_check.dat', status = 'replace')

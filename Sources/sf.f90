@@ -176,8 +176,8 @@ end if    !for VE=0
 
         end if    !for s_mode=0
 
-     end do
-  end do
+     end do  !k
+  end do  !l
 
 
   if( BCflagN( globalNM(m,i), 3 ).ne.1 .and. BCflagN( globalNM(m,i), 3 ).ne.3 ) &  !KBC on free surface has no volume integral
@@ -412,12 +412,23 @@ if(solve_cp.eq.1 .and. surf_adsp.eq.1) then
    !tangential strectching
    Rms32 = phi_1d(k,ipp)*rintfac_right(k,id) * gammaintfac(k,id)*fourterms(k,id)  /sqrt(SQr2z2(k,id)) &
         - phi_1d(k,ipp)*rintfac_right(k,id)*gammaintfac(k,id)*Rms3_2(k,id)*SQr2z2(k,id)**(-1.5_rk)
+   !  ! if(m.eq.CL_element .or. globalNM(m,i).eq.CL_node+(2*NES+1)*2+6 ) &
+   ! if(globalNM(m,i).eq.CL_node ) &
+   !      Rms32 = 0.0_rk
    !diffusion
-   Rms4 = -Pep**(-1)* phi_1d(k,ipp)* gammaetaeta(k,id) * rintfac_right(k,id) *SQr2z2(k,id)**(-0.5_rk)
+   Rms4 = Pep**(-1)* phix_1d(k,ipp)*gammaeta(k,id) /SQr2z2(k,id)*dS(k,id)
    !dilatation
    Rms5 = phi_1d(k,ipp)*gammaintfac(k,id)*Rms5term(k,id)*dS(k,id)
+   ! intRms_S(k) = Rms1 + Rms32
+   intRms_S(k) = Rms1 + Rms2 + Rms31 + Rms5 + Rms4 + Rms32
+
+
+   ! if(m.eq.4 .and. k.eq.2) then
+   !    print *, intRms_S(k),phi_1d(k,ipp), k,i
+   !    pause
+   ! end if
+
    
-   intRms_S(k) = Rms1 + Rms2 + Rms31 + Rms4 + Rms5 + Rms32 
 end if  !solve_cp=1 and surf_adsp=1
 
    
@@ -434,7 +445,7 @@ intRm_S(k) = intRm_S(k) + KBCgroup/Pep* ( phi_1d(k,ipp) * ( &
      cpeta_right(k,id)* ( rsi_right(k,id)*reta_right(k,id) + zsi_right(k,id)*zeta_right(k,id) ) &
      ) *rintfac_right(k,id) /Jp_right(k,id) )
 
-   end do
+   end do   !k
 
    sf(LNOPP(i)+Nr) = sf(LNOPP(i)+Nr) + gaussian_quadrature_1d(intRsi_S)
    sf(LNOPP(i)+Nu) = sf(LNOPP(i)+Nu) + gaussian_quadrature_1d(intRu_S)!/Ca
@@ -443,6 +454,10 @@ intRm_S(k) = intRm_S(k) + KBCgroup/Pep* ( phi_1d(k,ipp) * ( &
    if(solve_cp.eq.1) sf(LNOPP(i)+Ncp) = sf(LNOPP(i)+Ncp) + gaussian_quadrature_1d(intRm_S)
    if(solve_cp.eq.1 .and. surf_adsp.eq.1) sf(LNOPP(i)+MDF(globalNM(m,i))-1) = gaussian_quadrature_1d(intRms_S)
    
+   ! if(m.eq.4) then
+   !    print *, sf(LNOPP(i)+MDF(globalNM(m,i))-1), i
+   !    pause
+   ! end if
 end if
 
 

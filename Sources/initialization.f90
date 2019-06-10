@@ -125,7 +125,7 @@ subroutine initialization
   allocate( SQr2z2(3,ths), dS(3,ths), dSQdr(3,ths), dSQdz(3,ths) )
   allocate( adsp_rate(3,ths), Rms1term(3,ths), ureandvze(3,ths), fourterms(3,ths), &
        Rms3_1(3,ths), rereeandzezee(3,ths), Rms3_2(3,ths) )
-  allocate( rdreandzdze(3,ths), twoHterm(3,ths), rdzeandzdre(3,ths), &  
+  allocate( rezeemzeree(3,ths), twoHterm(3,ths), rdzeandzdre(3,ths), &  
        dSdr(3,ths), dSdz(3,ths) )
   allocate( rdoteta(3,ths), zdoteta(3,ths), Rms5term(3,ths) )
 

@@ -32,7 +32,7 @@ module Ldata
   real(kind=rk), allocatable:: SQr2z2(:,:), dS(:,:), dSQdr(:,:), dSQdz(:,:)
   real(kind=rk), allocatable:: adsp_rate(:,:), Rms1term(:,:), ureandvze(:,:), &
        fourterms(:,:), Rms3_1(:,:), rereeandzezee(:,:), Rms3_2(:,:)
-  real(kind=rk), allocatable:: rdreandzdze(:,:), Rms5term(:,:), twoHterm(:,:), rdzeandzdre(:,:)
+  real(kind=rk), allocatable:: rezeemzeree(:,:), Rms5term(:,:), twoHterm(:,:), rdzeandzdre(:,:)
 
   !for subroutine define_sf
   real(kind=rk), allocatable:: Aterm(:,:,:), Bterm(:,:,:)

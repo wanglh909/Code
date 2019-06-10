@@ -87,7 +87,7 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
 
         if(s_mode.eq.0) then
            !in drop phase, du = dv = 0
-           if( VN( globalNM(m,i) ).ne.1 ) then   !base nodes in drop
+           if( VN( globalNM(m,i) ).ne.1 ) then   !not base nodes in drop or CL
               do j = LNOPP(i) + Nu, LNOPP(i) + Nv  !u,v
                  locJac(j,:) = 0.0_rk
                  locJac(j,j) = 1.0_rk
@@ -396,6 +396,20 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
      !    end do
      ! end if
 
+
+
+     ! !make gamma not change
+     ! if( BCflagE(m,3).eq.1 ) then
+     !    do i = 1, 9
+     !       if(mod(i,3).eq.0) then
+     !          j = LNOPP(i) + MDF(globalNM(m,i)) - 1     !The location of Rms(i) in locRes
+     !          locJac(j,:) = 0.0_rk
+     !          locJac(j,j) = 1.0_rk               !dRms/dgamma
+     !          locRes(j) = 0.0_rk
+     !       end if
+     !    end do
+     ! end if
+     
 
      ! !make variable c not change
      ! if( VE(m).eq.1 ) then

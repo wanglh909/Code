@@ -371,13 +371,14 @@ if(surf_adsp.eq.1 .and. BCflagE(m,3).eq.1 .and. BCflagN(globalNM(m,j),3).ne.0) &
               !Rms3_1(k,id) = gammaeta(k,id)*ureandvze(k,id) + gammaintfac(k,id)*fourterms(k,id)
               rereeandzezee(k,id) = reta_right(k,id)*retaeta(k,id) + zeta_right(k,id)*zetaeta(k,id)
               Rms3_2(k,id) =ureandvze(k,id) * rereeandzezee(k,id)
-              rdreandzdze(k,id) = rdotintfac_right(k,id)*reta_right(k,id) + zdotintfac_right(k,id)*zeta_right(k,id)
-
-              twoHterm(k,id) = (zetaeta(k,id) - retaeta(k,id))/SQr2z2(k,id)**1.5 &
-                   + (reta_right(k,id) - zeta_right(k,id))*rereeandzezee(k,id)/SQr2z2(k,id)**2.5 &
-                   + zeta_right(k,id)/rintfac_right(k,id)/SQr2z2(k,id)
+              
+              rezeemzeree(k,id) = reta_right(k,id)*zetaeta(k,id) - zeta_right(k,id)*retaeta(k,id)
+              twoHterm(k,id) = 2.0_rk*sin(angle_c)/R/SQr2z2(k,id)**0.5!rezeemzeree(k,id)/SQr2z2(k,id)**2 + zeta_right(k,id)/rintfac_right(k,id)/SQr2z2(k,id)
               rdzeandzdre(k,id) = rdotintfac_right(k,id)*zeta_right(k,id) - zdotintfac_right(k,id)*reta_right(k,id)
               Rms5term(k,id) = rdzeandzdre(k,id)*twoHterm(k,id)
+
+              ! if(timestep.ge.) print *, Rms5term(k,id), m, k
+              
            end if  !solve_cp.eq.1 .and. surf_adsp.eq.1
         end if  !s_mode.eq.0 
         

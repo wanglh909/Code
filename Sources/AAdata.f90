@@ -135,7 +135,7 @@ module data
 
   real(kind=rk):: ztop
 
-  integer(kind=ik):: top_node, top_element, CL_element, CL_node
+  integer(kind=ik):: top_node, top_element, CL_element, CL_node, angle_c_node
   integer(kind=ik):: read_coordinate_value
 
   real(kind=rk):: T_sub
