@@ -15,10 +15,16 @@ subroutine newton_raphson
      step = step + 1
 
      !define soldot
-     if (timestep.le.FTS) then
-        soldot = ( sol - solp )/dt
-     else
-        soldot = 2.0_rk*( sol - solp )/dt - soldotp
+     if (s_mode.eq.0 ) then
+        if(timestep.le.FTS) then
+           soldot = ( sol - solp )/dt
+        else
+           soldot = 2.0_rk*( sol - solp )/dt - soldotp
+        end if
+        if(solve_cp.eq.1 .and. surf_adsp.eq.1) then
+           angle_c = atan( zcoordinate(angle_c_node)/ ( rcoordinate(CL_node) - rcoordinate(angle_c_node) ) )
+           mtwoH = 2.0_rk*sin(angle_c)/R
+        end if
      end if
     
      call multifront(error1, cal_time) !using subroutine assemble
@@ -81,7 +87,10 @@ subroutine newton_raphson
      if ( (error1.lt.TOL.and.error2.lt.TOL) .or. &
           ( s_mode.eq.1 .and. final_size.eq.0 .and. (error1.lt.2.0_rk .or. error2.lt.2.0_rk) ) ) then
         print *, 'this timestep converged'
-        if(diverge.eq.1) diverge=0
+        if(diverge.eq.1) then
+           diverge=0
+           graph_mode=0
+        end if
         !update soldot
         if (timestep.le.FTS) then
            soldot = ( sol - solp )/dt

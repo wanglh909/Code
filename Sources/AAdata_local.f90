@@ -25,14 +25,14 @@ module Ldata
        rdotintfac_right(:,:), zdotintfac_right(:,:), Jp_r_right(:,:), Jp_z_right(:,:), Jp_right(:,:)
   real(kind=rk), allocatable:: cpintfac_left(:,:), rintfac_left(:,:)
   real(kind=rk), allocatable:: gammaintfac(:,:), gammadot(:,:), gammaeta(:,:), &
-       ueta(:,:), veta(:,:), retaeta(:,:), zetaeta(:,:), gammaetaeta(:,:)
+       ueta(:,:), veta(:,:)!, retaeta(:,:), zetaeta(:,:), gammaetaeta(:,:)
   
   real(kind=rk), allocatable:: dcdsi(:,:), dcdeta(:,:) ,dTdsi(:,:) ,dcpdsi(:,:) !,dTdeta(:,:)
   real(kind=rk), allocatable:: flux(:,:), flux_r(:,:)
   real(kind=rk), allocatable:: SQr2z2(:,:), dS(:,:), dSQdr(:,:), dSQdz(:,:)
   real(kind=rk), allocatable:: adsp_rate(:,:), Rms1term(:,:), ureandvze(:,:), &
        fourterms(:,:), Rms3_1(:,:), rereeandzezee(:,:), Rms3_2(:,:)
-  real(kind=rk), allocatable:: rezeemzeree(:,:), Rms5term(:,:), twoHterm(:,:), rdzeandzdre(:,:)
+  real(kind=rk), allocatable:: rezeemzeree(:,:), Rms5term(:,:), twoHterm(:,:), rdzeandzdre(:,:), reueandzeve(:,:), Rms6term(:,:)
 
   !for subroutine define_sf
   real(kind=rk), allocatable:: Aterm(:,:,:), Bterm(:,:,:)
@@ -40,7 +40,7 @@ module Ldata
   real(kind=rk):: M1 = 0.0_rk, M2 = 0.0_rk
   real(kind=rk), parameter:: eps1 = 1.0_rk, eps2 = 1.0_rk, epss = 0.1_rk
   !real(kind=rk), parameter:: eps1 = 0.1_rk, eps2 = 0.1_rk, epss = 1.0_rk
-  real(kind=rk), allocatable:: rdoteta(:,:), zdoteta(:,:)
+  ! real(kind=rk), allocatable:: rdoteta(:,:), zdoteta(:,:)
 
 
   !for subroutine values_in_sj

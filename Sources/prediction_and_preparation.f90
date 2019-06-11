@@ -127,7 +127,7 @@ end if   !diverge=0
 
 
 !for the first timestep, solp was not defined other than initialization
-if(timestep.eq.0) solp = sol
+if(timestep.eq.0 .and. s_mode.eq.0) solp = sol
 
 !define soldot
 ! because after the last loop of newton's method for one time step, soldot wasn't calculated

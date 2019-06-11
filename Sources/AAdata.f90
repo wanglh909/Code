@@ -72,7 +72,7 @@ module data
   integer(kind=ik):: size_function_change, final_size
 
   !for spherical cap 
-  real(kind=rk):: angle_c, angle_cd, angle_c_degree
+  real(kind=rk):: angle_c, angle_cd, angle_c_degree, mtwoH
   real(kind=rk),parameter:: pi=3.141592653589793238462643383279_rk 
 
   !fixed timestep change

@@ -333,14 +333,26 @@ subroutine Dirichlet_BC(m, locJac, locRes, LNVar, LNOPP)
 !--------------------------------------------------------------------------------------
 
   
-  !for the initial stage when stability hasn't been set up, make variable cp not change
-  if( solve_cp.eq.1 .and. s_mode.eq.0 .and. init_stability.eq.0 ) then  
+  !for the initial stage when stability hasn't been set up, make variable cp&gamma not change
+  if( solve_cp.eq.1 .and. s_mode.eq.0 .and. init_stability.eq.0 ) then
+     !cp
      if( VE(m).eq.0 ) then
         do i = 1, 9    
            j = LNOPP(i) + Ncp     !The location of Rcp(i) in locRes
            locJac(j,:) = 0.0_rk
            locJac(j,j) = 1.0_rk               !dRcpi/dcpi
            locRes(j) = 0.0_rk
+        end do
+     end if
+     !gamma
+     if( surf_adsp.eq.1 .and. BCflagE(m,3).eq.1 ) then
+        do i = 1, 9
+           if(mod(i,3).eq.0) then
+              j = LNOPP(i) + MDF(globalNM(m,i)) - 1     !The location of Rms(i) in locRes
+              locJac(j,:) = 0.0_rk
+              locJac(j,j) = 1.0_rk               !dRms/dgamma
+              locRes(j) = 0.0_rk
+           end if
         end do
      end if
   end if

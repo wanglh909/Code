@@ -410,17 +410,18 @@ if(solve_cp.eq.1 .and. surf_adsp.eq.1) then
    !convection
    Rms31 = phi_1d(k,ipp)*rintfac_right(k,id) * gammaeta(k,id)*ureandvze(k,id)  /sqrt(SQr2z2(k,id))
    !tangential strectching
-   Rms32 = phi_1d(k,ipp)*rintfac_right(k,id) * gammaintfac(k,id)*fourterms(k,id)  /sqrt(SQr2z2(k,id)) &
-        - phi_1d(k,ipp)*rintfac_right(k,id)*gammaintfac(k,id)*Rms3_2(k,id)*SQr2z2(k,id)**(-1.5_rk)
-   !  ! if(m.eq.CL_element .or. globalNM(m,i).eq.CL_node+(2*NES+1)*2+6 ) &
-   ! if(globalNM(m,i).eq.CL_node ) &
-   !      Rms32 = 0.0_rk
+   Rms32 = - ( phix_1d(k,ipp)*gammaintfac(k,id) + phi_1d(k,ipp)*gammaeta(k,id) ) &
+        * ureandvze(k,id) /sqrt(SQr2z2(k,id)) * rintfac_right(k,id)
    !diffusion
    Rms4 = Pep**(-1)* phix_1d(k,ipp)*gammaeta(k,id) /SQr2z2(k,id)*dS(k,id)
    !dilatation
    Rms5 = phi_1d(k,ipp)*gammaintfac(k,id)*Rms5term(k,id)*dS(k,id)
-   ! intRms_S(k) = Rms1 + Rms32
-   intRms_S(k) = Rms1 + Rms2 + Rms31 + Rms5 + Rms4 + Rms32
+   !stretching&dilatation
+   Rms6 = phi_1d(k,ipp)*gammaintfac(k,id)*dS(k,id)* Rms6term(k,id)
+   
+   ! intRms_S(k) = Rms1 + Rms31 + Rms6
+   intRms_S(k) = Rms1 + Rms2 + Rms31 + Rms4 + Rms6! + Rms5 + Rms32!
+   
 
 
    ! if(m.eq.4 .and. k.eq.2) then
@@ -458,7 +459,7 @@ intRm_S(k) = intRm_S(k) + KBCgroup/Pep* ( phi_1d(k,ipp) * ( &
    !    print *, sf(LNOPP(i)+MDF(globalNM(m,i))-1), i
    !    pause
    ! end if
-end if
+end if    !free surface element from drop
 
 
 !free surface from vapor, KBC part2 & evaporation cooling part2

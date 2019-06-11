@@ -107,8 +107,8 @@ subroutine initialization
   allocate( rintfac_right(3,ths), uintfac_right(3,ths), vintfac_right(3,ths), cpintfac_right(3,ths), &
        rdotintfac_right(3,ths), zdotintfac_right(3,ths), &
        Jp_r_right(3,ths), Jp_z_right(3,ths), Jp_right(3,ths) )
-  allocate( gammaintfac(3,ths), gammadot(3,ths), gammaeta(3,ths), ueta(3,ths), veta(3,ths), &
-       retaeta(3,ths), zetaeta(3,ths), gammaetaeta(3,ths) )
+  allocate( gammaintfac(3,ths), gammadot(3,ths), gammaeta(3,ths), ueta(3,ths), veta(3,ths) )!, &
+       !retaeta(3,ths), zetaeta(3,ths), gammaetaeta(3,ths) )
   
   allocate( dcdsi(3,ths), dcdeta(3,ths), dTdsi(3,ths), dcpdsi(3,ths) )!,dTdeta(3,ths) )
   allocate( Aterm(3,3,ths), Bterm(3,3,ths) )
@@ -127,7 +127,7 @@ subroutine initialization
        Rms3_1(3,ths), rereeandzezee(3,ths), Rms3_2(3,ths) )
   allocate( rezeemzeree(3,ths), twoHterm(3,ths), rdzeandzdre(3,ths), &  
        dSdr(3,ths), dSdz(3,ths) )
-  allocate( rdoteta(3,ths), zdoteta(3,ths), Rms5term(3,ths) )
+  allocate( Rms5term(3,ths), reueandzeve(3,ths), Rms6term(3,ths) )  !rdoteta(3,ths), zdoteta(3,ths), 
 
 
 !--------------------------------------multifront------------------------------------

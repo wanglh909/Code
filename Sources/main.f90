@@ -22,7 +22,7 @@ program main
 
   !set mesh parameters
   !2 6 4 2 2 simple mesh
-  NEL = 8    ! 15   ! input   
+  NEL = 8!    ! 15   ! input   
   NEM = 200  !input     !decide in data_folder
   NEV = 50 !200!     1000!  !input
   NES = 5!5   !10!  30  !input
@@ -80,9 +80,9 @@ program main
   FTS = 5 !fixed timesteps
 
   !debug flag
-  simple_mesh = 1     ! !1: use simple mesh for quicker calculation
+  simple_mesh = 0     ! !1: use simple mesh for quicker calculation
   graph_mode = 0    !1: graph each step; 0: graph each timestep
-  check_0_in_Jac = 1   !1: put 'sj's together as Jac, check Jac
+  check_0_in_Jac = 0   !1: put 'sj's together as Jac, check Jac
   debug_NAN = .FALSE.  !.true.!      !True for NaN debugging (HUGE PERFORMANCE PENALTY)
   if(debug_NAN) then
      open(unit = 10, file = trim(folder)//'NaN_check.dat', status = 'replace')
@@ -174,7 +174,7 @@ program main
      call newton_raphson  !calculating part, use multifront, jac_check_0, l2_error, split_sol, graph
 
      !calculate contact angle & flux
-     if(diverge.eq.0)  call variable_cal   !(initial_vapor_solving.eq.1 .or. initial_vapor_solved.eq.1).and.
+     if(diverge.eq.0 .and. s_mode.eq.0)  call variable_cal   !(initial_vapor_solving.eq.1 .or. initial_vapor_solved.eq.1).and.
 
     
      if(graph_mode.eq.1 .and. diverge.eq.0) then

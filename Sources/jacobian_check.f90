@@ -15,7 +15,7 @@ subroutine jacobian_check(m, i, sj, sf, LNOPP, LNVar, id)
   !write(*,*) 'secand method check for element m =',m, 'point i =', i
 
   delta = 10e-7_rk
-  TOL = 10e-4_rk
+  TOL = 10e-2_rk
  
   if(i.eq.1) then
      open(unit = 20, file = trim(folder)//'secand_method.dat', status = 'replace')
