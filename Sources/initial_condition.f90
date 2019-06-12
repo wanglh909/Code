@@ -322,7 +322,7 @@ close(10)
         Tsol(i) = 0.0_rk!?
         psol(i) = 2.0_rk!/Ca    !include p at the node and p needed to be interpolated
         cpsol(i) = 1.0_rk
-        gammasol(i) = 1.0_rk
+        gammasol(i) = 0.0_rk
      end if
 
      if( VN(i).eq.1 .or. VN(i).eq.2 ) then

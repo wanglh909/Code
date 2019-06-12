@@ -44,7 +44,7 @@ program main
   
   ! no_Maran = 0  !1: no Marangoni stress
   Maran_flow = 1
-  fixed_Ma = 0  !does not matter if Maran_flow = 0
+  fixed_Ma = 1  !does not matter if Maran_flow = 0
   !option to solve cp
   solve_cp = 1
   surf_adsp = 1  !free surface adsorption
@@ -174,7 +174,7 @@ program main
      call newton_raphson  !calculating part, use multifront, jac_check_0, l2_error, split_sol, graph
 
      !calculate contact angle & flux
-     if(diverge.eq.0 .and. s_mode.eq.0)  call variable_cal   !(initial_vapor_solving.eq.1 .or. initial_vapor_solved.eq.1).and.
+     if(diverge.eq.0)  call variable_cal   !(initial_vapor_solving.eq.1 .or. initial_vapor_solved.eq.1).and.
 
     
      if(graph_mode.eq.1 .and. diverge.eq.0) then

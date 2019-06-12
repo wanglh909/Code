@@ -110,10 +110,10 @@ subroutine parameter_values
      !beta = 0.0_rk
      substrate = 0.0_rk
   end if
-  MaN = 10.0_rk!beta0*Tc/(mu*vc)  !-100.0_rk !
+  MaN = -10.0_rk!beta0*Tc/(mu*vc)  !-100.0_rk !
   Da_sub = 100.0_rk !kad_sub*lc/Dp
-  Da_surf1 = 0.0_rk!100.0_rk
-  Da_surf2 = 0.0_rk!100.0_rk
+  Da_surf1 = 1.0_rk!100.0_rk
+  Da_surf2 = 1.0_rk!100.0_rk
 
   !change for equations
   Re = Re*Ca
