@@ -95,7 +95,7 @@ subroutine initialization
   allocate( uintfac(3,3,ths), urintfac(3,3,ths), uzintfac(3,3,ths), &
        vintfac(3,3,ths), vrintfac(3,3,ths), vzintfac(3,3,ths), pintfac(3,3,ths), &
        crintfac(3,3,ths), czintfac(3,3,ths), Trintfac(3,3,ths), Tzintfac(3,3,ths), &
-       cprintfac(3,3,ths), cpzintfac(3,3,ths) )
+       cpintfac(3,3,ths), cprintfac(3,3,ths), cpzintfac(3,3,ths), mu(3,3,ths) )
   allocate( rdotintfac(3,3,ths), zdotintfac(3,3,ths), &
        udotintfac(3,3,ths), vdotintfac(3,3,ths), Tdotintfac(3,3,ths), cpdotintfac(3,3,ths) )
   allocate( udotlocal(9,ths), vdotlocal(9,ths), rdotlocal(9,ths), zdotlocal(9,ths), &

@@ -47,7 +47,8 @@ program main
   fixed_Ma = 0  !does not matter if Maran_flow = 0
   !option to solve cp
   solve_cp = 1
-  surf_adsp = 1  !free surface adsorption
+  muchange = 1  !viscosity change due to concentration
+  surf_adsp = 0  !free surface adsorption
   sub_adsp = 0   !substrate adsorption
   !set terms option
   NStrans = 1 !do not set this to 0, s.s. is not right for evaporation

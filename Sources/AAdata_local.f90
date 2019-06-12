@@ -13,7 +13,8 @@ module Ldata
   real(kind=rk), allocatable:: phir(:,:,:,:), phiz(:,:,:,:)
   real(kind=rk), allocatable:: uintfac(:,:,:), urintfac(:,:,:), uzintfac(:,:,:), &
        vintfac(:,:,:), vrintfac(:,:,:), vzintfac(:,:,:), pintfac(:,:,:), &
-       crintfac(:,:,:), czintfac(:,:,:), Trintfac(:,:,:), Tzintfac(:,:,:), cprintfac(:,:,:), cpzintfac(:,:,:)
+       crintfac(:,:,:), czintfac(:,:,:), Trintfac(:,:,:),Tzintfac(:,:,:),&
+       cpintfac(:,:,:), cprintfac(:,:,:), cpzintfac(:,:,:), mu(:,:,:)
   real(kind=rk), allocatable:: rdotintfac(:,:,:), zdotintfac(:,:,:), &
        udotintfac(:,:,:), vdotintfac(:,:,:), Tdotintfac(:,:,:), cpdotintfac(:,:,:)
   real(kind=rk), allocatable:: udotlocal(:,:), vdotlocal(:,:), &

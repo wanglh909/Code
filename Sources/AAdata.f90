@@ -144,7 +144,7 @@ module data
   real(kind=rk):: diameterp, Dp, Pep, Pep_surf, kboltz = 1.3806485279e-23 !(J/K)    
 
 
-  integer(kind=ik):: Maran_flow, solve_T, fixed_Ma, solve_cp, surf_adsp, sub_adsp
+  integer(kind=ik):: Maran_flow, solve_T, fixed_Ma, solve_cp, surf_adsp, sub_adsp, muchange
 
   integer(kind=ik):: init_stability, timestep_stable, radial_cal_time
   

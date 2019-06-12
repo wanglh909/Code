@@ -11,12 +11,13 @@ subroutine VI_in_sj(m,i,j, sj, LNVar, LNOPP,id)
 
   integer(kind=ik):: k, l
   real(kind=rk):: intRsi_r_V(Ng,Ng), intRsi_z_V(Ng,Ng), intReta_r_V(Ng,Ng), intReta_z_V(Ng,Ng)
-  real(kind=rk):: intRu_r_V(Ng,Ng), intRu_z_V(Ng,Ng), intRu_u(Ng,Ng), intRuv(Ng,Ng), intRu_p(Ng,Ng)
-  real(kind=rk):: intRv_r_V(Ng,Ng), intRv_z_V(Ng,Ng), intRv_u(Ng,Ng), intRvv(Ng,Ng),intRv_p(Ng,Ng) 
+  real(kind=rk):: intRu_r_V(Ng,Ng), intRu_z_V(Ng,Ng), intRu_u(Ng,Ng), intRuv(Ng,Ng), intRu_p(Ng,Ng), intRu_cp(Ng,Ng)
+  real(kind=rk):: intRv_r_V(Ng,Ng), intRv_z_V(Ng,Ng), intRv_u(Ng,Ng), intRvv(Ng,Ng),intRv_p(Ng,Ng),intRv_cp(Ng,Ng) 
   real(kind=rk):: intRp_r(Ng,Ng), intRp_z(Ng,Ng), intRp_u(Ng,Ng), intRp_v(Ng,Ng)
   real(kind=rk):: intRc_r(Ng,Ng), intRc_z(Ng,Ng), intRc_c(Ng,Ng)
   real(kind=rk):: intRt_r_V(Ng,Ng), intRt_z_V(Ng,Ng), intRt_u(Ng,Ng), intRtv(Ng,Ng), intRt_T(Ng,Ng)
   real(kind=rk):: intRm_r_V(Ng,Ng), intRm_z_V(Ng,Ng), intRm_u(Ng,Ng), intRmv(Ng,Ng), intRm_cp(Ng,Ng)
+  real(kind=rk):: mu_cp
   intRsi_r_V(:,:) = 0.0_rk
   intRsi_z_V(:,:) = 0.0_rk
   intReta_r_V(:,:) = 0.0_rk
@@ -26,11 +27,13 @@ subroutine VI_in_sj(m,i,j, sj, LNVar, LNOPP,id)
   intRu_u(:,:) = 0.0_rk
   intRuv(:,:) = 0.0_rk
   intRu_p(:,:) = 0.0_rk
+  intRu_cp(:,:) = 0.0_rk
   intRv_r_V(:,:) = 0.0_rk
   intRv_z_V(:,:) = 0.0_rk
   intRv_u(:,:) = 0.0_rk
   intRvv(:,:) = 0.0_rk
   intRv_p(:,:) = 0.0_rk
+  intRv_cp(:,:) = 0.0_rk
   intRp_r(:,:) = 0.0_rk
   intRp_z(:,:) = 0.0_rk
   intRp_u(:,:) = 0.0_rk
@@ -48,6 +51,8 @@ subroutine VI_in_sj(m,i,j, sj, LNVar, LNOPP,id)
   intRm_u(:,:) = 0.0_rk
   intRmv(:,:) = 0.0_rk
   intRm_cp(:,:) = 0.0_rk
+  mu_cp = 0.0_rk
+  
 
 
   do k = 1, MDF( globalNM(m,i) ) 
@@ -242,57 +247,69 @@ intRv_p(k,l) = intRv_p(k,l) - Kdi*psi(k,l,j)*Oh*phiz(k,l,i,id) *rintfac(k,l,id)*
 
            if(Viscous.eq.1) then
 !------------------------------------------Ru-------------------------------------  
-intRu_r_V(k,l) = intRu_r_V(k,l) + ( &
+intRu_r_V(k,l) = intRu_r_V(k,l) + mu(k,l,id)* ( ( &
      Oh*( 2.0_rk*urintfac_r(k,l,id)*phir(k,l,i,id) + 2.0_rk*urintfac(k,l,id)*phir_r(k,l,i,id) + &
      ( uzintfac_r(k,l,id) + vrintfac_r(k,l,id) )*phiz(k,l,i,id) + &
      ( uzintfac(k,l,id) + vrintfac(k,l,id) )*phiz_r(k,l,i,id) - &
      4.0_rk*phi(k,l,i)*phi(k,l,j)/rintfac(k,l,id)**3 *uintfac(k,l,id) ) ) *rintfac(k,l,id)*abs(Jp(k,l,id)) + &
      
      ( Oh*( 2.0_rk*urintfac(k,l,id)*phir(k,l,i,id) + ( uzintfac(k,l,id) + vrintfac(k,l,id) )*phiz(k,l,i,id) + &
-     phi(k,l,i)*2.0_rk/rintfac(k,l,id)**2 *uintfac(k,l,id) ) ) *rJp_r(k,l,id) 
+     phi(k,l,i)*2.0_rk/rintfac(k,l,id)**2 *uintfac(k,l,id) ) ) *rJp_r(k,l,id)  )
 
 
-intRu_z_V(k,l) = intRu_z_V(k,l) + ( &
+intRu_z_V(k,l) = intRu_z_V(k,l) + mu(k,l,id)*( ( &
      Oh*( 2.0_rk*urintfac_z(k,l,id)*phir(k,l,i,id) + 2.0_rk*urintfac(k,l,id)*phir_z(k,l,i,id) + &
      ( uzintfac_z(k,l,id) + vrintfac_z(k,l,id) )*phiz(k,l,i,id) + &
      ( uzintfac(k,l,id) + vrintfac(k,l,id) )*phiz_z(k,l,i,id) ) ) *rintfac(k,l,id)*abs(Jp(k,l,id)) + &
      
      ( Oh*( 2.0_rk*urintfac(k,l,id)*phir(k,l,i,id) + ( uzintfac(k,l,id) + vrintfac(k,l,id) )*phiz(k,l,i,id) + &
-     phi(k,l,i)*2.0_rk/rintfac(k,l,id)**2 *uintfac(k,l,id) ) )  *rintfac(k,l,id)* Jp_z(k,l,id)*Jpsign(k,l,id)
+     phi(k,l,i)*2.0_rk/rintfac(k,l,id)**2 *uintfac(k,l,id) ) )  *rintfac(k,l,id)* Jp_z(k,l,id)*Jpsign(k,l,id)   )
 
 
-intRu_u(k,l) = intRu_u(k,l) + Oh*( 2.0_rk*phir(k,l,i,id)*phir(k,l,j,id) + &
+intRu_u(k,l) = intRu_u(k,l) + Oh*mu(k,l,id)* ( 2.0_rk*phir(k,l,i,id)*phir(k,l,j,id) + &
      phiz(k,l,i,id)*phiz(k,l,j,id) + 2.0_rk/rintfac(k,l,id)**2 *phi(k,l,i)*phi(k,l,j) )  &
      *rintfac(k,l,id)*abs(Jp(k,l,id))  
 
-intRuv(k,l) = intRuv(k,l) + Oh*phir(k,l,j,id)*phiz(k,l,i,id) *rintfac(k,l,id)*abs(Jp(k,l,id)) 
+intRuv(k,l) = intRuv(k,l) + Oh*mu(k,l,id)* phir(k,l,j,id)*phiz(k,l,i,id) *rintfac(k,l,id)*abs(Jp(k,l,id)) 
 
 !intRu_p(k,l) = intRu_p(k,l) + 0
 
+if(muchange.eq.1) then
+   mu_cp = 2.0*( 1 - cpintfac(k,l,id)/cp_pack )**(-3) /cp_pack*phi(k,l,j)
+intRu_cp(k,l) = Oh*mu_cp* ( 2.0_rk*urintfac(k,l,id)*phir(k,l,i,id) + &
+           ( uzintfac(k,l,id) + vrintfac(k,l,id) )*phiz(k,l,i,id) + &
+           phi(k,l,i)*2.0_rk/rintfac(k,l,id)**2 *uintfac(k,l,id) ) *rintfac(k,l,id)*abs(Jp(k,l,id))
+end if
+
+
 
 !------------------------------------------Rv-------------------------------------  
-intRv_r_V(k,l) = intRv_r_V(k,l) + Oh*( ( uzintfac_r(k,l,id) + vrintfac_r(k,l,id) )*phir(k,l,i,id) + &
+intRv_r_V(k,l) = intRv_r_V(k,l) + Oh*mu(k,l,id)*( ( ( uzintfac_r(k,l,id) + vrintfac_r(k,l,id) )*phir(k,l,i,id) + &
      ( uzintfac(k,l,id) + vrintfac(k,l,id) )*phir_r(k,l,i,id) + &
      2.0_rk*vzintfac_r(k,l,id)*phiz(k,l,i,id) + 2.0_rk*vzintfac(k,l,id)*phiz_r(k,l,i,id) ) &
      *rintfac(k,l,id)*abs(Jp(k,l,id)) + &
      
-     Oh*( ( uzintfac(k,l,id) + vrintfac(k,l,id) ) *phir(k,l,i,id) + 2.0_rk*vzintfac(k,l,id)*phiz(k,l,i,id) ) *rJp_r(k,l,id) 
+     Oh*( ( uzintfac(k,l,id) + vrintfac(k,l,id) ) *phir(k,l,i,id) + 2.0_rk*vzintfac(k,l,id)*phiz(k,l,i,id) ) *rJp_r(k,l,id)   )
 
 
-intRv_z_V(k,l) = intRv_z_V(k,l) + Oh*( ( uzintfac_z(k,l,id) + vrintfac_z(k,l,id) )*phir(k,l,i,id) + &
+intRv_z_V(k,l) = intRv_z_V(k,l) + Oh*mu(k,l,id)*( ( ( uzintfac_z(k,l,id) + vrintfac_z(k,l,id) )*phir(k,l,i,id) + &
      ( uzintfac(k,l,id) + vrintfac(k,l,id) )*phir_z(k,l,i,id) + &
      2.0_rk*vzintfac_z(k,l,id)*phiz(k,l,i,id) + 2.0_rk*vzintfac(k,l,id)*phiz_z(k,l,i,id) ) *rintfac(k,l,id)*abs(Jp(k,l,id)) + &
      
      Oh*( ( uzintfac(k,l,id) + vrintfac(k,l,id) ) *phir(k,l,i,id) + &
-     2.0_rk*vzintfac(k,l,id)*phiz(k,l,i,id) ) *rintfac(k,l,id)* Jp_z(k,l,id)*Jpsign(k,l,id)
+     2.0_rk*vzintfac(k,l,id)*phiz(k,l,i,id) ) *rintfac(k,l,id)* Jp_z(k,l,id)*Jpsign(k,l,id)    )
 
 
-intRv_u(k,l) = intRv_u(k,l) + Oh*phiz(k,l,j,id)*phir(k,l,i,id) *rintfac(k,l,id)*abs(Jp(k,l,id)) 
+intRv_u(k,l) = intRv_u(k,l) + Oh*mu(k,l,id)* phiz(k,l,j,id)*phir(k,l,i,id) *rintfac(k,l,id)*abs(Jp(k,l,id)) 
 
-intRvv(k,l) = intRvv(k,l) + Oh*( phir(k,l,i,id)*phir(k,l,j,id) + &
+intRvv(k,l) = intRvv(k,l) + Oh*mu(k,l,id)* ( phir(k,l,i,id)*phir(k,l,j,id) + &
      2.0_rk*phiz(k,l,i,id)*phiz(k,l,j,id) ) *rintfac(k,l,id)*abs(Jp(k,l,id)) 
 
 !intRv_p(k,l) = intRv_p(k,l) + 0
+
+if(muchange.eq.1) &
+intRv_cp(k,l) = Oh*mu_cp* ( ( uzintfac(k,l,id) + vrintfac(k,l,id) ) *phir(k,l,i,id) + &
+           2.0_rk*vzintfac(k,l,id)*phiz(k,l,i,id) ) *rintfac(k,l,id)*abs(Jp(k,l,id))
 
            end if
 !j=2,4,5,6,8,  intRu_p(k,l) = 0.0_rk
@@ -600,8 +617,10 @@ intRt_T(k,l) = intRt_T(k,l) + F0*( phir(k,l,i,id)*phir(k,l,j,id) + phiz(k,l,i,id
         sj(LNOPP(i)+Nu,LNOPP(j)+Nu) = gaussian_quadrature(intRu_u)        ! sjRuu(i,j) 
         sj(LNOPP(i)+Nu,LNOPP(j)+Nv) = gaussian_quadrature(intRuv)         ! sjRuv(i,j) 
         if( PN( globalNM(m,j) ).eq.1 ) then
-           sj(LNOPP(i)+Nu,LNOPP(j)+Np) = gaussian_quadrature(intRu_p)     ! sjRup(i,j) 
+           sj(LNOPP(i)+Nu,LNOPP(j)+Np) = gaussian_quadrature(intRu_p)     ! sjRup(i,j)
         end if
+        if( muchange.eq.1 ) &
+             sj(LNOPP(i)+Nu,LNOPP(j)+Ncp) = gaussian_quadrature(intRu_cp)     ! sjRucp(i,j)
 
         sj(LNOPP(i)+Nv,LNOPP(j)+Nr) = gaussian_quadrature(intRv_r_V)      ! sjRvr(i,j) 
         sj(LNOPP(i)+Nv,LNOPP(j)+Nz) = gaussian_quadrature(intRv_z_V)      ! sjRvz(i,j) 
@@ -610,7 +629,10 @@ intRt_T(k,l) = intRt_T(k,l) + F0*( phir(k,l,i,id)*phir(k,l,j,id) + phiz(k,l,i,id
         if( PN( globalNM(m,j) ).eq.1 ) then
            sj(LNOPP(i)+Nv,LNOPP(j)+Np) = gaussian_quadrature(intRv_p)     ! sjRvp(i,j) 
         end if
+        if( muchange.eq.1 ) &
+           sj(LNOPP(i)+Nv,LNOPP(j)+Ncp) = gaussian_quadrature(intRv_cp)     ! sjRvcp(i,j) 
 
+        
         if( BCflagN( globalNM(m,i), 3 ).eq.0 ) then  !(evaporation cooling & particle accumulation) on free surface, no volume integral
 
            

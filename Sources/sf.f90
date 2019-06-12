@@ -92,12 +92,12 @@ if(VE(m).eq.0) then
 
    if(Viscous.eq.1) then
       intRu_V(k,l) = intRu_V(k,l) + ( &
-           Oh*( 2.0_rk*urintfac(k,l,id)*phir(k,l,i,id) + &
+           Oh*mu(k,l,id)* ( 2.0_rk*urintfac(k,l,id)*phir(k,l,i,id) + &
            ( uzintfac(k,l,id) + vrintfac(k,l,id) )*phiz(k,l,i,id) + &
            phi(k,l,i)*2.0_rk/rintfac(k,l,id)**2 *uintfac(k,l,id) ) )  *rintfac(k,l,id)*abs(Jp(k,l,id))
 
       intRv_V(k,l) = intRv_V(k,l) + ( &
-           Oh*( ( uzintfac(k,l,id) + vrintfac(k,l,id) ) *phir(k,l,i,id) + &
+           Oh*mu(k,l,id)* ( ( uzintfac(k,l,id) + vrintfac(k,l,id) ) *phir(k,l,i,id) + &
            2.0_rk*vzintfac(k,l,id)*phiz(k,l,i,id) ) ) *rintfac(k,l,id)*abs(Jp(k,l,id))
    end if
 

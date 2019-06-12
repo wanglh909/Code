@@ -110,6 +110,7 @@ if(surf_adsp.eq.1 .and. BCflagE(m,3).eq.1 .and. BCflagN(globalNM(m,j),3).ne.0) &
         vzintfac(:,:,id) = 0.0_rk
         Trintfac(:,:,id) = 0.0_rk
         Tzintfac(:,:,id) = 0.0_rk
+        cpintfac(:,:,id) = 0.0_rk
         cprintfac(:,:,id) = 0.0_rk
         cpzintfac(:,:,id) = 0.0_rk
         pintfac(:,:,id) = 0.0_rk
@@ -136,6 +137,8 @@ if(surf_adsp.eq.1 .and. BCflagE(m,3).eq.1 .and. BCflagN(globalNM(m,j),3).ne.0) &
                     Tzintfac(k,l,id) = Tzintfac(k,l,id) +  Tlocal(n,id)*phiz(k,l,n,id)
                  end if
                  if(solve_cp.eq.1) then
+                    if(muchange.eq.1) &
+                    cpintfac(k,l,id) = cpintfac(k,l,id) +  cplocal(n,id)*phi(k,l,n)
                     cprintfac(k,l,id) = cprintfac(k,l,id) +  cplocal(n,id)*phir(k,l,n,id)
                     cpzintfac(k,l,id) = cpzintfac(k,l,id) +  cplocal(n,id)*phiz(k,l,n,id)
                  end if
@@ -147,7 +150,13 @@ if(surf_adsp.eq.1 .and. BCflagE(m,3).eq.1 .and. BCflagN(globalNM(m,j),3).ne.0) &
                  vdotintfac(k,l,id) = vdotintfac(k,l,id) + vdotlocal(n,id)*phi(k,l,n)
                  if(solve_T.eq.1)  Tdotintfac(k,l,id) = Tdotintfac(k,l,id) + Tdotlocal(n,id)*phi(k,l,n)
                  if(solve_cp.eq.1) cpdotintfac(k,l,id) = cpdotintfac(k,l,id) + cpdotlocal(n,id)*phi(k,l,n)
-              end do
+              end do  !n loop
+              
+              if(muchange.eq.1) then
+                 mu(k,l,id) = (1 - cpintfac(k,l,id)/cp_pack)**(-2)
+              else
+                 mu(k,l,id) = 1.0_rk
+              end if
 
            end do
         end do   !end loop for k&l, preparation for gaussian_quadrature
