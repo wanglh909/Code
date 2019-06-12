@@ -304,7 +304,7 @@ if(BCflagN( globalNM(m,i), 4 ) .ne.0 ) then
    ipp = i/3  !phix_1d(k,ipp)
    do k = 1, Ng, 1    !three gausspoints
 
-intReta_S(k) = phix_1d(k,ipp) * geta_size(m) * log( SQr2z2(k,id) )
+intReta_S(k) = phix_1d(k,ipp) * geta_size(m) * log( reta_right(k,id)**2 + zeta_right(k,id)**2  )
    end do
    sf(LNOPP(i)+Nz) = sf(LNOPP(i)+Nz)  -  M2*gaussian_quadrature_1d(intReta_S)
 end if
@@ -413,7 +413,7 @@ if(solve_cp.eq.1 .and. surf_adsp.eq.1) then
    Rms32 = - ( phix_1d(k,ipp)*gammaintfac(k,id) + phi_1d(k,ipp)*gammaeta(k,id) ) &
         * ureandvze(k,id) /sqrt(SQr2z2(k,id)) * rintfac_right(k,id)
    !diffusion
-   Rms4 = Pep**(-1)* phix_1d(k,ipp)*gammaeta(k,id) /SQr2z2(k,id)*dS(k,id)
+   Rms4 = Pep_surf**(-1)* phix_1d(k,ipp)*gammaeta(k,id) /SQr2z2(k,id)*dS(k,id)
    !dilatation
    Rms5 = phi_1d(k,ipp)*gammaintfac(k,id)*Rms5term(k,id)*dS(k,id)
    !stretching&dilatation

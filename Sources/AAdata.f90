@@ -141,7 +141,7 @@ module data
   real(kind=rk):: T_sub
 
 
-  real(kind=rk):: diameterp, Dp, Pep, kboltz = 1.3806485279e-23 !(J/K)    
+  real(kind=rk):: diameterp, Dp, Pep, Pep_surf, kboltz = 1.3806485279e-23 !(J/K)    
 
 
   integer(kind=ik):: Maran_flow, solve_T, fixed_Ma, solve_cp, surf_adsp, sub_adsp

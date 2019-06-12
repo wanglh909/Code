@@ -3,7 +3,7 @@ subroutine parameter_values
   use data, only: Re, Ca, Kdi, Pe, KBCgroup, REH, beta, Oh, Grav, MaN, Da_sub, Da_surf1, Da_surf2, &
        R, Hum, F0, kR, folder, substrate, outer, &
        NStrans, Inert, Capil, Viscous, GravI, Ttime, Tconv, Tdiff, TtimeS, TdiffS, NEM, NEL, NES, NEV, NEM_alge, T_sub, uniflux, &
-       diameterp, Pep, kboltz, pi, solve_T, Maran_flow, fixed_Ma, cp_pack, Dp, no_vapor, solve_cp, sub_adsp, surf_adsp
+       diameterp, Pep, kboltz, pi, solve_T, Maran_flow, fixed_Ma, cp_pack, Dp, no_vapor, solve_cp, sub_adsp, surf_adsp, Pep_surf
   implicit none
 
   integer(kind=ik):: Ltype !, water, octane, hexanol
@@ -106,6 +106,7 @@ subroutine parameter_values
   F0 = alphaS*(lc/vc)/(lc**2)!?
   kR = ks/kT  !relative thermal conductivity
   Pep = lc*vc/Dp    !267.35_rk
+  Pep_surf = 10000.0_rk*Pep
   if(solve_T.eq.0) then
      !beta = 0.0_rk
      substrate = 0.0_rk
@@ -131,6 +132,7 @@ subroutine parameter_values
   write(10,'(A, es14.7)') 'Ca =', Ca
   write(10,'(A, es14.7)') 'Pe =', Pe
   write(10,'(A, es14.7)') 'Pep =', Pep
+  write(10,'(A, es14.7)') 'Pep_surf =', Pep_surf
   write(10,'(A, es14.7)') 'F0 =', F0
   write(10,'(A, es14.7)') 'kR =', kR
   write(10,'(A, es14.7)') 'Grav =', Grav

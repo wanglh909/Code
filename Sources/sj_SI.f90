@@ -526,13 +526,13 @@ intRv_z_S(k) = phix_1d(k,ipp)*phix_1d(k,jpp) / sqrt( SQr2z2(k,id) ) *rintfac_rig
          ureandvze(k,id)/sqrt(SQr2z2(k,id))*rintfac_right(k,id)
     
     !Rms4, diffusion
-    Rms4r = 1.0_rk/Pep*phix_1d(k,ipp)*gammaeta(k,id)*( &
+    Rms4r = 1.0_rk/Pep_surf*phix_1d(k,ipp)*gammaeta(k,id)*( &
          -2.0_rk/SQr2z2(k,id)**2*reta_right(k,id)*phix_1d(k,jpp)*dS(k,id) + dSdr(k,id)/SQr2z2(k,id) )
 
-    Rms4z = 1.0_rk/Pep*phix_1d(k,ipp)*gammaeta(k,id)*( &
+    Rms4z = 1.0_rk/Pep_surf*phix_1d(k,ipp)*gammaeta(k,id)*( &
          -2.0_rk/SQr2z2(k,id)**2*zeta_right(k,id)*phix_1d(k,jpp)*dS(k,id) + dSdz(k,id)/SQr2z2(k,id))
     
-    Rms4gamma = 1.0_rk/Pep*phix_1d(k,ipp)*phix_1d(k,jpp)/SQr2z2(k,id)*dS(k,id)
+    Rms4gamma = 1.0_rk/Pep_surf*phix_1d(k,ipp)*phix_1d(k,jpp)/SQr2z2(k,id)*dS(k,id)
 
     !Rms5, dilatation
     twoHterm_r = -2.0_rk*sin(angle_c)/R/SQr2z2(k,id)**1.5*reta_right(k,id)*phix_1d(k,jpp)
