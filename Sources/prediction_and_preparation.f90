@@ -59,7 +59,16 @@ if(diverge.eq.0) then
                         imax = i
                         var = 'cp'
                      end if
-                  end if
+
+!                      if(surf_adsp.eq.1 .and. BCflagN(i,3).ne.0) then
+! if (ABS( sol(NOPP(i)+MDF(i)-1) - solpred(NOPP(i)+MDF(i)-1) ) .gt.trunerr) then
+!    trunerr = ABS( sol(NOPP(i)+MDF(i)-1) - solpred(NOPP(i)+MDF(i)-1) )
+!    imax = i
+!    var = 'gamma'
+! end if
+!                      end if  !surf_adsp=1 & free surface node
+                        
+                  end if   !solve_cp=1
 
                   ! if(PN(i).eq.1) then    ! skip calculating P change
                   !    if (ABS( sol(NOPP(i)+Np) - solpred(NOPP(i)+Np) )/pmax .gt.trunerr) then
