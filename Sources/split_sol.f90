@@ -40,7 +40,7 @@ subroutine split_sol
      !for the initial stage when stability hasn't been set up, cp not change
         if( init_stability.eq.0 .and. ( VN(i).eq.0 .or. VN(i).eq.2 ) ) then
            sol(NOPP(i) + Ncp) = 1.0_rk
-           ! if(surf_adsp.eq.1 .and. BCflagN(i,3).ne.0) sol(NOPP(i)+MDF(i)-1) = 1.0_rk
+           if(surf_adsp.eq.1 .and. BCflagN(i,3).ne.0) sol(NOPP(i)+MDF(i)-1) = 0.0_rk
         end if
 
      end if !solve_cp.eq.1 .and. s_mode.eq.0

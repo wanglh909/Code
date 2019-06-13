@@ -171,7 +171,7 @@ subroutine stagnation_and_extremum(cut, delta)
            !at eta = 0
            retap(1) = -3.0_rk*rcoordinate(globalNM(i,3)) + 4.0_rk*rcoordinate(globalNM(i,6)) - rcoordinate(globalNM(i,9))
            zetap(1) = -3.0_rk*zcoordinate(globalNM(i,3)) + 4.0_rk*zcoordinate(globalNM(i,6)) - zcoordinate(globalNM(i,9))
-           v_surf(1) = ( usol(globalNM(i,3))*retap(1) + vsol(globalNM(i,3))*zetap(1) ) /sqrt( retap(1)**2+zetap(1)**2 )
+           v_surf(1) = -( usol(globalNM(i,3))*retap(1) + vsol(globalNM(i,3))*zetap(1) ) /sqrt( retap(1)**2+zetap(1)**2 )
            if(solve_T.eq.1) then
               Teta(1) = -3.0_rk*Tsol(globalNM(i,3)) + 4.0_rk*Tsol(globalNM(i,6)) - Tsol(globalNM(i,9))
               gradT(1) = -Teta(1)/sqrt( retap(1)**2+zetap(1)**2 )
@@ -182,7 +182,7 @@ subroutine stagnation_and_extremum(cut, delta)
            !at eta = 1
            retap(2) = rcoordinate(globalNM(i,3)) - 4.0_rk*rcoordinate(globalNM(i,6)) + 3.0_rk*rcoordinate(globalNM(i,9))
            zetap(2) = zcoordinate(globalNM(i,3)) - 4.0_rk*zcoordinate(globalNM(i,6)) + 3.0_rk*zcoordinate(globalNM(i,9))
-           v_surf(2) = ( usol(globalNM(i,9))*retap(2) + vsol(globalNM(i,9))*zetap(2) ) /sqrt( retap(2)**2+zetap(2)**2 )
+           v_surf(2) = -( usol(globalNM(i,9))*retap(2) + vsol(globalNM(i,9))*zetap(2) ) /sqrt( retap(2)**2+zetap(2)**2 )
            if(solve_T.eq.1) then
               Teta(2) = Tsol(globalNM(i,3)) - 4.0_rk*Tsol(globalNM(i,6)) + 3.0_rk*Tsol(globalNM(i,9))
               gradT(2) = -Teta(2)/sqrt( retap(2)**2+zetap(2)**2 )
@@ -195,7 +195,7 @@ subroutine stagnation_and_extremum(cut, delta)
            !at eta = 0.5
            retap(3) = -rcoordinate(globalNM(i,3)) + rcoordinate(globalNM(i,9))
            zetap(3) = -zcoordinate(globalNM(i,3)) + zcoordinate(globalNM(i,9))
-           v_surf(3) = ( usol(globalNM(i,6))*retap(3) + vsol(globalNM(i,6))*zetap(3) ) /sqrt( retap(3)**2+zetap(3)**2 )
+           v_surf(3) = -( usol(globalNM(i,6))*retap(3) + vsol(globalNM(i,6))*zetap(3) ) /sqrt( retap(3)**2+zetap(3)**2 )
            write(10,'(2es15.7)') rcoordinate(globalNM(i,3)), v_surf(1), sqrt(usol(globalNM(i,3))**2+ vsol(globalNM(i,3))**2)
            write(10,'(2es15.7)') rcoordinate(globalNM(i,6)), v_surf(3), sqrt(usol(globalNM(i,6))**2+ vsol(globalNM(i,6))**2)
            write(10,'(2es15.7)') rcoordinate(globalNM(i,9)), v_surf(2), sqrt(usol(globalNM(i,9))**2+ vsol(globalNM(i,9))**2)
@@ -261,7 +261,7 @@ if(angle_c_degree.le.40.0_rk) then
                     usolp = usolp + usol(globalNM(i,3*j))*phii_1d(eta3,j)
                     vsolp = vsolp + vsol(globalNM(i,3*j))*phii_1d(eta3,j)
                  end do
-                 v_surf(3) = ( usolp*retap(3) + vsolp*zetap(3) ) /sqrt( retap(3)**2+zetap(3)**2 )
+                 v_surf(3) = -( usolp*retap(3) + vsolp*zetap(3) ) /sqrt( retap(3)**2+zetap(3)**2 )
                  if( v_surf(3) * v_surf(1) .lt. 0.0_rk ) then
                     eta2 = eta3
                  else  !v_surf(3) * v_surf(2) .le. 0.0_rk
