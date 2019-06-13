@@ -83,7 +83,7 @@ subroutine parameter_values
   rhos = 2.70e3_rk!(kg/m^3)
   cpS = 0.84e3_rk!(J/kg/K)
   alphaS = ks/rhos/cpS
-  T_sub = 25.0_rk !     80 !(C)  !25 if not heated
+  T_sub = 50.0_rk !(C)   !Tsub=25 if not heated
 
   !particle
   diameterp = 1.0e-8_rk  !1.0e-7_rk  !  (m) particle diameter
@@ -109,15 +109,15 @@ subroutine parameter_values
   F0 = alphaS*(lc/vc)/(lc**2)!?
   kR = ks/kT  !relative thermal conductivity
   Pep = lc*vc/Dp    !267.35_rk
-  Pep_surf = 1.0e100_rk*Pep
+  Pep_surf = 1.0e2_rk*Pep
   if(solve_T.eq.0) then
      !beta = 0.0_rk
      substrate = 0.0_rk
   end if
-  MaN = -100.0_rk!beta0*Tc/(mu*vc)  !-100.0_rk !
+  MaN = -50.0_rk!beta0*Tc/(mu*vc)  !negative --> counterclockwise
   Da_sub = 100.0_rk !kad_sub*lc/Dp
-  Da_surf1 = 0.01_rk!100.0_rk   !gamma promotes adsp
-  Da_surf2 = 0.1_rk!100.0_rk
+  Da_surf1 = 1.0_rk!100.0_rk   !gamma promotes adsp
+  Da_surf2 = 1.0_rk!100.0_rk
 
   !change for equations
   Re = Re*Ca

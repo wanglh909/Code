@@ -49,7 +49,7 @@ subroutine split_sol
      !substrate base
      if( BCflagN(i,5).ne.0 ) then
         sol( NOPP(i) + Nz ) = -substrate    !z
-        if(solve_T.eq.1) sol( NOPP(i) + NT ) = 0.0_rk 
+        if(solve_T.eq.1) sol( NOPP(i) + NT ) = T_sub 
      end if
 
 

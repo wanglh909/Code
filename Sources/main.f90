@@ -46,7 +46,7 @@ program main
   Maran_flow = 1
   fixed_Ma = 0  !does not matter if Maran_flow = 0
   !option to solve cp
-  solve_cp = 1
+  solve_cp = 0
   muchange = 1  !viscosity change due to concentration
   surf_adsp = 0  !free surface adsorption
   sub_adsp = 0   !substrate adsorption
