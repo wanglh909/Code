@@ -44,11 +44,11 @@ program main
   
   ! no_Maran = 0  !1: no Marangoni stress
   Maran_flow = 1
-  fixed_Ma = 1  !does not matter if Maran_flow = 0
+  fixed_Ma = 0  !does not matter if Maran_flow = 0
   !option to solve cp
-  solve_cp = 1
-  muchange = 0  !viscosity change due to concentration
-  surf_adsp = 1  !free surface adsorption
+  solve_cp = 0
+  muchange = 1  !viscosity change due to concentration
+  surf_adsp = 0  !free surface adsorption
   sub_adsp = 0   !substrate adsorption
   !set terms option
   NStrans = 1 !do not set this to 0, s.s. is not right for evaporation
@@ -68,6 +68,7 @@ program main
   cptime = 1
   cpconv = 1
   cpdiff = 1
+  fixed_dt = 1
   !set flow parameters
   call parameter_values
   

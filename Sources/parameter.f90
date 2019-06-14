@@ -83,15 +83,17 @@ subroutine parameter_values
   rhos = 2.70e3_rk!(kg/m^3)
   cpS = 0.84e3_rk!(J/kg/K)
   alphaS = ks/rhos/cpS
-  T_sub = 25.0_rk !(C)   !Tsub=25 if not heated
+  T_sub = 40.0_rk !(C)   !Tsub=25 if not heated
 
   !particle
   diameterp = 1.0e-8_rk  !1.0e-7_rk  !  (m) particle diameter
   Dp = kboltz*(25.0_rk+273.15_rk)/(6.0_rk*pi*mu*diameterp)   !2.45e-12 (m^2/s)
   !cp0 = 2.5e-4  !(kg/m^3)  !??not used yet
-  cp_pack = 100.0_rk
+  cp_pack = 500.0_rk
   ! kad_sub = 
   
+  MaN = -1.0e5_rk  !beta0*Tc/(mu*vc) !k*(0.5_rk-r) !negative --> counterclockwise
+  Da_sub = 0.0_rk !kad_sub*lc/Dp
 
   !characteristic
   !sigmac & lc defined in liquid
@@ -114,8 +116,6 @@ subroutine parameter_values
      !beta = 0.0_rk
      substrate = 0.0_rk
   end if
-  MaN = -500.0_rk!beta0*Tc/(mu*vc)  !negative --> counterclockwise
-  Da_sub = 100.0_rk !kad_sub*lc/Dp
   Da_surf1 = 0.0_rk!100.0_rk   !gamma promotes adsp
   Da_surf2 = 0.1_rk!100.0_rk
 

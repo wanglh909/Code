@@ -12,7 +12,7 @@ subroutine prediction
   real(kind=rk):: dtmin=1.0e-8_rk, dtmax=1.0e-1_rk
   ! real(kind=rk):: rmax, zmax, umax, vmax, Tmax, pmax, cmax
 
-if(diverge.eq.0) then
+if(diverge.eq.0 .and. fixed_dt.eq.0) then
    
    !define trunerr & soldot (prepare for the next time step)
    if(timestep.ge.FTS) then
@@ -162,22 +162,26 @@ end if   !diverge=0
   if(diverge.eq.0) then
      dtp = dt
      solp = sol
-     !dt. for first 5 steps, dt doesn't need to be redefined; after 5 steps:
-     if (timestep.gt.FTS .and. (timestep_stable.eq.0 .or. timestep_stable.gt.FTS)) then
-        dt = dtp*( eps/trunerr )**(1.0_rk/3.0_rk)
-        if(dt.lt.dtmin) dt = dtmin
-        !if(dt.gt.dtmax) dt = dtmax
-     end if
-     ! !wirte dt in file
-     ! if (timestep.eq.FTS .and. step.eq.0) then
-     !    open(unit = 10, file = trim(folder)//'dt.dat', status = 'replace')
-     !    write(10, '(A)') 'variables = "time", "dt", "timestep" '
-     ! else
-     !    open(unit = 10, file = trim(folder)//'dt.dat', status = 'old', access = 'append')
-     ! end if
-     !    write(10, '(2es15.7, i8)') time, dt, timestep
-     ! close(10)
 
+     if(fixed_dt.eq.0) then
+        !dt. for first 5 steps, dt doesn't need to be redefined; after 5 steps:
+        if (timestep.gt.FTS .and. (timestep_stable.eq.0 .or. timestep_stable.gt.FTS)) then
+           dt = dtp*( eps/trunerr )**(1.0_rk/3.0_rk)
+           if(dt.lt.dtmin) dt = dtmin
+           !if(dt.gt.dtmax) dt = dtmax
+        end if
+        ! !wirte dt in file
+        ! if (timestep.eq.FTS .and. step.eq.0) then
+        !    open(unit = 10, file = trim(folder)//'dt.dat', status = 'replace')
+        !    write(10, '(A)') 'variables = "time", "dt", "timestep" '
+        ! else
+        !    open(unit = 10, file = trim(folder)//'dt.dat', status = 'old', access = 'append')
+        ! end if
+        !    write(10, '(2es15.7, i8)') time, dt, timestep
+        ! close(10)
+     else !fixed_dt.eq.1
+        dt = 1.0e-3_rk
+     end if
 
      !define solpred, viz. the initial guess for each time step
      soldotpp = soldotp

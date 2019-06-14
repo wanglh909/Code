@@ -157,11 +157,13 @@ subroutine stagnation_and_extremum(cut, delta)
      !to write v_surf
      if(timestep.eq.1) then
         open(unit = 10, file = trim(folder)//'v_surf.dat', status = 'replace')
-     else
+     else if( mod(timestep,graph_step).eq.0 ) then
         open(unit = 10, file = trim(folder)//'v_surf.dat', status = 'old', access = 'append')
      end if
-     write(10, '(A)') 'variables = "r", "v_surf", "v_magnitude"'
-     write(10, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
+     if(timestep.eq.1 .or. mod(timestep,graph_step).eq.0) then
+        write(10, '(A)') 'variables = "r", "v_surf", "v_magnitude"'
+        write(10, '(A,f6.3,A)') 'Zone T = "theta=', angle_c_degree, '"'
+     end if
     
      r_change = 0.0_rk
      do i = 1, NTE
@@ -191,6 +193,7 @@ subroutine stagnation_and_extremum(cut, delta)
            ! v_surf_p(2) = -0.5_rk*dPdr(2)*zcoordinate(globalNM(i,9)) + beta*gradT(2)
 
 
+     if(timestep.eq.1 .or. mod(timestep,graph_step).eq.0) then
            !to write surface velocity
            !at eta = 0.5
            retap(3) = -rcoordinate(globalNM(i,3)) + rcoordinate(globalNM(i,9))
@@ -199,6 +202,7 @@ subroutine stagnation_and_extremum(cut, delta)
            write(10,'(2es15.7)') rcoordinate(globalNM(i,3)), v_surf(1), sqrt(usol(globalNM(i,3))**2+ vsol(globalNM(i,3))**2)
            write(10,'(2es15.7)') rcoordinate(globalNM(i,6)), v_surf(3), sqrt(usol(globalNM(i,6))**2+ vsol(globalNM(i,6))**2)
            write(10,'(2es15.7)') rcoordinate(globalNM(i,9)), v_surf(2), sqrt(usol(globalNM(i,9))**2+ vsol(globalNM(i,9))**2)
+     end if
 
            
 
@@ -364,7 +368,8 @@ end if  !angle < 40.0_rk
      ! close(30)
      close(14)
      close(18)
-     close(10)
+     
+     if(timestep.eq.1 .or. mod(timestep,graph_step).eq.0) close(10)
   
   end if !timestep>0
 
